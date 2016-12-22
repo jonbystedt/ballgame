@@ -108,11 +108,6 @@ public class Config : MonoBehaviour
 		get { return _instance.maxRenderDistance; }
 	}
 
-	public static int MaxOutlineDistance
-	{
-		get { return _instance.maxOutlineDistance; }
-	}
-
 	// Spawn Settings
 	public static int MaxItemSpawns
 	{

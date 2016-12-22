@@ -148,7 +148,7 @@ public class Chunk : PooledObject {
 					ApplyDistanceOcclusion();
 				}
 
-				yield return new WaitForSeconds(1f);
+				yield return new WaitForSeconds(0.1f);
 			}
 
 			yield return null;	
@@ -169,8 +169,7 @@ public class Chunk : PooledObject {
 		chunkDistance = Mathf.FloorToInt(Vector3.Distance(chunkCenter, playerHPos));
 
 		// distance based occlusion
-		//var mat = _renderer.material;
-		if (chunkDistance > Config.MaxRenderDistance)// && !outofrange)
+		if (chunkDistance > Config.MaxRenderDistance)
 		{
 			if (_renderer.enabled)
 			{
@@ -182,7 +181,7 @@ public class Chunk : PooledObject {
 			}			
 			outofrange = true;
 		}
-		else if (chunkDistance <= Config.MaxRenderDistance && chunkDistance > Config.MaxOutlineDistance)// && outofrange)
+		else if (chunkDistance <= Config.MaxRenderDistance)
 		{
 			if (!_renderer.enabled)
 			{
@@ -192,28 +191,9 @@ public class Chunk : PooledObject {
 			{
 				_glassrenderer.enabled = true;
 			}	
-			// if (mat.GetFloat("_Mode") != 2f)
-			// {
-			// 	mat.SetFloat("_Mode", 2f);
-			// }	
+
 			outofrange = false;
 		} 
-		else if (chunkDistance <= Config.MaxOutlineDistance)
-		{
-			if (!_renderer.enabled)
-			{
-				_renderer.enabled = true;
-			}
-			if (!_glassrenderer.enabled)
-			{
-				_glassrenderer.enabled = true;
-			}	
-			// if (mat.GetFloat("_Mode") != 0f)
-			// {
-			// 	mat.SetFloat("_Mode", 0f);
-			// }
-			outofrange = false;
-		}
 
 		// Chunk Deletion
 		if (chunkDistance > Config.ChunkDeleteRadius * Chunk.Size)

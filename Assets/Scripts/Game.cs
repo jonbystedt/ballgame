@@ -43,7 +43,6 @@ public class Game : MonoBehaviour
 	private Text positionText;
 
 	private StartGame startGame;
-	private Occluder occluder;
 	private CameraOperator camOp;
 	private int score = 0;
 	private int logCount = 2;
@@ -138,7 +137,6 @@ public class Game : MonoBehaviour
 		positionText = HUD.transform.Find("Position").GetComponent<Text>();
 
 		startGame = HUD.transform.GetComponent<StartGame>();
-		occluder = mainCamera.GetComponent<Occluder>();
 
 		camOp = mainCamera.GetComponentInParent<CameraOperator>();
 

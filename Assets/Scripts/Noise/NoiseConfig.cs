@@ -57,7 +57,7 @@ public static class NoiseConfig {
 			Mathf.Lerp(0f, 4f, GameUtils.Variance), 
 			Mathf.Lerp(0f, 0.5f, GameUtils.Variance), 
 			32,
-			Mathf.Pow(GameUtils.Variance - 0.5f, Mathf.FloorToInt(GameUtils.Variance * 8) % 8)
+			Mathf.Pow(GameUtils.Variance - 0.5f, 2 + Mathf.FloorToInt(GameUtils.Variance * 8) % 8)
 			); 
 
 		variance = GameUtils.Variance;
@@ -109,7 +109,7 @@ public static class NoiseConfig {
 			Mathf.Lerp(0f, 4f, GameUtils.Variance),
 			Mathf.Lerp(0f, 2f, GameUtils.Variance),
 			1024,
-			Mathf.Pow(GameUtils.Variance - 0.5f, Mathf.FloorToInt(GameUtils.Variance * 8) % 8)
+			Mathf.Pow(GameUtils.Variance - 0.5f, 2 + Mathf.FloorToInt(GameUtils.Variance * 8) % 8)
 			);
 
 		Game.Log(stripe.drift.ToString() + " " + pattern.drift.ToString() + " " + terrain.drift.ToString() + " " + mountain.drift.ToString());

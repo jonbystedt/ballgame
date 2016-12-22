@@ -37,7 +37,9 @@ public class TerrainGenerator : MonoBehaviour
 	bool glassy1;
 	bool glassy2;
 	bool freakyFriday;
-	float hollow;
+	float hollowFormation;
+    float hollowMountains;
+    float hollowGlass;
 
 	int floor = -48;
 
@@ -241,7 +243,7 @@ public class TerrainGenerator : MonoBehaviour
 				if (y <= mountainHeight && adjustedCaveChance < caveValue)
 				{
 					// glass or rock?
-					if (glassRockBreakPoint < glassValue) 
+                    if (glassRockBreakPoint < glassValue && glassValue < NoiseConfig.pattern.scale - (hollowMountains * NoiseConfig.pattern.scale)) 
 					{
 						// rock stripes
 						if (stripeValue > stripeColorBreakPoint) 
@@ -257,7 +259,7 @@ public class TerrainGenerator : MonoBehaviour
 							air = false;
 						}
 					}
-					else
+                    else if (glassValue > NoiseConfig.pattern.scale * hollowGlass)
 					{
 						// glass sections
 						// have rock stripes
@@ -318,7 +320,8 @@ public class TerrainGenerator : MonoBehaviour
 				}
 
 				// formations
-				else if (caveValue > cloudChance && caveValue < cloudChance + ((NoiseConfig.cave.scale - cloudChance) * hollow) && glassValue > cloudChance - ((NoiseConfig.pattern.scale - cloudChance) * hollow))
+				else if (caveValue > cloudChance && caveValue < cloudChance + ((NoiseConfig.cave.scale - cloudChance) * hollowFormation) 
+					&& glassValue > cloudChance - ((NoiseConfig.pattern.scale - cloudChance) * hollowFormation))
 				{
 					// two colors
 					if (stripeValue > stripeColorBreakPoint - glassIncrease1) 
@@ -666,7 +669,9 @@ public class TerrainGenerator : MonoBehaviour
 
 		freakyFriday = GameUtils.Variance > 0.9f ? true : false;
 
-		hollow = GameUtils.Variance;
+        hollowFormation = GameUtils.Variance;
+        hollowMountains = Mathf.Pow(GameUtils.Variance, 2);
+        hollowGlass = Mathf.Pow(GameUtils.Variance, 2);
 
 		float stripedChance = GameUtils.Variance;
 		float patternedChance = GameUtils.Variance / 2f;
