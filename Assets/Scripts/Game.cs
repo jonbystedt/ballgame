@@ -307,7 +307,7 @@ public class Game : MonoBehaviour
 		loader.Reset();
 		world.Reset();
 		TileFactory.Clear();
-		GameUtils.Variance = 0;
+		GameUtils.SeedValue = 0;
 
 		player.GetComponent<Rigidbody>().isKinematic = true;
 		playerActive = false;

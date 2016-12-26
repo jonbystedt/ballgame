@@ -10,7 +10,7 @@ public static class GameUtils
 	public static float[] VarianceTable = new float[VARIANCE_TABLE_SIZE];
 
 	static int _varianceCount = 0;
-	public static float Variance 
+	public static float SeedValue 
 	{
 		get
 		{

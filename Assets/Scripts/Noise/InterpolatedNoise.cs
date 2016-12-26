@@ -4,7 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-public class InterpolatedNoise : MonoBehaviour {
+public class InterpolatedNoise : MonoBehaviour 
+{
 
 	public static Dictionary<Region,SampleSet> Results = new Dictionary<Region,SampleSet>();
 

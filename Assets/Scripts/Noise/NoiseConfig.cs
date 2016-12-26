@@ -46,108 +46,105 @@ public static class NoiseConfig {
 
 	public static void Initialize()
 	{
-		float variance = GameUtils.Variance;
+		float variance = GameUtils.SeedValue;
 		rainBreakValue = rainBreakValue + Mathf.FloorToInt(variance * variance * 350);
 		lightningBreakValue = lightningBreakValue + Mathf.FloorToInt(variance * variance * 250);
 
-		variance = GameUtils.Variance;
+		variance = GameUtils.SeedValue;
 		terrain = new NoiseOptions(
-			Mathf.Lerp(0.000001f, 0.05f, Mathf.Pow(variance, 1.2f)),
-			Mathf.FloorToInt(Mathf.Lerp(1,3,GameUtils.Variance)),//1, 
-			Mathf.Lerp(0f, 4f, GameUtils.Variance), 
-			Mathf.Lerp(0f, 0.5f, GameUtils.Variance), 
+			Mathf.Lerp(0.00001f, 0.025f, Mathf.Pow(variance, 1.2f)),
+			Mathf.FloorToInt(Mathf.Lerp(1,3,GameUtils.SeedValue)),//1, 
+			Mathf.Lerp(0f, 4f, GameUtils.SeedValue), 
+			Mathf.Lerp(0f, 0.5f, GameUtils.SeedValue), 
 			32,
-			Mathf.Pow(GameUtils.Variance - 0.5f, 2 + Mathf.FloorToInt(GameUtils.Variance * 8) % 8)
+			Mathf.Pow(GameUtils.SeedValue - 0.5f, 10 + Mathf.FloorToInt(GameUtils.SeedValue * 10) % 10)
 			); 
 
-		variance = GameUtils.Variance;
+		variance = GameUtils.SeedValue;
 		mountain = new NoiseOptions(
 			Mathf.Lerp(0.00005f, 0.025f, Mathf.Pow(variance, 1.2f)),
-			Mathf.FloorToInt(Mathf.Lerp(1,3,GameUtils.Variance)),//4, 
-			Mathf.Lerp(0f, 4f, GameUtils.Variance), 
-			Mathf.Lerp(0f, 1f, GameUtils.Variance), 
+			Mathf.FloorToInt(Mathf.Lerp(1,3,GameUtils.SeedValue)),//4, 
+			Mathf.Lerp(0f, 4f, GameUtils.SeedValue), 
+			Mathf.Lerp(0f, 1f, GameUtils.SeedValue), 
 			64,
-			Mathf.Pow(GameUtils.Variance - 0.5f, 4 + Mathf.FloorToInt(GameUtils.Variance * 8) % 8)
+			Mathf.Pow(GameUtils.SeedValue - 0.5f, 8 + Mathf.FloorToInt(GameUtils.SeedValue * 8) % 8)
 			); 
 
 		cave = new NoiseOptions(
-			Mathf.Lerp(0.0008f, 0.01f, GameUtils.Variance), 
-			1,//2, 
-			Mathf.Lerp(0f, 4f, GameUtils.Variance), 
-			Mathf.Lerp(0f, 1f, GameUtils.Variance), 
+			Mathf.Lerp(0.0008f, 0.05f, Mathf.Pow(GameUtils.SeedValue,2)), 
+			1,//Mathf.FloorToInt(Mathf.Lerp(1,2,GameUtils.SeedValue)), 
+			Mathf.Lerp(0f, 2f, GameUtils.SeedValue), 
+			Mathf.Lerp(0f, 1f, GameUtils.SeedValue), 
 			1024,
-			Mathf.Pow(GameUtils.Variance - 0.5f, 8 + Mathf.FloorToInt(GameUtils.Variance * 8) % 8)
+			Mathf.Pow(GameUtils.SeedValue - 0.5f, 12 + Mathf.FloorToInt(GameUtils.SeedValue * 10) % 10)
 			);
-		if (cave.frequency > 0.005) 
-		{
-			cave.octaves = 1;//Mathf.FloorToInt(Mathf.Lerp(1,3,GameUtils.Variance));
-		}
-		else if (cave.frequency <= 0.001)
-		{
-			cave.octaves = Mathf.FloorToInt(Mathf.Lerp(1,2,GameUtils.Variance));
-		}
-		else
-		{
-			cave.octaves = Mathf.FloorToInt(Mathf.Lerp(1,3,GameUtils.Variance));
-		}
+		// if (cave.frequency > 0.005) 
+		// {
+		// 	cave.octaves = 1;//Mathf.FloorToInt(Mathf.Lerp(1,3,GameUtils.Variance));
+		// }
+		// else if (cave.frequency <= 0.001)
+		// {
+		// 	cave.octaves = Mathf.FloorToInt(Mathf.Lerp(1,2,GameUtils.SeedValue));
+		// }
+		// else
+		// {
+		// 	cave.octaves = Mathf.FloorToInt(Mathf.Lerp(1,3,GameUtils.SeedValue));
+		// }
 
-
-		variance = GameUtils.Variance;
 		pattern = new NoiseOptions(
-			Mathf.Lerp(0.000005f, 0.05f, variance * variance), 
-			Mathf.FloorToInt(Mathf.Lerp(1,3,GameUtils.Variance)),//4, 
-			Mathf.Lerp(0f, 4f, GameUtils.Variance), 
-			Mathf.Lerp(0f, 1f, GameUtils.Variance), 
+			Mathf.Lerp(0.0008f, 0.1f, Mathf.Pow(GameUtils.SeedValue,3)), 
+			1,//Mathf.FloorToInt(Mathf.Lerp(1,2,GameUtils.SeedValue)),//4, 
+			Mathf.Lerp(0f, 4f, GameUtils.SeedValue), 
+			Mathf.Lerp(0f, 1f, GameUtils.SeedValue), 
 			1024,
-			Mathf.Pow(GameUtils.Variance - 0.5f, 4 + Mathf.FloorToInt(GameUtils.Variance * 8) % 8)
+			Mathf.Pow(GameUtils.SeedValue - 0.5f, 10 + Mathf.FloorToInt(GameUtils.SeedValue * 8) % 8)
 			);
 
-		variance = GameUtils.Variance;
 		stripe = new NoiseOptions(
-			Mathf.Lerp(0.00000001f, 5f, variance * variance), 
-			Mathf.FloorToInt(Mathf.Lerp(1,2,GameUtils.Variance)),//2, 
-			Mathf.Lerp(0f, 4f, GameUtils.Variance),
-			Mathf.Lerp(0f, 2f, GameUtils.Variance),
+			Mathf.Lerp(0.00000001f, 1f, Mathf.Pow(GameUtils.SeedValue,2)),  
+			Mathf.FloorToInt(Mathf.Lerp(1,4,GameUtils.SeedValue)),//2, 
+			Mathf.Lerp(0f, 4f, GameUtils.SeedValue),
+			Mathf.Lerp(0f, 2f, GameUtils.SeedValue),
 			1024,
-			Mathf.Pow(GameUtils.Variance - 0.5f, 2 + Mathf.FloorToInt(GameUtils.Variance * 8) % 8)
+			Mathf.Pow(GameUtils.SeedValue - 0.5f, 6 + Mathf.FloorToInt(GameUtils.SeedValue * 8) % 8)
 			);
 
 		Game.Log(stripe.drift.ToString() + " " + pattern.drift.ToString() + " " + terrain.drift.ToString() + " " + mountain.drift.ToString());
 
-		variance = GameUtils.Variance;
+		variance = GameUtils.SeedValue;
 		spawnTypes = new NoiseOptions(
 			Mathf.Lerp(0.008f, 0.05f, variance * variance), 
-			Mathf.FloorToInt(Mathf.Lerp(1,2,GameUtils.Variance)),//1, 
-			Mathf.Lerp(0f, 2f, GameUtils.Variance),
-			Mathf.Lerp(0f, 2f, GameUtils.Variance),
+			Mathf.FloorToInt(Mathf.Lerp(1,2,GameUtils.SeedValue)),//1, 
+			Mathf.Lerp(0f, 2f, GameUtils.SeedValue),
+			Mathf.Lerp(0f, 2f, GameUtils.SeedValue),
 			10000,
 			0f
 			);
 
 		spawnFrequency = new NoiseOptions(
-			Mathf.Lerp(0.04f, 2f, GameUtils.Variance), 
-			Mathf.FloorToInt(Mathf.Lerp(1,2,GameUtils.Variance)),//1, 
-			Mathf.Lerp(0f, 2f, GameUtils.Variance),
-			Mathf.Lerp(0f, 2f, GameUtils.Variance),
+			Mathf.Lerp(0.04f, 2f, GameUtils.SeedValue), 
+			Mathf.FloorToInt(Mathf.Lerp(1,2,GameUtils.SeedValue)),//1, 
+			Mathf.Lerp(0f, 2f, GameUtils.SeedValue),
+			Mathf.Lerp(0f, 2f, GameUtils.SeedValue),
 			100,
 			0f
 			);
 
-		variance = GameUtils.Variance;
+		variance = GameUtils.SeedValue;
 		spawnIntensity = new NoiseOptions(
 			Mathf.Lerp(0.004f, 0.05f, variance * variance), 
-			Mathf.FloorToInt(Mathf.Lerp(1,2,GameUtils.Variance)) + 2,//1, 
-			Mathf.Lerp(0f, 2f, GameUtils.Variance),
-			Mathf.Lerp(0f, 2f, GameUtils.Variance),
+			Mathf.FloorToInt(Mathf.Lerp(1,2,GameUtils.SeedValue)) + 2,//1, 
+			Mathf.Lerp(0f, 2f, GameUtils.SeedValue),
+			Mathf.Lerp(0f, 2f, GameUtils.SeedValue),
 			100,
 			0f
 			);
 
 		rainIntensity = new NoiseOptions(
-			Mathf.Lerp(0.002f, 0.001f, GameUtils.Variance),
-			Mathf.FloorToInt(Mathf.Lerp(1,4, GameUtils.Variance)),
-			Mathf.Lerp(0f, 2f, GameUtils.Variance),
-			Mathf.Lerp(0f, 2f, GameUtils.Variance),
+			Mathf.Lerp(0.002f, 0.001f, GameUtils.SeedValue),
+			Mathf.FloorToInt(Mathf.Lerp(1,4, GameUtils.SeedValue)),
+			Mathf.Lerp(0f, 2f, GameUtils.SeedValue),
+			Mathf.Lerp(0f, 2f, GameUtils.SeedValue),
 			1000,
 			0f
 			);
@@ -155,13 +152,13 @@ public static class NoiseConfig {
 		lightningIntensity = new NoiseOptions(
 			rainIntensity.frequency,
 			rainIntensity.octaves,
-			rainIntensity.lacunarity + Mathf.Lerp(0.01f, 0.0025f, GameUtils.Variance),
-			rainIntensity.persistance + Mathf.Lerp(0.01f, 0.0025f, GameUtils.Variance),
+			rainIntensity.lacunarity + Mathf.Lerp(0.01f, 0.0025f, GameUtils.SeedValue),
+			rainIntensity.persistance + Mathf.Lerp(0.01f, 0.0025f, GameUtils.SeedValue),
 			1000,
 			0f
 			);
 
-		float noiseValue = GameUtils.Variance;
+		float noiseValue = GameUtils.SeedValue;
 		if (noiseValue > 0.75f)
 		{
 			caveMethod = NoiseGenerator.noiseMethods[(int)NoiseType.Value][2];
@@ -179,7 +176,7 @@ public static class NoiseConfig {
 			caveMethod = NoiseGenerator.noiseMethods[(int)NoiseType.Perlin][2];
 		}
 
-		noiseValue = GameUtils.Variance;
+		noiseValue = GameUtils.SeedValue;
 		if (noiseValue > 0.75f)//0.95f)
 		{
 			patternMethod = NoiseGenerator.noiseMethods[(int)NoiseType.Value][2];
@@ -197,7 +194,7 @@ public static class NoiseConfig {
 			patternMethod = NoiseGenerator.noiseMethods[(int)NoiseType.SimplexValue][2];
 		}
 
-		noiseValue = GameUtils.Variance;
+		noiseValue = GameUtils.SeedValue;
 		if (noiseValue > 0.75f)//0.95f)
 		{
 			stripeMethod = NoiseGenerator.noiseMethods[(int)NoiseType.Value][2];
@@ -215,7 +212,7 @@ public static class NoiseConfig {
 			stripeMethod = NoiseGenerator.noiseMethods[(int)NoiseType.Simplex][2];
 		}
 
-		noiseValue = GameUtils.Variance;
+		noiseValue = GameUtils.SeedValue;
 		if (noiseValue > 0.75f)//0.95f)
 		{
 			mountainType = NoiseType.Value;
@@ -233,7 +230,7 @@ public static class NoiseConfig {
 			mountainType = NoiseType.Simplex;
 		}
 
-		noiseValue = GameUtils.Variance;
+		noiseValue = GameUtils.SeedValue;
 		if (noiseValue > 0.75f)//0.95f)
 		{
 			terrainType = NoiseType.Perlin;
@@ -251,6 +248,6 @@ public static class NoiseConfig {
 			terrainType = NoiseType.SimplexValue;
 		}
 
-		terrain.scale = Mathf.FloorToInt(Mathf.Lerp(1f, 33f, GameUtils.Variance));
+		terrain.scale = Mathf.FloorToInt(Mathf.Lerp(1f, 33f, GameUtils.SeedValue));
 	}
 }

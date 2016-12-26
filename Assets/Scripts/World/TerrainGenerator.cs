@@ -93,7 +93,7 @@ public class TerrainGenerator : MonoBehaviour
 	{
 		SampleRegion caves = new SampleRegion(NoiseConfig.cave, NoiseConfig.caveMethod, 4, new Vector3(1,1,1));
 
-		SampleRegion patterns = new SampleRegion(NoiseConfig.pattern, NoiseConfig.patternMethod, 4, new Vector3(1,1,1));
+		SampleRegion patterns = new SampleRegion(NoiseConfig.pattern, NoiseConfig.patternMethod, 2, new Vector3(1,1,1));
 
 		SampleRegion stripes;
 
@@ -239,14 +239,24 @@ public class TerrainGenerator : MonoBehaviour
 				int colorIndex;
 				int modIndex;
 
-				// mountains
+				// mountains if less than or equal to the height of a 2D noisemap, and not in the 'cave' negative space
 				if (y <= mountainHeight && adjustedCaveChance < caveValue)
 				{
-					// glass or rock?
-                    if (glassRockBreakPoint < glassValue && glassValue < NoiseConfig.pattern.scale - (hollowMountains * NoiseConfig.pattern.scale)) 
+					// glass or rock? if the value of the 3D 'glass' noisemap is greater than the breakpoint this is potentially rock
+                    if (glassRockBreakPoint < glassValue) 
 					{
-						// rock stripes
-						if (stripeValue > stripeColorBreakPoint) 
+						// but if the value of the 'glass' noisemap is greater than the 'hollow' cutoff this is air
+						if (glassValue > NoiseConfig.pattern.scale - Mathf.FloorToInt((hollowMountains * (float)NoiseConfig.pattern.scale)))
+						{
+							chunk.SetBlock (localX, localY, localZ, new BlockAir());
+							if (!air)
+							{
+								sampleSet.spawnMap.height[localX, localZ] = y;
+							}
+							air = true;
+						}
+						// two distinct rock stripes provided by the 3D noisemap 'stripes'
+						else if (stripeValue > stripeColorBreakPoint) 
 						{
 							colorIndex = Mathf.FloorToInt(Mathf.Lerp(17, 32, stripeValue / (float)(NoiseConfig.stripe.scale - stripeColorBreakPoint)));
 							chunk.SetBlock (localX, localY, localZ, new Block(colorIndex));
@@ -259,11 +269,22 @@ public class TerrainGenerator : MonoBehaviour
 							air = false;
 						}
 					}
-                    else if (glassValue > NoiseConfig.pattern.scale * hollowGlass)
+					// Okay, this could be glass
+                    else 
 					{
+						// If we are less than the corresponding 'hollow' value this is air
+						if (glassValue < NoiseConfig.pattern.scale * hollowGlass) 
+						{
+							chunk.SetBlock (localX, localY, localZ, new BlockAir());
+							if (!air)
+							{
+								sampleSet.spawnMap.height[localX, localZ] = y;
+							}
+							air = true;
+						}
 						// glass sections
 						// have rock stripes
-						if (glassy2)
+						else if (glassy2)
 						{
 							if (glassStripeColorBreakPoint > stripeValue) 
 							{
@@ -318,6 +339,7 @@ public class TerrainGenerator : MonoBehaviour
 
 					}
 				}
+				// End of mountains
 
 				// formations
 				else if (caveValue > cloudChance && caveValue < cloudChance + ((NoiseConfig.cave.scale - cloudChance) * hollowFormation) 
@@ -642,40 +664,40 @@ public class TerrainGenerator : MonoBehaviour
 
 	void SetupFlags()
 	{
-		caveBreakPoint = Mathf.FloorToInt(Mathf.Lerp(384, 640, GameUtils.Variance));
+		caveBreakPoint = Mathf.FloorToInt(Mathf.Lerp(384, 640, GameUtils.SeedValue));
 
-		glassRockBreakPoint = Mathf.FloorToInt(Mathf.Lerp(0, 192, GameUtils.Variance));
-		stripeColorBreakPoint = Mathf.FloorToInt(Mathf.Lerp(0, 1024, GameUtils.Variance));
-		glassStripeColorBreakPoint = Mathf.FloorToInt(Mathf.Lerp(0, 1024, GameUtils.Variance));
+		glassRockBreakPoint = Mathf.FloorToInt(Mathf.Lerp(0, 192, GameUtils.SeedValue));
+		stripeColorBreakPoint = Mathf.FloorToInt(Mathf.Lerp(0, 1024, GameUtils.SeedValue));
+		glassStripeColorBreakPoint = Mathf.FloorToInt(Mathf.Lerp(0, 1024, GameUtils.SeedValue));
 
-		cloudBreakPoint = Mathf.FloorToInt(Mathf.Lerp(512, 768, GameUtils.Variance));
-		lowerCloudBreakPoint = Mathf.FloorToInt(Mathf.Lerp(0, 256, GameUtils.Variance));
+		cloudBreakPoint = Mathf.FloorToInt(Mathf.Lerp(512, 768, GameUtils.SeedValue));
+		lowerCloudBreakPoint = Mathf.FloorToInt(Mathf.Lerp(0, 256, GameUtils.SeedValue));
 
-		glassIncrease1 = Mathf.FloorToInt(Mathf.Lerp(0, 512, GameUtils.Variance));
-		glassIncrease2 = Mathf.FloorToInt(Mathf.Lerp(0, 512, GameUtils.Variance));
+		glassIncrease1 = Mathf.FloorToInt(Mathf.Lerp(0, 512, GameUtils.SeedValue));
+		glassIncrease2 = Mathf.FloorToInt(Mathf.Lerp(0, 512, GameUtils.SeedValue));
 
-		poleFlip = GameUtils.Variance > 0.95f ? true : false;
+		poleFlip = GameUtils.SeedValue > 0.95f ? true : false;
 
-		stretchFactor = Mathf.Lerp(0, 100, GameUtils.Variance);
-		squishFactor = Mathf.Lerp(0, 10, GameUtils.Variance);
+		stretchFactor = Mathf.Lerp(0, 1000, Mathf.Pow(GameUtils.SeedValue,2));
+		squishFactor = Mathf.Lerp(0, 100, Mathf.Pow(GameUtils.SeedValue,2));
 
-		candyStriper = GameUtils.Variance > 0.95f ? true : false;
-		candyStriper2 = GameUtils.Variance > 0.95f ? true : false;
-		candyStriper3 = GameUtils.Variance > 0.95f ? true : false;
-		candyStriper4 = GameUtils.Variance > 0.95f ? true : false;
+		candyStriper = GameUtils.SeedValue > 0.95f ? true : false;
+		candyStriper2 = GameUtils.SeedValue > 0.95f ? true : false;
+		candyStriper3 = GameUtils.SeedValue > 0.95f ? true : false;
+		candyStriper4 = GameUtils.SeedValue > 0.95f ? true : false;
 
-		glassy1 = GameUtils.Variance > 0.85f ? true : false;
-		glassy2 = GameUtils.Variance > 0.85f ? true : false;
+		glassy1 = GameUtils.SeedValue > 0.85f ? true : false;
+		glassy2 = GameUtils.SeedValue > 0.85f ? true : false;
 
-		freakyFriday = GameUtils.Variance > 0.9f ? true : false;
+		freakyFriday = GameUtils.SeedValue > 0.9f ? true : false;
 
-        hollowFormation = GameUtils.Variance;
-        hollowMountains = Mathf.Pow(GameUtils.Variance, 2);
-        hollowGlass = Mathf.Pow(GameUtils.Variance, 2);
+        hollowFormation = Mathf.Pow(GameUtils.SeedValue, 2);
+        hollowMountains = Mathf.Pow(GameUtils.SeedValue, 2);
+        hollowGlass = Mathf.Pow(GameUtils.SeedValue, 2);
 
-		float stripedChance = GameUtils.Variance;
-		float patternedChance = GameUtils.Variance / 2f;
-		float solidChance = GameUtils.Variance / 3f;
+		float stripedChance = GameUtils.SeedValue;
+		float patternedChance = GameUtils.SeedValue / 2f;
+		float solidChance = GameUtils.SeedValue / 3f;
 
 		if (solidChance > patternedChance && solidChance > stripedChance)
 		{
@@ -690,6 +712,6 @@ public class TerrainGenerator : MonoBehaviour
 			striped = true;
 		}
 
-		patternAmount = GameUtils.Variance;
+		patternAmount = GameUtils.SeedValue;
 	}
 }
