@@ -692,8 +692,8 @@ public class TerrainGenerator : MonoBehaviour
 		freakyFriday = GameUtils.SeedValue > 0.9f ? true : false;
 
         hollowFormation = Mathf.Pow(GameUtils.SeedValue, 2);
-        hollowMountains = Mathf.Pow(GameUtils.SeedValue, 2);
-        hollowGlass = Mathf.Pow(GameUtils.SeedValue, 2);
+        hollowMountains = Mathf.Pow(GameUtils.SeedValue, 3);
+        hollowGlass = Mathf.Pow(GameUtils.SeedValue, 3);
 
 		float stripedChance = GameUtils.SeedValue;
 		float patternedChance = GameUtils.SeedValue / 2f;

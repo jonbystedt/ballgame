@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
 
 public class Cosmos : MonoBehaviour {
 
@@ -58,6 +56,7 @@ public class Cosmos : MonoBehaviour {
 	public Moonlight moonlight;
 
 	private Color greySkyColor = new Color(0.25f,0.25f,0.25f);
+	private Color rainFogColor = new Color(0.15f,0.15f,0.15f);
 
 	float dot;
 	float tRange;
@@ -174,34 +173,12 @@ public class Cosmos : MonoBehaviour {
 		if (rain.RainIntensity == 0)
 		{
 			skyColor = nightDayFogColor.Evaluate(dot);
-
-			// if (zodiac.transform.localScale.x != 5) {
-			// 	newScale = Mathf.Lerp(zodiac.transform.localScale.x, 5, 0.01f);
-			// 	zodiac.transform.localScale = new Vector3(newScale, newScale, newScale);
-			// }
-
-			// if (moon.transform.localScale.x != 5) {
-			// 	newScale = Mathf.Lerp(moon.transform.localScale.x, 5, 0.01f);
-			// 	moon.transform.localScale = new Vector3(newScale, newScale, newScale);
-			// }
+			RenderSettings.fogColor = skyColor;
 		}
 		else
 		{
 			skyColor = Color.Lerp(nightDayFogColor.Evaluate(dot), greySkyColor, rain.RainIntensity);
-
-			// targetScale = Mathf.Lerp(5, 10, rain.RainIntensity);
-			// if (zodiac.transform.localScale.x != targetScale) 
-			// {
-			// 	newScale = Mathf.Lerp(zodiac.transform.localScale.x, targetScale, 0.01f);
-			// 	zodiac.transform.localScale = new Vector3(newScale, newScale, newScale);
-			// }
- 
-			// targetScale = Mathf.Lerp(5, 1, rain.RainIntensity);
-			// if (moon.transform.localScale.x != targetScale) 
-			// {
-			// 	newScale = Mathf.Lerp(moon.transform.localScale.x, targetScale, 0.01f);
-			// 	moon.transform.localScale = new Vector3(newScale, newScale, newScale);
-			// }
+			RenderSettings.fogColor = Color.Lerp(nightDayFogColor.Evaluate(dot), rainFogColor, rain.RainIntensity);
 		}
 
 		RenderSettings.fogColor = skyColor;

@@ -63,7 +63,7 @@ public static class NoiseConfig {
 		variance = GameUtils.SeedValue;
 		mountain = new NoiseOptions(
 			Mathf.Lerp(0.00005f, 0.025f, Mathf.Pow(variance, 1.2f)),
-			Mathf.FloorToInt(Mathf.Lerp(1,3,GameUtils.SeedValue)),//4, 
+			Mathf.FloorToInt(Mathf.Lerp(1,3,GameUtils.SeedValue)),
 			Mathf.Lerp(0f, 4f, GameUtils.SeedValue), 
 			Mathf.Lerp(0f, 1f, GameUtils.SeedValue), 
 			64,
@@ -71,29 +71,17 @@ public static class NoiseConfig {
 			); 
 
 		cave = new NoiseOptions(
-			Mathf.Lerp(0.0008f, 0.05f, Mathf.Pow(GameUtils.SeedValue,2)), 
-			1,//Mathf.FloorToInt(Mathf.Lerp(1,2,GameUtils.SeedValue)), 
+			Mathf.Lerp(0.001f, 0.06f, Mathf.Pow(GameUtils.SeedValue,2)), 
+			1,
 			Mathf.Lerp(0f, 2f, GameUtils.SeedValue), 
 			Mathf.Lerp(0f, 1f, GameUtils.SeedValue), 
 			1024,
 			Mathf.Pow(GameUtils.SeedValue - 0.5f, 12 + Mathf.FloorToInt(GameUtils.SeedValue * 10) % 10)
 			);
-		// if (cave.frequency > 0.005) 
-		// {
-		// 	cave.octaves = 1;//Mathf.FloorToInt(Mathf.Lerp(1,3,GameUtils.Variance));
-		// }
-		// else if (cave.frequency <= 0.001)
-		// {
-		// 	cave.octaves = Mathf.FloorToInt(Mathf.Lerp(1,2,GameUtils.SeedValue));
-		// }
-		// else
-		// {
-		// 	cave.octaves = Mathf.FloorToInt(Mathf.Lerp(1,3,GameUtils.SeedValue));
-		// }
 
 		pattern = new NoiseOptions(
 			Mathf.Lerp(0.0008f, 0.1f, Mathf.Pow(GameUtils.SeedValue,3)), 
-			1,//Mathf.FloorToInt(Mathf.Lerp(1,2,GameUtils.SeedValue)),//4, 
+			1,
 			Mathf.Lerp(0f, 4f, GameUtils.SeedValue), 
 			Mathf.Lerp(0f, 1f, GameUtils.SeedValue), 
 			1024,
@@ -102,7 +90,7 @@ public static class NoiseConfig {
 
 		stripe = new NoiseOptions(
 			Mathf.Lerp(0.00000001f, 1f, Mathf.Pow(GameUtils.SeedValue,2)),  
-			Mathf.FloorToInt(Mathf.Lerp(1,4,GameUtils.SeedValue)),//2, 
+			Mathf.FloorToInt(Mathf.Lerp(1,4,GameUtils.SeedValue)), 
 			Mathf.Lerp(0f, 4f, GameUtils.SeedValue),
 			Mathf.Lerp(0f, 2f, GameUtils.SeedValue),
 			1024,

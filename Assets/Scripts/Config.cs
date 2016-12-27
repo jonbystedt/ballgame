@@ -68,7 +68,7 @@ public class Config : MonoBehaviour
 				_instance.chunkLoadRadius = value + Mathf.FloorToInt(value / 2f);
 
 				// Delete the chunks that fall outside this
-				_instance.chunkDeleteRadius = value * 4;
+				_instance.chunkDeleteRadius = value * 10;
 
 				// Despawn radius is 2/3 the world size. Spawn radius is always 1.
 				_instance.despawnRadius = value - Mathf.CeilToInt(value / 3f);
