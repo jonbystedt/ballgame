@@ -9,12 +9,12 @@ public class GreedyMesher : MonoBehaviour
 	List<int[,]> MaskPool = new List<int[,]>();
 	List<int[]> DirectionsPool = new List<int[]>();
 
-	public void Create(MeshData meshData, Block[,,] blocks, WorldPosition pos, bool transparent, bool surrounded, bool fastMesh)
+	public void Create(MeshData meshData, Block[] blocks, WorldPosition pos, bool transparent, bool surrounded, bool fastMesh)
 	{
 		StartCoroutine(CreateMeshData(meshData, blocks, pos, transparent, surrounded, fastMesh));
 	}
 
-	IEnumerator CreateMeshData(MeshData meshData, Block[,,] blocks, WorldPosition pos,  bool transparent, bool surrounded, bool fastMesh)
+	IEnumerator CreateMeshData(MeshData meshData, Block[] blocks, WorldPosition pos,  bool transparent, bool surrounded, bool fastMesh)
 	{
 		// Experimental
 		fastMesh = true;
@@ -81,29 +81,30 @@ public class GreedyMesher : MonoBehaviour
 						if (!transparent)
 						{
 							if (0 <= x[d] 
-								&& blocks[x[0], x[1], x[2]] != null 
-								&& blocks[x[0], x[1], x[2]].type == Block.Type.rock)
+								&& blocks[Chunk.GetBlockDataIndex(x[0], x[1], x[2])] != null 
+								&& blocks[Chunk.GetBlockDataIndex(x[0], x[1], x[2])].type == Block.Type.rock)
 							{
-								a = blocks[x[0], x[1], x[2]];
+								a = blocks[Chunk.GetBlockDataIndex(x[0], x[1], x[2])];
 							}
 							if (x[d] < Chunk.Size - 1 
-								&& blocks[x[0] + q[0], x[1] + q[1], x[2] + q[2]] != null 
-								&& blocks[x[0] + q[0], x[1] + q[1], x[2] + q[2]].type == Block.Type.rock)
+								&& blocks[Chunk.GetBlockDataIndex(x[0] + q[0], x[1] + q[1], x[2] + q[2])] != null 
+								&& blocks[Chunk.GetBlockDataIndex(x[0] + q[0], x[1] + q[1], x[2] + q[2])].type == Block.Type.rock)
 							{
-								b = blocks[x[0] + q[0], x[1] + q[1], x[2] + q[2]];
+								b = blocks[Chunk.GetBlockDataIndex(x[0] + q[0], x[1] + q[1], x[2] + q[2])];
 							}
 						}
 						else
 						{
-							if (0 <= x[d] && blocks[x[0], x[1], x[2]] != null && blocks[x[0], x[1], x[2]].type == Block.Type.glass)
+							if (0 <= x[d] && blocks[Chunk.GetBlockDataIndex(x[0], x[1], x[2])] != null 
+								&& blocks[Chunk.GetBlockDataIndex(x[0], x[1], x[2])].type == Block.Type.glass)
 							{
-								a = blocks[x[0], x[1], x[2]];
+								a = blocks[Chunk.GetBlockDataIndex(x[0], x[1], x[2])];
 							}
 							if (x[d] < Chunk.Size - 1 
-								&& blocks[x[0] + q[0], x[1] + q[1], x[2] + q[2]] != null 
-								&& blocks[x[0] + q[0], x[1] + q[1], x[2] + q[2]].type == Block.Type.glass)
+								&& blocks[Chunk.GetBlockDataIndex(x[0] + q[0], x[1] + q[1], x[2] + q[2])] != null 
+								&& blocks[Chunk.GetBlockDataIndex(x[0] + q[0], x[1] + q[1], x[2] + q[2])].type == Block.Type.glass)
 							{
-								b = blocks[x[0] + q[0], x[1] + q[1], x[2] + q[2]];
+								b = blocks[Chunk.GetBlockDataIndex(x[0] + q[0], x[1] + q[1], x[2] + q[2])];
 							}
 						}
 

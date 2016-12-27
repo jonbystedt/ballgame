@@ -16,13 +16,14 @@ public class Save
 			{
 				for (int z = 0; z < Chunk.Size; z++)
 				{
-					if (chunk.blocks[x, y, z] == null || !chunk.blocks[x, y, z].changed) 
+					uint index = Chunk.GetBlockDataIndex(x, y, z);
+					if (chunk._blocks[index] == null || !chunk._blocks[index].changed) 
 					{
 						continue;
 					}
 
 					WorldPosition pos = new WorldPosition(x, y, z);
-					blocks.Add(pos, chunk.blocks[x, y ,z]);
+					blocks.Add(pos, chunk._blocks[index]);
 				}
 			}
 		}

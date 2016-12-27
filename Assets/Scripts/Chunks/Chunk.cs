@@ -34,7 +34,11 @@ public class Chunk : PooledObject {
 	}
 	public PooledObject transparentChunk;
 	public Column column;
-	public Block[,,] blocks = new Block[Size, Size, Size];
+	//public Block[,,] blocks = new Block[Size, Size, Size];
+
+	private const byte VOXEL_Y_SHIFT = 4;
+	private const byte VOXEL_Z_SHIFT = 8;
+	public Block[] _blocks;
 	
 	private MeshFilter filter;
 	private MeshCollider col;
@@ -60,6 +64,8 @@ public class Chunk : PooledObject {
 		_glassrenderer = transparentChunk.GetComponent<MeshRenderer>();
 		_renderer = gameObject.GetComponent<MeshRenderer>();
 
+		_blocks = new Block[Size * Size * Size];
+
 		update = false;
 		updating = false;
 		built = false;
@@ -76,23 +82,23 @@ public class Chunk : PooledObject {
 			column.chunks.Clear();
 		}
 
-		for (int x = 0; x < Chunk.Size; x++)
-		{
-			for (int y = 0; y < Chunk.Size; y++)
-			{
-				for (int z = 0; z < Chunk.Size; z++)
-				{
-					if (blocks[x,y,z] == null)
-					{
-						blocks[x,y,z] = new Block();
-					}
-					else
-					{
-						blocks[x,y,z].type = Block.Type.undefined;
-					}
-				}
-			}
-		}
+		// for (int x = 0; x < Chunk.Size; x++)
+		// {
+		// 	for (int y = 0; y < Chunk.Size; y++)
+		// 	{
+		// 		for (int z = 0; z < Chunk.Size; z++)
+		// 		{
+		// 			if (blocks[x,y,z] == null)
+		// 			{
+		// 				blocks[x,y,z] = new Block();
+		// 			}
+		// 			else
+		// 			{
+		// 				blocks[x,y,z].type = Block.Type.undefined;
+		// 			}
+		// 		}
+		// 	}
+		// }
 
 		StartCoroutine(SlowUpdate());
 	}
@@ -112,8 +118,8 @@ public class Chunk : PooledObject {
 			MeshData meshData = GetMeshData();
 			MeshData transparentMeshData = GetMeshData();
 
-			World.Mesher.Create(meshData, blocks, _pos, false, true, playerHit);
-			World.Mesher.Create(transparentMeshData, blocks, _pos, true, true, playerHit);
+			World.Mesher.Create(meshData, _blocks, _pos, false, true, playerHit);
+			World.Mesher.Create(transparentMeshData, _blocks, _pos, true, true, playerHit);
 
 			if (playerHit)
 				playerHit = false;
@@ -283,14 +289,19 @@ public class Chunk : PooledObject {
 	{
 		if (InRange(x) && InRange(y) && InRange(z))
 		{
-			if (blocks[x, y, z] != null)
-			{
-				return blocks[x, y, z];
-			}
-			else
-			{
-				return emptyBlock;
-			}
+			// if (blocks[x, y, z] != null)
+			// {
+			// 	return blocks[x, y, z];
+			// }
+			return _blocks[GetBlockDataIndex((uint)x, (uint)y, (uint)z)];
+			// if (block != null)
+			// {
+			// 	return block;
+			// }
+			// else
+			// {
+			// 	return emptyBlock;
+			// }
 		}
 		
 		return World.GetBlock(_pos.x + x, _pos.y + y, _pos.z + z);
@@ -300,7 +311,9 @@ public class Chunk : PooledObject {
 	{
 		if(InRange(x) && InRange(y) && InRange(z))
 		{
-			blocks[x, y, z] = block;
+			//blocks[x, y, z] = block;
+			uint index = GetBlockDataIndex((uint)x, (uint)y, (uint)z);
+			_blocks[index] = block;
 		}
 		else
 		{
@@ -310,16 +323,23 @@ public class Chunk : PooledObject {
 
 	public void SetBlocksUnmodified()
 	{
-		for (int x = 0; x < Size; x++)
+		for(int i = 0; i < _blocks.Length; i++)
 		{
-			for (int y = 0; y < Size; y++)
+			if (_blocks[i] != null)
 			{
-				for (int z = 0; z < Size; z++)
-				{
-					blocks[x,y,z].changed = false;
-				}
+				_blocks[i].changed = false;
 			}
 		}
+		// for (int x = 0; x < Size; x++)
+		// {
+		// 	for (int y = 0; y < Size; y++)
+		// 	{
+		// 		for (int z = 0; z < Size; z++)
+		// 		{
+		// 			blocks[x,y,z].changed = false;
+		// 		}
+		// 	}
+		// }
 	}
 
 	public bool IsSurrounded()
@@ -393,6 +413,25 @@ public class Chunk : PooledObject {
 	void ReturnMeshData(MeshData meshData)
 	{
 		MeshDataPool.Add(meshData);
+	}
+
+	static uint GetBlockDataIndex(uint x, uint y, uint z)
+	{
+		return x | y << VOXEL_Y_SHIFT | z << VOXEL_Z_SHIFT;
+	}
+
+	public static uint GetBlockDataIndex(int x, int y, int z)
+	{
+		return GetBlockDataIndex((uint)x, (uint)y, (uint)z);
+	}
+
+	static UIntVec3 GetBlockDataPosition(uint index)
+	{
+		uint blockX = index & 0xF;
+		uint blockY = (index >> VOXEL_Y_SHIFT) & 0xF;
+		uint blockZ = (index >> VOXEL_Z_SHIFT) & 0xF;
+
+		return new UIntVec3(blockX, blockY, blockZ);
 	}
 
 }
