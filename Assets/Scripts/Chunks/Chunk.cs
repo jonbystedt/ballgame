@@ -309,7 +309,7 @@ public class Chunk : PooledObject {
 	
 	public void SetBlock(int x, int y, int z, Block block)
 	{
-		if(InRange(x) && InRange(y) && InRange(z))
+		if (InRange(x) && InRange(y) && InRange(z))
 		{
 			//blocks[x, y, z] = block;
 			uint index = GetBlockDataIndex((uint)x, (uint)y, (uint)z);
