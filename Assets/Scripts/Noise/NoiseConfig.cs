@@ -71,7 +71,7 @@ public static class NoiseConfig {
 			); 
 
 		cave = new NoiseOptions(
-			Mathf.Lerp(0.008f, 0.08f, Mathf.Pow(GameUtils.SeedValue,2)), 
+			Mathf.Lerp(0.008f, 0.04f, Mathf.Pow(GameUtils.SeedValue,2)), 
 			1,
 			Mathf.Lerp(0f, 2f, GameUtils.SeedValue), 
 			Mathf.Lerp(0f, 1f, GameUtils.SeedValue), 
@@ -80,7 +80,7 @@ public static class NoiseConfig {
 			);
 
 		pattern = new NoiseOptions(
-			Mathf.Lerp(0.0008f, 0.06f, Mathf.Pow(GameUtils.SeedValue,3)), 
+			Mathf.Lerp(0.0008f, 0.04f, Mathf.Pow(GameUtils.SeedValue,3)), 
 			1,
 			Mathf.Lerp(0f, 4f, GameUtils.SeedValue), 
 			Mathf.Lerp(0f, 1f, GameUtils.SeedValue), 
@@ -90,7 +90,7 @@ public static class NoiseConfig {
 
 		stripe = new NoiseOptions(
 			Mathf.Lerp(0.00000001f, 1f, Mathf.Pow(GameUtils.SeedValue,2)),  
-			Mathf.FloorToInt(Mathf.Lerp(1,4,GameUtils.SeedValue)),//2, 
+			Mathf.FloorToInt(Mathf.Lerp(1,4,GameUtils.SeedValue)), 
 			Mathf.Lerp(0f, 4f, GameUtils.SeedValue),
 			Mathf.Lerp(0f, 2f, GameUtils.SeedValue),
 			1024,

@@ -6,12 +6,19 @@ using System.Diagnostics;
 
 public class TerrainGenerator : MonoBehaviour
 {
+	public AnimationCurve linear;
+	public AnimationCurve log;
+	public AnimationCurve bilinear;
+	public AnimationCurve trilinear;
 	public bool initialized = false;
-	public int mountainBase = -42;
+	public int mountainBase;
 	public InterpolatedNoise generator;
 
 	private List<SampleSet> SampleSetPool = new List<SampleSet>(); // TODO: Find expected size
 
+	int beachHeight;
+	int cloudEasing;
+	float beachPersistance;
 	int glassRockBreakPoint;
 	int stripeColorBreakPoint;
 	int glassStripeColorBreakPoint;
@@ -40,8 +47,9 @@ public class TerrainGenerator : MonoBehaviour
 	float hollowFormation;
     float hollowMountains;
     float hollowGlass;
+	float hollowPersistance;
 
-	int floor = -48;
+	int floor;
 
 	public void Initialize()
 	{	
@@ -147,6 +155,7 @@ public class TerrainGenerator : MonoBehaviour
 			{
 				Stopwatch stopwatch = Stopwatch.StartNew();
 
+				// loop through the x and z axis. The GenerateColumn coroutine will build a column of blocks at this position.
 				for (int x = column[0].pos.x; x < column[0].pos.x + Chunk.Size; x++)
 				{
 					for (int z = column[0].pos.z; z < column[0].pos.z + Chunk.Size; z++)
@@ -207,15 +216,20 @@ public class TerrainGenerator : MonoBehaviour
 		NoiseConfig.mountain.scale = 64 - terrainHeight;
 		int mountainHeight = mountainBase + GetNoise3D(new Vector3(x, 0, z), NoiseConfig.mountain, NoiseConfig.mountainType);
 
+		// loop through each chunk in the column
 		for(int i = 0; i < column.Length; i++)
 		{
 			Chunk chunk = column[i];
+
+			// track the topmost block of air in this column to use as the spawn location
 			bool air = true;
 
+			// building a single column of blocks on the y axis
 			for (int y = chunk.pos.y; y < chunk.pos.y + Chunk.Size; y++)
 			{
 				int localY = y - chunk.pos.y;
 
+				// build a layer of blocks on the lowest level
 				if (y <= floor)
 				{
 					chunk.SetBlock(localX, localY, localZ, Blocks.Rock(16));
@@ -227,26 +241,27 @@ public class TerrainGenerator : MonoBehaviour
 				int stripeValue = stripes[localX, (i * Chunk.Size) + localY, localZ];
 				int glassValue = patterns[localX, (i * Chunk.Size) + localY, localZ];
 
-				// Taper clouds towards ceiling
-				int cloudChance = cloudBreakPoint;
-				if (y >= 5)
-				{
-					cloudChance += Mathf.FloorToInt(((NoiseConfig.cave.scale - cloudBreakPoint) / 11f) * (y - 4f));
-				}
+				// Taper clouds towards ceiling				
+				int cloudChance = GetCloudChance(cloudBreakPoint, y);
 
 				// Slope gently out towards open space at bottom
-				int adjustedCaveChance = GetAdjustedCaveValue(caveBreakPoint, y);
+				int caveChance = GetCaveChance(caveBreakPoint, y);
+
+				// Mountains are more likely to become hollow towards the top
+				float hollowMountainValue = GetHollowValue(hollowMountains, y);
+				float hollowGlassValue = GetHollowValue(hollowGlass, y);
+
 				int colorIndex;
 				int modIndex;
 
 				// mountains if less than or equal to the height of a 2D noisemap, and not in the 'cave' negative space
-				if (y <= mountainHeight && adjustedCaveChance < caveValue)
+				if (y <= mountainHeight && caveChance < caveValue)
 				{
 					// glass or rock? if the value of the 3D 'glass' noisemap is greater than the breakpoint this is potentially rock
                     if (glassRockBreakPoint < glassValue) 
 					{
 						// but if the value of the 'glass' noisemap is greater than the 'hollow' cutoff this is air
-						if (glassValue > NoiseConfig.pattern.scale - Mathf.FloorToInt((hollowMountains * (float)NoiseConfig.pattern.scale)))
+						if (glassValue > NoiseConfig.pattern.scale - Mathf.FloorToInt((hollowMountainValue * (float)NoiseConfig.pattern.scale)))
 						{
 							chunk.SetBlock (localX, localY, localZ, Block.Air);
 							if (!air)
@@ -273,7 +288,7 @@ public class TerrainGenerator : MonoBehaviour
                     else 
 					{
 						// If we are less than the corresponding 'hollow' value this is air
-						if (glassValue < NoiseConfig.pattern.scale * hollowGlass) 
+						if (glassValue < NoiseConfig.pattern.scale * hollowGlassValue) 
 						{
 							chunk.SetBlock (localX, localY, localZ, Block.Air);
 							if (!air)
@@ -643,27 +658,52 @@ public class TerrainGenerator : MonoBehaviour
 				options.persistance) + 1f).value * (options.scale / 2f));
 	}
 
-	static int GetAdjustedCaveValue(int caveValue, int y)
+	// returns a value to use as the breakpoint between cave and no cave
+	int GetCaveChance(int caveChance, int y)
 	{
-		if (y == -47) caveValue -= 172;
-		if (y == -46) caveValue -= 152;
-		if (y == -45) caveValue -= 132;
-		if (y == -44) caveValue -= 112;
-		if (y == -43) caveValue -= 92;
-		if (y == -42) caveValue -= 72;
-		if (y == -41) caveValue -= 52;
-		if (y == -40) caveValue -= 32;
-		if (y == -39) caveValue -= 22;
-		if (y == -38) caveValue -= 17;
-		if (y == -37) caveValue -= 12;
-		if (y == -36) caveValue -= 7;
-		if (y == -35) caveValue -= 2;
+		if (y < floor + beachHeight + 1)
+		{
+			caveChance -= Mathf.FloorToInt(caveChance * beachPersistance 
+						* bilinear.Evaluate(floor - y + beachHeight + 1 / beachHeight));
+		}
 
-		return caveValue;
+		return caveChance;
+	}
+
+	// returns a value to use as the breakpoint between cloud and no cloud
+	int GetCloudChance(int cloudChance, int y)
+	{
+		if (y >= Chunk.Size - cloudEasing)
+		{
+			cloudChance += Mathf.FloorToInt((NoiseConfig.cave.scale - cloudChance) 
+							* log.Evaluate(Mathf.Abs(Chunk.Size - cloudEasing - y) + 1 / cloudEasing));
+		}
+
+		return cloudChance;
+	}
+
+	// returns a value that moderates the chance of the 'pattern' sample carving holes in the mountains
+	float GetHollowValue(float hollowValue, int y)
+	{
+		hollowValue = (hollowValue * (1f - hollowPersistance)) 
+						+ Mathf.Lerp(
+							0, 
+							hollowValue * hollowPersistance, 
+							y + 1 + (Chunk.Size * (Config.WorldHeight - 1)) / (Chunk.Size * Config.WorldHeight));
+
+		return hollowValue;
 	}
 
 	void SetupFlags()
 	{
+		floor = ((Config.WorldHeight - 1) * -Chunk.Size);
+		mountainBase = floor + Config.MountainBase;
+
+		beachHeight = Mathf.FloorToInt(Mathf.Lerp(4, 32, GameUtils.SeedValue));
+		beachPersistance = 0.5f + (GameUtils.SeedValue * 0.5f);
+		cloudEasing = 16;
+		hollowPersistance = 1f - Mathf.Pow(GameUtils.SeedValue, 2);
+
 		caveBreakPoint = Mathf.FloorToInt(Mathf.Lerp(384, 640, GameUtils.SeedValue));
 
 		glassRockBreakPoint = Mathf.FloorToInt(Mathf.Lerp(0, 192, GameUtils.SeedValue));
@@ -691,7 +731,7 @@ public class TerrainGenerator : MonoBehaviour
 
 		freakyFriday = GameUtils.SeedValue > 0.9f ? true : false;
 
-        hollowFormation = Mathf.Pow(GameUtils.SeedValue, 3);
+        hollowFormation = GameUtils.SeedValue;
         hollowMountains = Mathf.Pow(GameUtils.SeedValue, 5);
         hollowGlass = Mathf.Pow(GameUtils.SeedValue, 5);
 
