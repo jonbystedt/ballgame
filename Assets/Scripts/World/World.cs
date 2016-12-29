@@ -301,37 +301,39 @@ public class World : MonoBehaviour {
 		}
 	}
 
-	public static Block GetBlock(int x, int y, int z)
+	public static ushort GetBlock(int x, int y, int z)
 	{
 		Chunk containerChunk = GetChunk(new Vector3(x, y, z));
 
 		if (containerChunk != null)
 		{
-			Block block = containerChunk.GetBlock (
+			return containerChunk.GetBlock(
 				x - containerChunk.pos.x,
 				y - containerChunk.pos.y,
 				z - containerChunk.pos.z);
-
-			return block;
 		}
 		else
 		{
-			return undefinedBlock;
+			return Block.Null;
 		}
 	}
 
-	public static Block GetBlock(WorldPosition pos)
+	public static ushort GetBlock(WorldPosition pos)
 	{
 		return GetBlock(pos.x, pos.y, pos.z);
 	}
 
-	public static void SetBlock(int x, int y, int z, Block block, bool playerHit)
+	public static void SetBlock(int x, int y, int z, ushort block, bool playerHit)
 	{
 		Chunk chunk = GetChunk(new Vector3(x, y, z));
 
 		if (chunk != null)
 		{
 			chunk.SetBlock(x - chunk.pos.x, y - chunk.pos.y, z - chunk.pos.z, block);
+			if (playerHit) 
+			{
+				chunk._changes[Chunk.BlockIndex(x - chunk.pos.x, y - chunk.pos.y, z - chunk.pos.z)] = true;
+			}
 			chunk.playerHit = playerHit;
 			chunk.update = true;
 
@@ -349,17 +351,17 @@ public class World : MonoBehaviour {
 		}
 	}
 
-	public static void SetBlock(WorldPosition pos, Block block, bool playerHit)
+	public static void SetBlock(WorldPosition pos, ushort block, bool playerHit)
 	{
 		SetBlock(pos.x, pos.y, pos.x, block, playerHit);
 	}
 
-	public static void SetBlock(WorldPosition pos, Block block)
+	public static void SetBlock(WorldPosition pos, ushort block)
 	{
 		SetBlock(pos, block, false);
 	}
 
-	public static void SetBlock(int x, int y, int z, Block block)
+	public static void SetBlock(int x, int y, int z, ushort block)
 	{
 		SetBlock(x, y, z, block, false);
 	}	

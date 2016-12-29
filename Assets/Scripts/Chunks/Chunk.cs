@@ -11,6 +11,8 @@ public class Chunk : PooledObject {
 	public static int Size = 16;
 	public static int HalfSize = Mathf.FloorToInt(Size * 0.5f);
 	public static int NoSpawn = -9999;
+	private const byte VOXEL_Y_SHIFT = 4;
+	private const byte VOXEL_Z_SHIFT = 8;
 
 	public bool isNew = true;
 	public bool update = false;
@@ -34,11 +36,8 @@ public class Chunk : PooledObject {
 	}
 	public PooledObject transparentChunk;
 	public Column column;
-	//public Block[,,] blocks = new Block[Size, Size, Size];
-
-	private const byte VOXEL_Y_SHIFT = 4;
-	private const byte VOXEL_Z_SHIFT = 8;
-	public Block[] _blocks;
+	public ushort[] _blocks;
+	public bool[] _changes;
 	
 	private MeshFilter filter;
 	private MeshCollider col;
@@ -64,7 +63,8 @@ public class Chunk : PooledObject {
 		_glassrenderer = transparentChunk.GetComponent<MeshRenderer>();
 		_renderer = gameObject.GetComponent<MeshRenderer>();
 
-		_blocks = new Block[Size * Size * Size];
+		_blocks = new ushort[Size * Size * Size];
+		_changes = new bool[Size * Size * Size];
 
 		update = false;
 		updating = false;
@@ -82,23 +82,11 @@ public class Chunk : PooledObject {
 			column.chunks.Clear();
 		}
 
-		// for (int x = 0; x < Chunk.Size; x++)
-		// {
-		// 	for (int y = 0; y < Chunk.Size; y++)
-		// 	{
-		// 		for (int z = 0; z < Chunk.Size; z++)
-		// 		{
-		// 			if (blocks[x,y,z] == null)
-		// 			{
-		// 				blocks[x,y,z] = new Block();
-		// 			}
-		// 			else
-		// 			{
-		// 				blocks[x,y,z].type = Block.Type.undefined;
-		// 			}
-		// 		}
-		// 	}
-		// }
+		for (int i = 0; i < _blocks.Length; i++)
+		{
+			_blocks[i] = Block.Null;
+			_changes[i] = false;
+		}
 
 		StartCoroutine(SlowUpdate());
 	}
@@ -263,83 +251,49 @@ public class Chunk : PooledObject {
 		updating = false;
 	}
 
-	//Sends the calculated mesh information 
-	//to the mesh and collision components
 	void RenderMesh(MeshData meshData)
 	{
+		// renderer mesh
 		filter.mesh.Clear();
+
 		filter.mesh.vertices = meshData.vertices.ToArray();
 		filter.mesh.triangles = meshData.triangles.ToArray();
 		filter.mesh.uv = meshData.uv.ToArray();
-		NormalCalculator.RecalculateNormals(filter.mesh, 60);
-		//filter.mesh.RecalculateNormals();
-		filter.mesh.RecalculateBounds();
-		;
 
+		NormalCalculator.RecalculateNormals(filter.mesh, 60);
+		filter.mesh.RecalculateBounds();
+
+		// collider mesh
 		col.sharedMesh = null;
 		Mesh mesh = new Mesh();
+
 		mesh.vertices = meshData.colliderVerts.ToArray();
 		mesh.triangles = meshData.colliderTris.ToArray();
+
 		NormalCalculator.RecalculateNormals(mesh, 60);
-		//mesh.RecalculateNormals();
 		col.sharedMesh = mesh;
 	}
 
-	public Block GetBlock(int x, int y, int z)
+	public ushort GetBlock(int x, int y, int z)
 	{
 		if (InRange(x) && InRange(y) && InRange(z))
 		{
-			// if (blocks[x, y, z] != null)
-			// {
-			// 	return blocks[x, y, z];
-			// }
 			return _blocks[GetBlockDataIndex((uint)x, (uint)y, (uint)z)];
-			// if (block != null)
-			// {
-			// 	return block;
-			// }
-			// else
-			// {
-			// 	return emptyBlock;
-			// }
 		}
 		
 		return World.GetBlock(_pos.x + x, _pos.y + y, _pos.z + z);
 	}
 	
-	public void SetBlock(int x, int y, int z, Block block)
+	public void SetBlock(int x, int y, int z, ushort block)
 	{
 		if (InRange(x) && InRange(y) && InRange(z))
 		{
-			//blocks[x, y, z] = block;
-			uint index = GetBlockDataIndex((uint)x, (uint)y, (uint)z);
-			_blocks[index] = block;
+			_blocks[GetBlockDataIndex((uint)x, (uint)y, (uint)z)] = block;
 		}
 		else
 		{
 			World.SetBlock(_pos.x + x, _pos.y + y, _pos.z + z, block);
 		}
-	}
-
-	public void SetBlocksUnmodified()
-	{
-		for(int i = 0; i < _blocks.Length; i++)
-		{
-			if (_blocks[i] != null)
-			{
-				_blocks[i].changed = false;
-			}
-		}
-		// for (int x = 0; x < Size; x++)
-		// {
-		// 	for (int y = 0; y < Size; y++)
-		// 	{
-		// 		for (int z = 0; z < Size; z++)
-		// 		{
-		// 			blocks[x,y,z].changed = false;
-		// 		}
-		// 	}
-		// }
 	}
 
 	public bool IsSurrounded()
@@ -381,6 +335,14 @@ public class Chunk : PooledObject {
 
 		return true;
 	}
+
+	public void SetBlocksUnmodified()
+	{
+		for (int i = 0; i < _changes.Length; i++)
+		{
+			_changes[i] = false;
+		}
+	}
 	
 	public static bool InRange(int index)
 	{
@@ -420,7 +382,7 @@ public class Chunk : PooledObject {
 		return x | y << VOXEL_Y_SHIFT | z << VOXEL_Z_SHIFT;
 	}
 
-	public static uint GetBlockDataIndex(int x, int y, int z)
+	public static uint BlockIndex(int x, int y, int z)
 	{
 		return GetBlockDataIndex((uint)x, (uint)y, (uint)z);
 	}

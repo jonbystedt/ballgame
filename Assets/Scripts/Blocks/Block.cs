@@ -5,11 +5,11 @@ using System;
 [Serializable]
 public class Block {
 
+	public static ushort Null = UInt16.MaxValue;
+	public static ushort Air = UInt16.MaxValue - 1;
 	public enum Type { rock, glass, air, undefined };
 	public enum Direction { north, east, south, west, up, down };
 	public struct Tile { public int x; public int y; }
-	public bool changed = true;
-	public bool initialized = false;
 
 	bool _transparent = false;
 	public bool transparent
@@ -56,7 +56,6 @@ public class Block {
 		this.color.b = color.b;
 
 		type = Type.rock;
-		initialized = true;
 	}
 
 	public virtual Tile TexturePosition(Direction direction)

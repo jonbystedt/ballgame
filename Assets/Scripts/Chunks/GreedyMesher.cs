@@ -5,16 +5,16 @@ using System.Diagnostics;
 
 public class GreedyMesher : MonoBehaviour 
 {
-	Dictionary<int,Block> BlockLookup = new Dictionary<int,Block>();
+	Dictionary<int,ushort> BlockLookup = new Dictionary<int,ushort>();
 	List<int[,]> MaskPool = new List<int[,]>();
 	List<int[]> DirectionsPool = new List<int[]>();
 
-	public void Create(MeshData meshData, Block[] blocks, WorldPosition pos, bool transparent, bool surrounded, bool fastMesh)
+	public void Create(MeshData meshData, ushort[] blocks, WorldPosition pos, bool transparent, bool surrounded, bool fastMesh)
 	{
 		StartCoroutine(CreateMeshData(meshData, blocks, pos, transparent, surrounded, fastMesh));
 	}
 
-	IEnumerator CreateMeshData(MeshData meshData, Block[] blocks, WorldPosition pos,  bool transparent, bool surrounded, bool fastMesh)
+	IEnumerator CreateMeshData(MeshData meshData, ushort[] blocks, WorldPosition pos,  bool transparent, bool surrounded, bool fastMesh)
 	{
 		// Experimental
 		fastMesh = true;
@@ -42,88 +42,96 @@ public class GreedyMesher : MonoBehaviour
 				{
 					for (x[u] = 0; x[u] < Chunk.Size; x[u]++)
 					{
-						Block a = null;
-						Block b = null;
+						ushort front_block = Block.Null;
+						ushort back_block = Block.Null;
 
-						// don't draw occluded chunk edges
-						// disabled: edges never drawn
 						if (surrounded || transparent)
 						{
-							// grab a block from the world to check visibility
+							// Edge cases. Grab a block from the world to check visibility
 							if (x[d] == -1)
 							{
-								Block block;
+								ushort block = Block.Null;
 								block = World.GetBlock(new WorldPosition(pos.x + x[0], pos.y + x[1], pos.z + x[2]));
-								if (block != null && block.initialized && block.type != Block.Type.undefined)
+								if (block != Block.Null)
 								{
-									if ((!transparent && block.type == Block.Type.rock) || (transparent && block.type == Block.Type.glass))
+									Block.Type type = Blocks.GetType(block);
+									if ((!transparent && type == Block.Type.rock) || (transparent && type == Block.Type.glass))
 									{
-										a = block;
+										front_block = block;
 									}
 								}
 							}
 
 							if (x[d] == Chunk.Size - 1)
 							{
-								Block block;
+								ushort block = Block.Null;
 								block = World.GetBlock(new WorldPosition(pos.x + x[0] + q[0], pos.y + x[1] + q[1], pos.z + x[2] + q[2]));
-								if (block != null && block.initialized && block.type != Block.Type.undefined)
+								if (block != Block.Null)
 								{
-									if ((!transparent && block.type == Block.Type.rock) || (transparent && block.type == Block.Type.glass))
+									Block.Type type = Blocks.GetType(block);
+									if ((!transparent && type == Block.Type.rock) || (transparent && type == Block.Type.glass))
 									{
-										b = block;
+										back_block = block;
 									}
 								}
 							}
 						}
 
-						// Check visibility
+						// Check visibility within chunk
 						if (!transparent)
 						{
 							if (0 <= x[d] 
-								&& blocks[Chunk.GetBlockDataIndex(x[0], x[1], x[2])] != null 
-								&& blocks[Chunk.GetBlockDataIndex(x[0], x[1], x[2])].type == Block.Type.rock)
+								&& blocks[Chunk.BlockIndex(x[0], x[1], x[2])] != Block.Null 
+								&& Blocks.GetType(blocks[Chunk.BlockIndex(x[0], x[1], x[2])]) == Block.Type.rock)
 							{
-								a = blocks[Chunk.GetBlockDataIndex(x[0], x[1], x[2])];
+								front_block = blocks[Chunk.BlockIndex(x[0], x[1], x[2])];
 							}
 							if (x[d] < Chunk.Size - 1 
-								&& blocks[Chunk.GetBlockDataIndex(x[0] + q[0], x[1] + q[1], x[2] + q[2])] != null 
-								&& blocks[Chunk.GetBlockDataIndex(x[0] + q[0], x[1] + q[1], x[2] + q[2])].type == Block.Type.rock)
+								&& blocks[Chunk.BlockIndex(x[0] + q[0], x[1] + q[1], x[2] + q[2])] != Block.Null 
+								&& Blocks.GetType(blocks[Chunk.BlockIndex(x[0] + q[0], x[1] + q[1], x[2] + q[2])]) == Block.Type.rock)
 							{
-								b = blocks[Chunk.GetBlockDataIndex(x[0] + q[0], x[1] + q[1], x[2] + q[2])];
+								back_block = blocks[Chunk.BlockIndex(x[0] + q[0], x[1] + q[1], x[2] + q[2])];
 							}
 						}
 						else
 						{
-							if (0 <= x[d] && blocks[Chunk.GetBlockDataIndex(x[0], x[1], x[2])] != null 
-								&& blocks[Chunk.GetBlockDataIndex(x[0], x[1], x[2])].type == Block.Type.glass)
+							if (0 <= x[d] 
+								&& blocks[Chunk.BlockIndex(x[0], x[1], x[2])] != Block.Null 
+								&& Blocks.GetType(blocks[Chunk.BlockIndex(x[0], x[1], x[2])]) == Block.Type.glass)
 							{
-								a = blocks[Chunk.GetBlockDataIndex(x[0], x[1], x[2])];
+								front_block = blocks[Chunk.BlockIndex(x[0], x[1], x[2])];
 							}
 							if (x[d] < Chunk.Size - 1 
-								&& blocks[Chunk.GetBlockDataIndex(x[0] + q[0], x[1] + q[1], x[2] + q[2])] != null 
-								&& blocks[Chunk.GetBlockDataIndex(x[0] + q[0], x[1] + q[1], x[2] + q[2])].type == Block.Type.glass)
+								&& blocks[Chunk.BlockIndex(x[0] + q[0], x[1] + q[1], x[2] + q[2])] != Block.Null 
+								&& Blocks.GetType(blocks[Chunk.BlockIndex(x[0] + q[0], x[1] + q[1], x[2] + q[2])]) == Block.Type.glass)
 							{
-								b = blocks[Chunk.GetBlockDataIndex(x[0] + q[0], x[1] + q[1], x[2] + q[2])];
+								back_block = blocks[Chunk.BlockIndex(x[0] + q[0], x[1] + q[1], x[2] + q[2])];
 							}
 						}
 
-						if (a != null && !BlockLookup.ContainsKey(a.color.GetHashCode()))
-							BlockLookup.Add(a.color.GetHashCode(), a);
+						int front_tile_code = Blocks.GetTileCode(front_block);
+						if (front_block != Block.Null && !BlockLookup.ContainsKey(front_tile_code))
+						{
+							BlockLookup.Add(front_tile_code, front_block);
+						}
 
-						if (b != null && !BlockLookup.ContainsKey(b.color.GetHashCode()))
-							BlockLookup.Add(b.color.GetHashCode(), b);
+						int back_tile_code = Blocks.GetTileCode(back_block);
+						if (back_block != Block.Null && !BlockLookup.ContainsKey(back_tile_code))
+						{
+							BlockLookup.Add(back_tile_code, back_block);
+						}
 
-						if ((a == null && b == null) || (a != null && b != null) )
+						// Check this code for errors!
+						if ((front_block == Block.Null && back_block == Block.Null) || (front_block != Block.Null && back_block != Block.Null) )
 						{
 							mask[x[u], x[v]] = 0;
 						}
-						else if (a != null)
+						else if (front_block != Block.Null)
 						{
 							// Don't include meshes from blocks outside of this chunk
 							if (x[d] >= 0)
 							{
-								mask[x[u], x[v]] = a.color.GetHashCode();
+								mask[x[u], x[v]] = front_tile_code;
 							}
 							else
 							{
@@ -134,7 +142,7 @@ public class GreedyMesher : MonoBehaviour
 						{
 							if (x[d] < Chunk.Size - 1)
 							{
-								mask[x[u], x[v]] = -b.color.GetHashCode();
+								mask[x[u], x[v]] = -back_tile_code;
 							}
 							else
 							{
@@ -217,7 +225,7 @@ public class GreedyMesher : MonoBehaviour
 
 							meshData.AddQuadTriangles();
 
-							meshData.uv.AddRange(BlockLookup[c].FaceUVs(dir, w, h)); 
+							meshData.uv.AddRange(Blocks.GetFaceUVs(BlockLookup[c],dir, w, h)); 
 
 							// Clear mask
 							for (int l = 0; l < h; l++)

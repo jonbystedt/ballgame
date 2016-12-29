@@ -76,22 +76,18 @@ public class Roller : MonoBehaviour
 
 		if (resetGroundPound)
 		{
-			//_rigidbody.mass -= 1000f;
-			//_collider.material.bounciness *= 10f;
 			resetGroundPound = false;
 		}
 
 		// get block below player
-		Block ground = World.GetBlock(World.GetBlockPosition(transform.position - Vector3.up * 0.5f));
-		if (ground.type != Block.Type.undefined && ground.type != Block.Type.air && !jumpStarted)
+		ushort ground = World.GetBlock(World.GetBlockPosition(transform.position - Vector3.up * 0.5f));
+		if (ground != Block.Null && ground != Block.Air && !jumpStarted)
 		{
 			grounded = true;
-			//_rigidbody.useGravity = false;
 		} 
 		else
 		{
 			grounded = false;
-			//_rigidbody.useGravity = true;
 		}
 
 		// did we hit the ground?
@@ -253,7 +249,7 @@ public class Roller : MonoBehaviour
 
 	public void CreateSphere()
 	{
-		VoxelEditor.SetSphere(World.GetBlockPosition(transform.position), new BlockGlass(0), 50);
+		VoxelEditor.SetSphere(World.GetBlockPosition(transform.position), Blocks.Glass(0), 50);
 	}
 
 	public void CreateBlocks()
@@ -271,11 +267,11 @@ public class Roller : MonoBehaviour
 
 					WorldPosition editBlock = World.GetBlockPosition(editLocation);
 
-					Block block = World.GetBlock(editBlock);
+					ushort block = World.GetBlock(editBlock);
 
-					if (block is BlockAir)
+					if (block == Block.Air)
 					{
-						VoxelEditor.SetBlock(editBlock, new BlockGlass(0));
+						VoxelEditor.SetBlock(editBlock, Blocks.Glass(0));
 					}
 				}
 			}
@@ -373,18 +369,19 @@ public class Roller : MonoBehaviour
 
 			if (bash)
 			{
-				Block bashBlock = World.GetBlock(b_pos);
+				ushort bashBlock = World.GetBlock(b_pos);
 
-				if (bashBlock.type != Block.Type.undefined && bashBlock.type != Block.Type.air)
+				if (bashBlock != Block.Null && bashBlock != Block.Air)
 				{
-					VoxelEditor.SetBlock(b_pos, new BlockAir(), true);
+					VoxelEditor.SetBlock(b_pos, Block.Air, true);
 
 					if (b_pos.y < Mathf.RoundToInt(pos.y))
 					{
 						groundPounded = true;
 					}
 
-					Color color = new Color(bashBlock.color.r, bashBlock.color.g, bashBlock.color.b);
+					TileColor tileColor = Blocks.GetColor(bashBlock);
+					Color color = new Color(tileColor.r, tileColor.g, tileColor.b);
 			
 					if (Game.CameraOp.Distance > 5f)
 					{
@@ -437,7 +434,7 @@ public class Roller : MonoBehaviour
 					if (UnityEngine.Random.value < 0.9f)
 					{
 						Pickup pickup = spawn.transform.GetComponent<Pickup>();
-						pickup.Fireworks(1f);
+						pickup.Fireworks(0.5f);
 						blockSpawns.RemoveAt(i);
 
 						StartCoroutine(Wait(0.3f, () => {

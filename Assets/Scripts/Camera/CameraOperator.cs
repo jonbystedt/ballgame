@@ -116,7 +116,7 @@ public class CameraOperator : MonoBehaviour
 
 					// Block at the forward position
 					WorldPosition testBlockPosForward = World.GetBlockPosition(forwardPos);
-					Block tbForward = World.GetBlock(testBlockPosForward);
+					ushort tbForward = World.GetBlock(testBlockPosForward);
 
 					// If the forward position looks clear, perform further checks
 					if (IsEmpty(tbForward))
@@ -135,10 +135,10 @@ public class CameraOperator : MonoBehaviour
 						// Block slightly right of the forward position
 						WorldPosition testSpreadRight = World.GetBlockPosition(forwardPos + _camera.transform.right * spread);
 
-						Block tbUp = World.GetBlock(testSpreadUp);
-						Block tbDown = World.GetBlock(testSpreadDown);
-						Block tbLeft = World.GetBlock(testSpreadLeft);
-						Block tbRight = World.GetBlock(testSpreadRight);
+						ushort tbUp = World.GetBlock(testSpreadUp);
+						ushort tbDown = World.GetBlock(testSpreadDown);
+						ushort tbLeft = World.GetBlock(testSpreadLeft);
+						ushort tbRight = World.GetBlock(testSpreadRight);
 
 						bool down = lookingUp ? true : IsEmpty(tbDown);
 						bool up  = lookingUp ? true : IsEmpty(tbUp);
@@ -169,10 +169,10 @@ public class CameraOperator : MonoBehaviour
 								Mathf.Lerp(spread/3f, spread/2f, freeLookCamera.m_TiltAngle / 15f)
 								);
 
-							Block tbUpLeft = World.GetBlock(testSpreadUpLeft);
-							Block tbUpRight = World.GetBlock(testSpreadUpRight);
-							Block tbDownLeft = World.GetBlock(testSpreadDownLeft);
-							Block tbDownRight = World.GetBlock(testSpreadDownRight);
+							ushort tbUpLeft = World.GetBlock(testSpreadUpLeft);
+							ushort tbUpRight = World.GetBlock(testSpreadUpRight);
+							ushort tbDownLeft = World.GetBlock(testSpreadDownLeft);
+							ushort tbDownRight = World.GetBlock(testSpreadDownRight);
 
 							bool upLeft = IsEmpty(tbUpLeft);
 							bool upRight = IsEmpty(tbUpRight);
@@ -250,9 +250,9 @@ public class CameraOperator : MonoBehaviour
 			
     }
 
-	bool IsEmpty(Block block)
+	bool IsEmpty(ushort block)
 	{
-		if (block == null || block.type == Block.Type.undefined || block.type == Block.Type.air)
+		if (block == Block.Null || block == Block.Air)
 		{
 			return true;
 		}

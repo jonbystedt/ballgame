@@ -248,6 +248,7 @@ public class Game : MonoBehaviour
 		GameUtils.SetHash();
 		GameUtils.CreateVarianceTable();
 		TileFactory.GenerateColorPalette();
+		Blocks.Initialize();
 		cosmos.CreateSky();
 
 		World.Seed = seed;

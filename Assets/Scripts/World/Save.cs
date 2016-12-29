@@ -6,7 +6,7 @@ using System;
 [Serializable]
 public class Save 
 {
-	public Dictionary<WorldPosition, Block> blocks = new Dictionary<WorldPosition, Block>();
+	public Dictionary<WorldPosition, ushort> blocks = new Dictionary<WorldPosition, ushort>();
 
 	public Save(Chunk chunk)
 	{
@@ -16,8 +16,8 @@ public class Save
 			{
 				for (int z = 0; z < Chunk.Size; z++)
 				{
-					uint index = Chunk.GetBlockDataIndex(x, y, z);
-					if (chunk._blocks[index] == null || !chunk._blocks[index].changed) 
+					uint index = Chunk.BlockIndex(x, y, z);
+					if (chunk._blocks[index] == Block.Null || !chunk._changes[index]) 
 					{
 						continue;
 					}

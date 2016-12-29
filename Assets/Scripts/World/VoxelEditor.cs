@@ -3,26 +3,26 @@ using System.Collections;
 
 public static class VoxelEditor 
 {
-	public static void SetBlock(WorldPosition pos, Block block, bool playerHit)
+	public static void SetBlock(WorldPosition pos, ushort block, bool playerHit)
 	{
-		Block current = World.GetBlock(pos);
+		ushort current = World.GetBlock(pos);
 
-		if (current is BlockAir && !(block is BlockAir))
+		if (current == Block.Air && block != Block.Air)
 		{
 			World.SetBlock(pos.x, pos.y, pos.z, block, playerHit);
 		}
-		else if (!(current is BlockAir) && block is BlockAir && pos.y != -48)
+		else if (current != Block.Air && block == Block.Air && pos.y != -48)
 		{
 			World.SetBlock(pos.x, pos.y, pos.z, block, playerHit);
 		}
 	}
 
-	public static void SetBlock(WorldPosition pos, Block block)
+	public static void SetBlock(WorldPosition pos, ushort block)
 	{
 		SetBlock(pos, block, false);
 	}
 
-	public static void SetSphere(WorldPosition pos, Block block, int diameter)
+	public static void SetSphere(WorldPosition pos, ushort block, int diameter)
 	{
 		int r = Mathf.FloorToInt(diameter / 2f);
 
@@ -41,7 +41,7 @@ public static class VoxelEditor
 		}
 	}
 
-	public static void SetBox(Region region, Block block)
+	public static void SetBox(Region region, ushort block)
 	{
 		for (int z = region.min.z; z < region.max.z + 1; z = z + region.sizeZ)
 		{

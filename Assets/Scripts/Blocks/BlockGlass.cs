@@ -107,11 +107,6 @@ public class BlockGlass : Block {
 		return UVs;
 	}
 
-//	public override MeshData BlockData (Chunk chunk, int x, int y, int z, MeshData meshData)
-//	{
-//		return meshData;
-//	}
-
 	public override bool IsSolid(Block.Direction direction)
 	{
 		return false;

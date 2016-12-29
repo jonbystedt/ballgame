@@ -218,7 +218,7 @@ public class TerrainGenerator : MonoBehaviour
 
 				if (y <= floor)
 				{
-					chunk.SetBlock(localX, localY, localZ, new Block(16));
+					chunk.SetBlock(localX, localY, localZ, Blocks.Rock(16));
 					air = false;
 					continue;
 				}
@@ -248,7 +248,7 @@ public class TerrainGenerator : MonoBehaviour
 						// but if the value of the 'glass' noisemap is greater than the 'hollow' cutoff this is air
 						if (glassValue > NoiseConfig.pattern.scale - Mathf.FloorToInt((hollowMountains * (float)NoiseConfig.pattern.scale)))
 						{
-							chunk.SetBlock (localX, localY, localZ, new BlockAir());
+							chunk.SetBlock (localX, localY, localZ, Block.Air);
 							if (!air)
 							{
 								sampleSet.spawnMap.height[localX, localZ] = y;
@@ -259,13 +259,13 @@ public class TerrainGenerator : MonoBehaviour
 						else if (stripeValue > stripeColorBreakPoint) 
 						{
 							colorIndex = Mathf.FloorToInt(Mathf.Lerp(17, 32, stripeValue / (float)(NoiseConfig.stripe.scale - stripeColorBreakPoint)));
-							chunk.SetBlock (localX, localY, localZ, new Block(colorIndex));
+							chunk.SetBlock(localX, localY, localZ, Blocks.Rock(colorIndex));
 							air = false;
 						} 
 						else 
 						{
 							colorIndex = Mathf.FloorToInt(Mathf.Lerp(0, 16, stripeValue / (float)stripeColorBreakPoint));
-							chunk.SetBlock (localX, localY, localZ, new Block(colorIndex));
+							chunk.SetBlock(localX, localY, localZ, Blocks.Rock(colorIndex));
 							air = false;
 						}
 					}
@@ -275,7 +275,7 @@ public class TerrainGenerator : MonoBehaviour
 						// If we are less than the corresponding 'hollow' value this is air
 						if (glassValue < NoiseConfig.pattern.scale * hollowGlass) 
 						{
-							chunk.SetBlock (localX, localY, localZ, new BlockAir());
+							chunk.SetBlock (localX, localY, localZ, Block.Air);
 							if (!air)
 							{
 								sampleSet.spawnMap.height[localX, localZ] = y;
@@ -289,7 +289,7 @@ public class TerrainGenerator : MonoBehaviour
 							if (glassStripeColorBreakPoint > stripeValue) 
 							{
 								colorIndex = Mathf.FloorToInt(Mathf.Lerp(0, 16, stripeValue / (float)stripeColorBreakPoint));
-								chunk.SetBlock (localX, localY, localZ, new BlockGlass(colorIndex));
+								chunk.SetBlock (localX, localY, localZ, Blocks.Glass(colorIndex));
 								air = false;
 							} 
 							else 
@@ -298,13 +298,13 @@ public class TerrainGenerator : MonoBehaviour
 								if (stripeValue > stripeColorBreakPoint)
 								{
 									colorIndex = Mathf.FloorToInt(Mathf.Lerp(0, 16, stripeValue / (float)(NoiseConfig.stripe.scale - glassStripeColorBreakPoint)));
-									chunk.SetBlock (localX, localY, localZ, new Block(colorIndex));
+									chunk.SetBlock (localX, localY, localZ, Blocks.Rock(colorIndex));
 									air = false;
 								}
 								else
 								{
 									colorIndex = Mathf.FloorToInt(Mathf.Lerp(17, 32, stripeValue / (float)(NoiseConfig.stripe.scale - glassStripeColorBreakPoint)));
-									chunk.SetBlock (localX, localY, localZ, new Block(colorIndex));
+									chunk.SetBlock (localX, localY, localZ, Blocks.Rock(colorIndex));
 									air = false;
 								}
 
@@ -315,7 +315,7 @@ public class TerrainGenerator : MonoBehaviour
 							if (glassStripeColorBreakPoint > stripeValue) 
 							{
 								colorIndex = Mathf.FloorToInt(Mathf.Lerp(0, 16, stripeValue / (float)stripeColorBreakPoint));
-								chunk.SetBlock (localX, localY, localZ, new Block(colorIndex));
+								chunk.SetBlock (localX, localY, localZ, Blocks.Rock(colorIndex));
 								air = false;
 							} 
 							else 
@@ -324,13 +324,13 @@ public class TerrainGenerator : MonoBehaviour
 								if (stripeValue > stripeColorBreakPoint)
 								{
 									colorIndex = Mathf.FloorToInt(Mathf.Lerp(0, 16, stripeValue / (float)(NoiseConfig.stripe.scale - glassStripeColorBreakPoint)));
-									chunk.SetBlock (localX, localY, localZ, new BlockGlass(colorIndex));
+									chunk.SetBlock (localX, localY, localZ, Blocks.Glass(colorIndex));
 									air = false;
 								}
 								else
 								{
 									colorIndex = Mathf.FloorToInt(Mathf.Lerp(17, 32, stripeValue / (float)(NoiseConfig.stripe.scale - glassStripeColorBreakPoint)));
-									chunk.SetBlock (localX, localY, localZ, new BlockGlass(colorIndex));
+									chunk.SetBlock (localX, localY, localZ, Blocks.Glass(colorIndex));
 									air = false;
 								}
 
@@ -357,7 +357,7 @@ public class TerrainGenerator : MonoBehaviour
 						{
 							if (solid)
 							{
-								chunk.SetBlock(localX, localY, localZ, new Block(candyStriper ? modIndex : colorIndex));
+								chunk.SetBlock(localX, localY, localZ, Blocks.Rock(candyStriper ? modIndex : colorIndex));
 							}
 							else if (patterned)
 							{
@@ -365,16 +365,16 @@ public class TerrainGenerator : MonoBehaviour
 								{
 									if (glassy1)
 									{
-										chunk.SetBlock(localX, localY, localZ, new BlockGlass((candyStriper ? modIndex : colorIndex) + 16));
+										chunk.SetBlock(localX, localY, localZ, Blocks.Glass((candyStriper ? modIndex : colorIndex) + 16));
 									}
 									else
 									{
-										chunk.SetBlock(localX, localY, localZ, new Block((candyStriper ? modIndex : colorIndex) + 16));
+										chunk.SetBlock(localX, localY, localZ, Blocks.Rock((candyStriper ? modIndex : colorIndex) + 16));
 									}
 								}
 								else
 								{
-									chunk.SetBlock(localX, localY, localZ, new Block((candyStriper2 ? modIndex : colorIndex)));
+									chunk.SetBlock(localX, localY, localZ, Blocks.Rock((candyStriper2 ? modIndex : colorIndex)));
 								}
 							}
 							else if (striped)
@@ -383,23 +383,23 @@ public class TerrainGenerator : MonoBehaviour
 								{
 									if (glassy1)
 									{
-										chunk.SetBlock(localX, localY, localZ, new BlockGlass((candyStriper ? modIndex : colorIndex) + 16));
+										chunk.SetBlock(localX, localY, localZ, Blocks.Glass((candyStriper ? modIndex : colorIndex) + 16));
 									}
 									else
 									{
-										chunk.SetBlock(localX, localY, localZ, new Block((candyStriper ? modIndex : colorIndex) + 16));
+										chunk.SetBlock(localX, localY, localZ, Blocks.Rock((candyStriper ? modIndex : colorIndex) + 16));
 									}
 								}
 								else
 								{
-									chunk.SetBlock(localX, localY, localZ, new Block(candyStriper2 ? modIndex : colorIndex));
+									chunk.SetBlock(localX, localY, localZ, Blocks.Rock(candyStriper2 ? modIndex : colorIndex));
 								}
 							}
 
 						}
 						else
 						{
-							chunk.SetBlock(localX, localY, localZ, new BlockGlass(candyStriper ? modIndex : colorIndex));
+							chunk.SetBlock(localX, localY, localZ, Blocks.Glass(candyStriper ? modIndex : colorIndex));
 						}
 
 						air = false;
@@ -418,7 +418,7 @@ public class TerrainGenerator : MonoBehaviour
 							{
 								if (solid)
 								{
-									chunk.SetBlock(localX, localY, localZ, new Block(candyStriper4 ? modIndex : colorIndex));
+									chunk.SetBlock(localX, localY, localZ, Blocks.Rock(candyStriper4 ? modIndex : colorIndex));
 								}
 								else if (patterned)
 								{
@@ -426,16 +426,16 @@ public class TerrainGenerator : MonoBehaviour
 									{
 										if (glassy1)
 										{
-											chunk.SetBlock(localX, localY, localZ, new BlockGlass((candyStriper4 ? modIndex : colorIndex) - 16));
+											chunk.SetBlock(localX, localY, localZ, Blocks.Glass((candyStriper4 ? modIndex : colorIndex) - 16));
 										}
 										else
 										{
-											chunk.SetBlock(localX, localY, localZ, new Block((candyStriper4 ? modIndex : colorIndex) - 16));
+											chunk.SetBlock(localX, localY, localZ, Blocks.Rock((candyStriper4 ? modIndex : colorIndex) - 16));
 										}
 									}
 									else
 									{
-										chunk.SetBlock(localX, localY, localZ, new Block(candyStriper3 ? modIndex : colorIndex));
+										chunk.SetBlock(localX, localY, localZ, Blocks.Rock(candyStriper3 ? modIndex : colorIndex));
 									}
 								}
 								else if (striped)
@@ -444,22 +444,22 @@ public class TerrainGenerator : MonoBehaviour
 									{
 										if (glassy1)
 										{
-											chunk.SetBlock(localX, localY, localZ, new BlockGlass((candyStriper4 ? modIndex : colorIndex) - 16));
+											chunk.SetBlock(localX, localY, localZ, Blocks.Glass((candyStriper4 ? modIndex : colorIndex) - 16));
 										}
 										else
 										{
-											chunk.SetBlock(localX, localY, localZ, new Block((candyStriper4 ? modIndex : colorIndex) - 16));
+											chunk.SetBlock(localX, localY, localZ, Blocks.Rock((candyStriper4 ? modIndex : colorIndex) - 16));
 										}
 									}
 									else
 									{
-										chunk.SetBlock(localX, localY, localZ, new Block((candyStriper3 ? modIndex : colorIndex)));
+										chunk.SetBlock(localX, localY, localZ, Blocks.Rock((candyStriper3 ? modIndex : colorIndex)));
 									}
 								}
 							}
 							else
 							{
-								chunk.SetBlock(localX, localY, localZ, new BlockGlass((candyStriper4 ? modIndex : colorIndex)));
+								chunk.SetBlock(localX, localY, localZ, Blocks.Glass((candyStriper4 ? modIndex : colorIndex)));
 							}
 
 						}
@@ -468,11 +468,11 @@ public class TerrainGenerator : MonoBehaviour
 							// other stripes
 							if (stripeColorBreakPoint > stripeValue)
 							{
-								chunk.SetBlock(localX, localY, localZ, new BlockGlass(colorIndex));
+								chunk.SetBlock(localX, localY, localZ, Blocks.Glass(colorIndex));
 							}
 							else
 							{
-								chunk.SetBlock(localX, localY, localZ, new Block(colorIndex));
+								chunk.SetBlock(localX, localY, localZ, Blocks.Rock(colorIndex));
 							}
 						}
 
@@ -487,7 +487,7 @@ public class TerrainGenerator : MonoBehaviour
 					if (glassStripeColorBreakPoint > stripeValue - glassIncrease2) 
 					{
 						colorIndex = Mathf.FloorToInt(Mathf.Lerp(0, 16, (stripeValue - glassIncrease2) / (float)glassStripeColorBreakPoint));
-						chunk.SetBlock (localX, localY, localZ, new Block(colorIndex));
+						chunk.SetBlock (localX, localY, localZ, Blocks.Rock(colorIndex));
 						air = false;
 					} 
 					// or glass
@@ -505,7 +505,7 @@ public class TerrainGenerator : MonoBehaviour
 								colorIndex = Mathf.FloorToInt(Mathf.Lerp(0, 16, (stripeValue - stripeColorBreakPoint) / (float)(NoiseConfig.stripe.scale - stripeColorBreakPoint)));
 							}
 
-							chunk.SetBlock (localX, localY, localZ, new BlockGlass(colorIndex));
+							chunk.SetBlock (localX, localY, localZ, Blocks.Glass(colorIndex));
 							air = false;
 						}
 						else
@@ -519,7 +519,7 @@ public class TerrainGenerator : MonoBehaviour
 								colorIndex = Mathf.FloorToInt(Mathf.Lerp(17, 32, stripeValue / (float)stripeColorBreakPoint));
 							}
 
-							chunk.SetBlock (localX, localY, localZ, new Block(colorIndex));
+							chunk.SetBlock (localX, localY, localZ, Blocks.Rock(colorIndex));
 							air = false;
 						}
 					}
@@ -527,7 +527,7 @@ public class TerrainGenerator : MonoBehaviour
 				}
 				else
 				{
-					chunk.SetBlock (localX, localY, localZ, new BlockAir());
+					chunk.SetBlock (localX, localY, localZ, Block.Air);
 					if (!air)
 					{
 						sampleSet.spawnMap.height[localX, localZ] = y;
