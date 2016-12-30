@@ -685,10 +685,15 @@ public class TerrainGenerator : MonoBehaviour
 	// returns a value that moderates the chance of the 'pattern' sample carving holes in the mountains
 	float GetHollowValue(float hollowValue, int y)
 	{
-		hollowValue = (hollowValue * (1f - hollowPersistance)) 
+		float persistance = hollowPersistance;
+		if (y < -(Chunk.Size * Config.WorldHeight - 1) + beachHeight)
+		{
+			persistance = persistance * (1f - log.Evaluate(Mathf.Abs(y + (Chunk.Size * Config.WorldHeight - 1) + beachHeight)  / Chunk.Size));
+		}
+		hollowValue = (hollowValue * (1f - persistance)) 
 						+ Mathf.Lerp(
 							0, 
-							hollowValue * hollowPersistance, 
+							hollowValue * persistance, 
 							y + 1 + (Chunk.Size * (Config.WorldHeight - 1)) / (Chunk.Size * Config.WorldHeight));
 
 		return hollowValue;
