@@ -51,8 +51,11 @@ public class TerrainGenerator : MonoBehaviour
 
 	int floor;
 
+	int WORLD_BLOCK_HEIGHT;
+
 	public void Initialize()
 	{	
+		WORLD_BLOCK_HEIGHT = Config.WorldHeight * Chunk.Size;
 		SetupFlags();
 		initialized = true;
 	}
@@ -661,10 +664,11 @@ public class TerrainGenerator : MonoBehaviour
 	// returns a value to use as the breakpoint between cave and no cave
 	int GetCaveChance(int caveChance, int y)
 	{
+		// encourage the floor to slope out by lessening the cave chance along a bilinear curve below beachHeight
 		if (y < floor + beachHeight + 1)
 		{
 			caveChance -= Mathf.FloorToInt(caveChance * beachPersistance 
-						* bilinear.Evaluate(floor - y + beachHeight + 1 / beachHeight));
+						* bilinear.Evaluate((float)(floor - y + beachHeight + 1) / (float)beachHeight));
 		}
 
 		return caveChance;
@@ -673,10 +677,13 @@ public class TerrainGenerator : MonoBehaviour
 	// returns a value to use as the breakpoint between cloud and no cloud
 	int GetCloudChance(int cloudChance, int y)
 	{
+		// taper formations using a log curve at the top of the world
+		// the height of the taper is controlled by cloudEasing
 		if (y >= Chunk.Size - cloudEasing)
 		{
+			int heightFromBreak = ToWorldHeight(y) - WORLD_BLOCK_HEIGHT + cloudEasing;
 			cloudChance += Mathf.FloorToInt((NoiseConfig.cave.scale - cloudChance) 
-							* log.Evaluate(Mathf.Abs(Chunk.Size - cloudEasing - y) + 1 / cloudEasing));
+							* log.Evaluate((float)heightFromBreak / (float)cloudEasing));
 		}
 
 		return cloudChance;
@@ -686,17 +693,24 @@ public class TerrainGenerator : MonoBehaviour
 	float GetHollowValue(float hollowValue, int y)
 	{
 		float persistance = hollowPersistance;
-		if (y < -(Chunk.Size * Config.WorldHeight - 1) + beachHeight)
+
+		// persistance is the amount of the hollow value not affected by the linear fade below
+		// at values below beachHeight this value is reduced on a log curve to promote beaches
+		if (y < beachHeight - (Chunk.Size * (Config.WorldHeight - 1)))
 		{
-			persistance = persistance * (1f - log.Evaluate(Mathf.Abs(y + (Chunk.Size * Config.WorldHeight - 1) + beachHeight)  / Chunk.Size));
+			persistance = persistance * log.Evaluate((float)(y + (Chunk.Size * (Config.WorldHeight - 1))) / (float)(beachHeight));
 		}
-		hollowValue = (hollowValue * (1f - persistance)) 
-						+ Mathf.Lerp(
-							0, 
-							hollowValue * persistance, 
-							y + 1 + (Chunk.Size * (Config.WorldHeight - 1)) / (Chunk.Size * Config.WorldHeight));
+
+		// the portion which does not persist varies from 0-max with world height
+		hollowValue = hollowValue * persistance 
+						+ Mathf.Lerp(0, hollowValue * (1f / persistance), (float)ToWorldHeight(y) / (float)WORLD_BLOCK_HEIGHT);
 
 		return hollowValue;
+	}
+
+	int ToWorldHeight(int y)
+	{
+		return y + (Chunk.Size * (Config.WorldHeight - 1));
 	}
 
 	void SetupFlags()
