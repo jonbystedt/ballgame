@@ -162,6 +162,11 @@ public class World : MonoBehaviour {
 		newChunk.GetComponent<MeshRenderer>().material.mainTexture = TileFactory.stoneTexture;
 		newChunk.transparentChunk.GetComponent<MeshRenderer>().material.mainTexture = TileFactory.glassTexture;
 
+//		if (!newChunk.isNew)
+//		{
+//			Game.Log("Recycled Chunk Created");
+//		}
+
 		newChunk.Initialize();
 
 		return newChunk;
@@ -216,8 +221,21 @@ public class World : MonoBehaviour {
 				// Kick off generation. We get a region back that encompasses these chunks.
 				Region region = Generator.Generate(columnChunks);
 
-				Column column = new Column(region, columnChunks);
-				Columns.Add(columnLocation.GetHashCode(), column);
+				// There might be a column object left over on a recycled chunk. Use it.
+				// if (newChunk.column == null)
+				// {
+					Column column = new Column(region, columnChunks);
+					Columns.Add(columnLocation.GetHashCode(), column);
+				// }
+				// else
+				// {
+				// 	newChunk.column.region = region;
+				// 	for (int i = 0; i < columnChunks.Length; i++)
+				// 	{
+				// 		newChunk.column.chunks.Add(columnChunks[i].pos);
+				// 		columnChunks[i].column = newChunk.column;
+				// 	}
+				// }
 			}
 		}
 	}
