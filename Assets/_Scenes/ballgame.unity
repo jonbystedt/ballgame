@@ -7515,7 +7515,7 @@ MonoBehaviour:
     m_RotationOrder: 0
   fogScale: 0.5
   maxIntensity: 0.8
-  minIntensity: 0.2
+  minIntensity: 0.4
   minPoint: -0.6
   maxAmbient: 0.8
   minAmbient: 0.4
@@ -7532,7 +7532,6 @@ MonoBehaviour:
   lightningScript: {fileID: 2010452191}
   lightning: {fileID: 275898846}
   fog: {fileID: 0}
-  scatterFog: {fileID: 0}
   edges: {fileID: 1859928995}
   days: 0
   hours: 12
@@ -15199,7 +15198,6 @@ GameObject:
   - component: {fileID: 1859928995}
   - component: {fileID: 1859928988}
   - component: {fileID: 1859928986}
-  - component: {fileID: 1859928985}
   - component: {fileID: 1859928992}
   - component: {fileID: 1859928994}
   m_Layer: 0
@@ -15209,39 +15207,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1859928985
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1859928984}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1011132d4b825412f94662fe9f97df8b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  distanceFog: 1
-  excludeFarPixels: 0
-  useRadialDistance: 0
-  heightFog: 0
-  height: 1
-  heightDensity: 2
-  startDistance: 0
-  Advanced:
-    UseScattering: 1
-    sun: {fileID: 1012674343}
-    Turbidity: 20
-    WorldScale: 500
-    Rayleigh: 1
-    ScatteringSize: 0.8
-    ScatteringIntensity: 20
-    Bias: 0.4
-    contrast: 4.5
-    luminance: 0.05
-    lumaAmount: 1
-    Falloff: 0
-    BoostColor: 1
-  fogShaderExtended: {fileID: 4800000, guid: 6a9f279db06fb4cc7aa3ce9a3cf10595, type: 3}
 --- !u!114 &1859928986
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15273,12 +15238,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0923359e9e352a4b9b11c7b7161ad67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Radius: 0.191
-  m_SampleCount: 1
-  m_OcclusionIntensity: 0.5
+  m_Radius: 0.072
+  m_SampleCount: 0
+  m_OcclusionIntensity: 0.86
   m_Blur: 1
   m_Downsampling: 1
-  m_OcclusionAttenuation: 10
+  m_OcclusionAttenuation: 2
   m_MinZ: 0.01
   m_SSAOShader: {fileID: 4800000, guid: 43ca18288c424f645aaa1e9e07f04c50, type: 3}
   m_RandomTexture: {fileID: 2800000, guid: a181ca8e3c62f3e4b8f183f6c586b032, type: 3}
