@@ -7532,6 +7532,7 @@ MonoBehaviour:
   lightningScript: {fileID: 2010452191}
   lightning: {fileID: 275898846}
   fog: {fileID: 0}
+  scatterFog: {fileID: 0}
   edges: {fileID: 1859928995}
   days: 0
   hours: 12
@@ -15195,10 +15196,10 @@ GameObject:
   - component: {fileID: 1859928990}
   - component: {fileID: 1859928989}
   - component: {fileID: 1859928987}
-  - component: {fileID: 1859928985}
   - component: {fileID: 1859928995}
   - component: {fileID: 1859928988}
   - component: {fileID: 1859928986}
+  - component: {fileID: 1859928985}
   - component: {fileID: 1859928992}
   - component: {fileID: 1859928994}
   m_Layer: 0
@@ -15211,27 +15212,36 @@ GameObject:
 --- !u!114 &1859928985
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 11466728, guid: aaebf03dad3e64290ba0f8797bbf7422,
-    type: 2}
+  m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1859928984}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 60e318a6043c1cb4a8ce1c8805bab930, type: 3}
+  m_Script: {fileID: 11500000, guid: 1011132d4b825412f94662fe9f97df8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  resolution: 1
-  screenBlendMode: 0
-  sunTransform: {fileID: 1012674345}
-  radialBlurIterations: 2
-  sunColor: {r: 1, g: 1, b: 1, a: 1}
-  sunThreshold: {r: 0.87, g: 0.74, b: 0.65, a: 1}
-  sunShaftBlurRadius: 2.5
-  sunShaftIntensity: 1.15
-  maxRadius: 0.75
-  useDepthTexture: 1
-  sunShaftsShader: {fileID: 4800000, guid: d3b1c8c1036784176946f5cfbfb7fe4c, type: 3}
-  simpleClearShader: {fileID: 4800000, guid: f688f89ed5eb847c5b19c934a0f1e772, type: 3}
+  distanceFog: 1
+  excludeFarPixels: 0
+  useRadialDistance: 0
+  heightFog: 0
+  height: 1
+  heightDensity: 2
+  startDistance: 0
+  Advanced:
+    UseScattering: 1
+    sun: {fileID: 1012674343}
+    Turbidity: 20
+    WorldScale: 500
+    Rayleigh: 1
+    ScatteringSize: 0.8
+    ScatteringIntensity: 20
+    Bias: 0.4
+    contrast: 4.5
+    luminance: 0.05
+    lumaAmount: 1
+    Falloff: 0
+    BoostColor: 1
+  fogShaderExtended: {fileID: 4800000, guid: 6a9f279db06fb4cc7aa3ce9a3cf10595, type: 3}
 --- !u!114 &1859928986
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15863,9 +15873,8 @@ MonoBehaviour:
   coloredOutlines: 0
   shadowsEnabled: 0
   contactShadows: 0
-  fogEnabled: 0
+  globalFogEnabled: 0
   atmosphericScattering: 0
-  godRays: 0
   maxRenderDistance: 256
   maxOutlineDistance: 0
   maxSmallObjectCount: 250
