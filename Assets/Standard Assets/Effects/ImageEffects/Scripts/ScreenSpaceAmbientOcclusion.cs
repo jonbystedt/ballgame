@@ -24,7 +24,7 @@ namespace UnityStandardAssets.ImageEffects
         public int m_Blur = 2;
         [Range(1,6)]
         public int m_Downsampling = 2;
-        [Range(0.2f, 10.0f)]
+        [Range(0.2f, 2.0f)]
         public float m_OcclusionAttenuation = 1.0f;
         [Range(0.00001f, 0.5f)]
         public float m_MinZ = 0.01f;
@@ -107,7 +107,7 @@ namespace UnityStandardAssets.ImageEffects
             m_Radius = Mathf.Clamp (m_Radius, 0.05f, 1.0f);
             m_MinZ = Mathf.Clamp (m_MinZ, 0.00001f, 0.5f);
             m_OcclusionIntensity = Mathf.Clamp (m_OcclusionIntensity, 0.5f, 4.0f);
-            m_OcclusionAttenuation = Mathf.Clamp (m_OcclusionAttenuation, 0.2f, 10.0f);
+            m_OcclusionAttenuation = Mathf.Clamp (m_OcclusionAttenuation, 0.2f, 2.0f);
             m_Blur = Mathf.Clamp (m_Blur, 0, 4);
 
             // Render SSAO term into a smaller texture

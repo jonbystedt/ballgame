@@ -27,8 +27,6 @@ namespace UnityStandardAssets.ImageEffects
         public float edgesOnly = 0.0f;
         public Color edgesOnlyBgColor = Color.white;
 
-		public Shader otherShader;
-
         public Shader edgeDetectShader;
         private Material edgeDetectMaterial = null;
         private EdgeDetectMode oldMode = EdgeDetectMode.SobelDepthThin;
@@ -85,7 +83,7 @@ namespace UnityStandardAssets.ImageEffects
             edgeDetectMaterial.SetFloat ("_Exponent", edgeExp);
             edgeDetectMaterial.SetFloat ("_Threshold", lumThreshold);
 
-			Graphics.Blit (source, destination, edgeDetectMaterial, (int) mode);
+            Graphics.Blit (source, destination, edgeDetectMaterial, (int) mode);
         }
     }
 }

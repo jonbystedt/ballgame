@@ -269,13 +269,10 @@ public class Game : MonoBehaviour
 		ssao = mainCamera.GetComponent<ScreenSpaceAmbientOcclusion>();
 		ssao.enabled = Config.ContactShadows;
 
-		fog = cosmosCamera.GetComponent<GlobalFog>();
-		fog.Advanced.UseScattering = Config.AtmosphericScattering;
-
-		godRays = mainCamera.GetComponent<SunShafts>();
-		godRays.enabled = Config.GodRays;
-
-		RenderSettings.fog = Config.FogEnabled;
+		RenderSettings.fog = true;//Config.GlobalFogEnabled;
+		fog = mainCamera.GetComponent<GlobalFog>();
+		fog.enabled = Config.GlobalFogEnabled;
+		//fog.Advanced.UseScattering = Config.AtmosphericScattering;
 
 		if (Config.ShadowsEnabled)
 		{
@@ -344,7 +341,7 @@ public class Game : MonoBehaviour
 			}
 
 			Column column = World.GetColumn(pos);
-			if (column != null && column.chunks[0] != null)// && column.chunks[0].rendered)
+			if (column != null && column.chunks[0] != null)
 			{
 				SampleSet results;
 				InterpolatedNoise.Results.TryGetValue(column.region, out results);
@@ -391,46 +388,14 @@ public class Game : MonoBehaviour
 
 	void DoFPS(float timeNow) 
 	{
-				//fps.Add((float)(frames / (timeNow - lastInterval)));
 		fps = (float)(frames / (timeNow - lastInterval));
 		frames = 0;
 		lastInterval = timeNow;
 
 		if (showStats)
 		{
-			//fpsText.text = fps.Average().ToString("f0") + " FPS";
 			fpsText.text = fps.ToString("f0") + " FPS";
 		}
-		
-		// if (fps.Count >= 50)
-		// {
-		// 	float averageFPS = fps.Average();
-		// 	float minFPS = fps.Min();
-
-		// 	if (averageFPS <= 25 && Config.CoroutineTiming > 10000)
-		// 	{
-		// 		Config.CoroutineTiming -= 500;
-		// 		//Game.Log(Config.CoroutineTiming.ToString() +  " " + averageFPS.ToString("f0") + " " + minFPS.ToString("f0"));
-		// 	}
-		// 	else if (averageFPS <= 30 && minFPS <= 20 && Config.CoroutineTiming > 15000)
-		// 	{
-		// 		Config.CoroutineTiming -= 500;
-		// 		//Game.Log(Config.CoroutineTiming.ToString() +  " " + averageFPS.ToString("f0") + " " + minFPS.ToString("f0"));
-		// 	}
-
-		// 	if (averageFPS >= 45 &&  minFPS >= 30 && Config.CoroutineTiming < 20000 && loader.building)
-		// 	{
-		// 		Config.CoroutineTiming += 500;
-		// 		//Game.Log(Config.CoroutineTiming.ToString() +  " " + averageFPS.ToString() + " " + minFPS.ToString("f0"));
-		// 	}
-		// 	else if (averageFPS >= 60 &&  minFPS >= 45 && Config.CoroutineTiming < 50000 && loader.building)
-		// 	{
-		// 		Config.CoroutineTiming += 500;
-		// 		//Game.Log(Config.CoroutineTiming.ToString() +  " " + averageFPS.ToString() + " " + minFPS.ToString("f0"));
-		// 	}
-
-		// 	fps.Clear();
-		// }
 	}
 
 

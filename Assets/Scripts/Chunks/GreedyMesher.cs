@@ -8,12 +8,12 @@ public class GreedyMesher : MonoBehaviour
 	List<int[,]> MaskPool = new List<int[,]>();
 	List<int[]> Int3Pool = new List<int[]>();
 
-	public void Create(MeshData meshData, ushort[] blocks, WorldPosition pos, bool transparent, bool surrounded, bool fastMesh)
+	public void Create(MeshData meshData, ushort[] blocks, WorldPosition pos, bool transparent, bool fastMesh)
 	{
-		StartCoroutine(CreateMeshData(meshData, blocks, pos, transparent, surrounded, fastMesh));
+		StartCoroutine(CreateMeshData(meshData, blocks, pos, transparent, fastMesh));
 	}
 
-	IEnumerator CreateMeshData(MeshData meshData, ushort[] blocks, WorldPosition pos,  bool transparent, bool surrounded, bool fastMesh)
+	IEnumerator CreateMeshData(MeshData meshData, ushort[] blocks, WorldPosition pos,  bool transparent, bool fastMesh)
 	{
 		// Experimental
 		fastMesh = true;
@@ -24,8 +24,8 @@ public class GreedyMesher : MonoBehaviour
 		int[,] mask = GetMask();
 		int[] x = GetInt3();
 		int[] q = GetInt3();
-		int[] du = GetInt3();//new int[3];
-		int[] dv = GetInt3();//new int[3];
+		int[] du = GetInt3();
+		int[] dv = GetInt3();
 
 		// Sweep over 3 axes, 0..2
 		for (int axis = 0; axis < 3; axis++)

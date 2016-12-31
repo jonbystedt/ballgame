@@ -106,11 +106,13 @@ public class Chunk : PooledObject {
 			MeshData meshData = GetMeshData();
 			MeshData transparentMeshData = GetMeshData();
 
-			World.Mesher.Create(meshData, _blocks, _pos, false, true, playerHit);
-			World.Mesher.Create(transparentMeshData, _blocks, _pos, true, true, playerHit);
+			World.Mesher.Create(meshData, _blocks, _pos, false, playerHit);
+			World.Mesher.Create(transparentMeshData, _blocks, _pos, true, playerHit);
 
 			if (playerHit)
+			{
 				playerHit = false;
+			}
 
 			StartCoroutine(AwaitMeshData(meshData,transparentMeshData));
 		}

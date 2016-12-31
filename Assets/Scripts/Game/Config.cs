@@ -34,9 +34,8 @@ public class Config : MonoBehaviour
 	public bool coloredOutlines;
 	public bool shadowsEnabled;
 	public bool contactShadows;
-	public bool fogEnabled;
+	public bool globalFogEnabled;
 	public bool atmosphericScattering;
-	public bool godRays;
 	public int maxRenderDistance;
 	public int maxOutlineDistance;
 	public int maxSmallObjectCount = 1000;
@@ -201,22 +200,16 @@ public class Config : MonoBehaviour
 		set { _instance.atmosphericScattering = value; }
 	}
 
-	public static bool FogEnabled
+	public static bool GlobalFogEnabled
 	{
-		get { return _instance.fogEnabled;}
-		set { _instance.fogEnabled = value; }
+		get { return _instance.globalFogEnabled;}
+		set { _instance.globalFogEnabled = value; }
 	}
 
 	public static bool ShadowsEnabled
 	{
 		get { return _instance.shadowsEnabled;}
 		set { _instance.shadowsEnabled = value; }
-	}
-
-	public static bool GodRays
-	{
-		get { return _instance.godRays;}
-		set { _instance.godRays = value; }
 	}
 
 	public static float PickupMaxWeight
@@ -251,11 +244,10 @@ public class Config : MonoBehaviour
 					MaxItemSpawns = 100;
 					BlockSpawnChance = 0.05f;
 					ContactShadows = false;
-					FogEnabled = true;
-					FogScale = 1.15f;
+					GlobalFogEnabled = false;
+					FogScale = 1.1f;
 					AtmosphericScattering = false;
 					ShadowsEnabled = false;
-					GodRays = false;
 					Outlines = false;
 					ColoredOutlines = false;
 					if (QualitySettings.GetQualityLevel() != 0)
@@ -269,12 +261,11 @@ public class Config : MonoBehaviour
 				{
 					MaxItemSpawns = 100;
 					BlockSpawnChance = 0.05f;
-					FogScale = 1.1f;
+					FogScale = 1.0f;
 					ContactShadows = false;
-					FogEnabled = true;
-					AtmosphericScattering = true;
+					GlobalFogEnabled = true;
+					AtmosphericScattering = false;
 					ShadowsEnabled = false;
-					GodRays = false;
 					Outlines = false;
 					ColoredOutlines = false;
 					if (QualitySettings.GetQualityLevel() != 1)
@@ -288,12 +279,11 @@ public class Config : MonoBehaviour
 				{
 					MaxItemSpawns = 100;
 					BlockSpawnChance = 0.05f;
-					FogScale = 1.0f;
+					FogScale = 0.9f;
 					ContactShadows = false;
-					FogEnabled = true;
+					GlobalFogEnabled = true;
 					AtmosphericScattering = true;
 					ShadowsEnabled = true;
-					GodRays = false;
 					Outlines = false;
 					ColoredOutlines = false;
 					if (QualitySettings.GetQualityLevel() != 2)
@@ -307,14 +297,13 @@ public class Config : MonoBehaviour
 				{
 					MaxItemSpawns = 100;
 					BlockSpawnChance = 0.05f;
-					FogScale = 1.0f;
+					FogScale = 0.8f;
 					ContactShadows = false;
-					FogEnabled = true;
+					GlobalFogEnabled = true;
 					AtmosphericScattering = true;
 					ShadowsEnabled = true;
-					GodRays = false;
-					Outlines = true;
-					ColoredOutlines = true;
+					Outlines = false;
+					ColoredOutlines = false;
 					if (QualitySettings.GetQualityLevel() != 3)
 					{
 						QualitySettings.SetQualityLevel(3);
