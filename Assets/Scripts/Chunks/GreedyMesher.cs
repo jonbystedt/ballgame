@@ -5,7 +5,6 @@ using System.Diagnostics;
 
 public class GreedyMesher : MonoBehaviour 
 {
-	Dictionary<int,ushort> BlockLookup = new Dictionary<int,ushort>();
 	List<int[,]> MaskPool = new List<int[,]>();
 	List<int[]> DirectionsPool = new List<int[]>();
 
@@ -26,18 +25,19 @@ public class GreedyMesher : MonoBehaviour
 		int[] x = GetDirections();
 		int[] q = GetDirections();
 
-		// Sweep over 3 axes
-		for (int d = 0; d < 3; d++)
+		// Sweep over 3 axes, 0..2
+		for (int axis = 0; axis < 3; axis++)
 		{
-			// u and v are orthogonal directions to d
-			int u = (d + 1) % 3; 
-			int v = (d + 2) % 3;
+			// u and v are orthogonal directions to the main axis
+			int u = (axis + 1) % 3; 
+			int v = (axis + 2) % 3;
 
-			q[d] = 1;
+			q[axis] = 1;
 
-			for (x[d] = -1; x[d] < Chunk.Size; )
+			// Include each side to compute outer visibility
+			for (x[axis] = -1; x[axis] < Chunk.Size; )
 			{
-				// Compute mask
+				// Compute mask for this face
 				for (x[v] = 0; x[v] < Chunk.Size; x[v]++)
 				{
 					for (x[u] = 0; x[u] < Chunk.Size; x[u]++)
@@ -45,49 +45,40 @@ public class GreedyMesher : MonoBehaviour
 						ushort front_block = Block.Null;
 						ushort back_block = Block.Null;
 
-						if (surrounded || transparent)
+						// Edge cases. Grab a block from the world to check visibility
+						if (x[axis] == -1)
 						{
-							// Edge cases. Grab a block from the world to check visibility
-							if (x[d] == -1)
-							{
-								ushort block = Block.Null;
-								block = World.GetBlock(new WorldPosition(pos.x + x[0], pos.y + x[1], pos.z + x[2]));
-								if (block != Block.Null)
-								{
-									Block.Type type = Blocks.GetType(block);
-									if ((!transparent && type == Block.Type.rock) || (transparent && type == Block.Type.glass))
-									{
-										front_block = block;
-									}
-								}
-							}
+							ushort block = Block.Null;
+							block = World.GetBlock(new WorldPosition(pos.x + x[0], pos.y + x[1], pos.z + x[2]));
 
-							if (x[d] == Chunk.Size - 1)
+							Block.Type type = Blocks.GetType(block);
+							if ((!transparent && type == Block.Type.rock) || (transparent && type == Block.Type.glass))
 							{
-								ushort block = Block.Null;
-								block = World.GetBlock(new WorldPosition(pos.x + x[0] + q[0], pos.y + x[1] + q[1], pos.z + x[2] + q[2]));
-								if (block != Block.Null)
-								{
-									Block.Type type = Blocks.GetType(block);
-									if ((!transparent && type == Block.Type.rock) || (transparent && type == Block.Type.glass))
-									{
-										back_block = block;
-									}
-								}
+								front_block = block;
+							}
+						}
+
+						if (x[axis] == Chunk.Size - 1)
+						{
+							ushort block = Block.Null;
+							block = World.GetBlock(new WorldPosition(pos.x + x[0] + q[0], pos.y + x[1] + q[1], pos.z + x[2] + q[2]));
+
+							Block.Type type = Blocks.GetType(block);
+							if ((!transparent && type == Block.Type.rock) || (transparent && type == Block.Type.glass))
+							{
+								back_block = block;
 							}
 						}
 
 						// Check visibility within chunk
 						if (!transparent)
 						{
-							if (0 <= x[d] 
-								&& blocks[Chunk.BlockIndex(x[0], x[1], x[2])] != Block.Null 
+							if (0 <= x[axis]
 								&& Blocks.GetType(blocks[Chunk.BlockIndex(x[0], x[1], x[2])]) == Block.Type.rock)
 							{
 								front_block = blocks[Chunk.BlockIndex(x[0], x[1], x[2])];
 							}
-							if (x[d] < Chunk.Size - 1 
-								&& blocks[Chunk.BlockIndex(x[0] + q[0], x[1] + q[1], x[2] + q[2])] != Block.Null 
+							if (x[axis] < Chunk.Size - 1 
 								&& Blocks.GetType(blocks[Chunk.BlockIndex(x[0] + q[0], x[1] + q[1], x[2] + q[2])]) == Block.Type.rock)
 							{
 								back_block = blocks[Chunk.BlockIndex(x[0] + q[0], x[1] + q[1], x[2] + q[2])];
@@ -95,43 +86,30 @@ public class GreedyMesher : MonoBehaviour
 						}
 						else
 						{
-							if (0 <= x[d] 
-								&& blocks[Chunk.BlockIndex(x[0], x[1], x[2])] != Block.Null 
+							if (0 <= x[axis] 
 								&& Blocks.GetType(blocks[Chunk.BlockIndex(x[0], x[1], x[2])]) == Block.Type.glass)
 							{
 								front_block = blocks[Chunk.BlockIndex(x[0], x[1], x[2])];
 							}
-							if (x[d] < Chunk.Size - 1 
-								&& blocks[Chunk.BlockIndex(x[0] + q[0], x[1] + q[1], x[2] + q[2])] != Block.Null 
+							if (x[axis] < Chunk.Size - 1 
 								&& Blocks.GetType(blocks[Chunk.BlockIndex(x[0] + q[0], x[1] + q[1], x[2] + q[2])]) == Block.Type.glass)
 							{
 								back_block = blocks[Chunk.BlockIndex(x[0] + q[0], x[1] + q[1], x[2] + q[2])];
 							}
 						}
 
-						int front_tile_code = Blocks.GetTileCode(front_block);
-						if (front_block != Block.Null && !BlockLookup.ContainsKey(front_tile_code))
-						{
-							BlockLookup.Add(front_tile_code, front_block);
-						}
-
-						int back_tile_code = Blocks.GetTileCode(back_block);
-						if (back_block != Block.Null && !BlockLookup.ContainsKey(back_tile_code))
-						{
-							BlockLookup.Add(back_tile_code, back_block);
-						}
-
-						// Check this code for errors!
+						// if both blocks are something, or both or nothing assign 0 to the mask. this cannot be seen.
 						if ((front_block == Block.Null && back_block == Block.Null) || (front_block != Block.Null && back_block != Block.Null) )
 						{
 							mask[x[u], x[v]] = 0;
 						}
+						// the front block only is nothing
 						else if (front_block != Block.Null)
 						{
-							// Don't include meshes from blocks outside of this chunk
-							if (x[d] >= 0)
+							// We don't include the frontside mesh if x[axis] = -1 as this lies outside the chunk
+							if (x[axis] >= 0)
 							{
-								mask[x[u], x[v]] = front_tile_code;
+								mask[x[u], x[v]] = (int)front_block;
 							}
 							else
 							{
@@ -140,9 +118,11 @@ public class GreedyMesher : MonoBehaviour
 						}
 						else
 						{
-							if (x[d] < Chunk.Size - 1)
+							// We don't include the backside mesh if x[axis] = Chunk.Size - 1 as this lies outside the chunk
+							if (x[axis] < Chunk.Size - 1)
 							{
-								mask[x[u], x[v]] = -back_tile_code;
+								// The sign indicates the side the mesh is on
+								mask[x[u], x[v]] = -(int)back_block;
 							}
 							else
 							{
@@ -160,30 +140,31 @@ public class GreedyMesher : MonoBehaviour
 					}
 				}
 
-				// Increment x[d]
-				x[d]++;
+				// Increment x[axis]
+				x[axis]++;
 
 				// Generate mesh for mask using lexicographic ordering
 				for (int j = 0; j < Chunk.Size; j++)
 				{
 					for (int i = 0; i < Chunk.Size; )
 					{
-						int c = mask[i, j];
+						// this is the block code, signed according to what side the mesh is on
+						int block = mask[i, j];
 
-						if (c != 0)
+						if (block != 0)
 						{
-							// Compute width
-							int w = 1;
-							for ( ; i + w < Chunk.Size && c == mask[i + w, j]; w++) {}
+							// compute width. expand as long as the same block code is encountered in the mask
+							int width = 1;
+							for ( ; i + width < Chunk.Size && block == mask[i + width, j]; width++) {}
 
-							// Compute height
+							// compute height. expand as long as the total height and width have the same block code
 							bool done = false;
-							int h = 1;
-							for ( ; j + h < Chunk.Size; h++)
+							int height = 1;
+							for ( ; j + height < Chunk.Size; height++)
 							{
-								for (int k = 0; k < w; k++)
+								for (int k = 0; k < width; k++)
 								{
-									if (c != mask[i + k, j + h])
+									if (block != mask[i + k, j + height])
 									{
 										done = true;
 										break;
@@ -204,17 +185,17 @@ public class GreedyMesher : MonoBehaviour
 
 							Block.Direction dir;
 
-							if (c > 0)
+							if (block > 0)
 							{
-								dv[v] = h;
-								du[u] = w;
+								dv[v] = height;
+								du[u] = width;
 								dir = Block.Direction.up;
 							}
 							else
 							{
-								c = -c;
-								du[v] = h;
-								dv[u] = w;
+								block = -block;
+								du[v] = height;
+								dv[u] = width;
 								dir = Block.Direction.down;
 							}
 
@@ -225,19 +206,19 @@ public class GreedyMesher : MonoBehaviour
 
 							meshData.AddQuadTriangles();
 
-							meshData.uv.AddRange(Blocks.GetFaceUVs(BlockLookup[c],dir, w, h)); 
+							meshData.uv.AddRange(Blocks.GetFaceUVs((ushort)block, dir, width, height)); 
 
-							// Clear mask
-							for (int l = 0; l < h; l++)
+							// Clear this portion of the mask
+							for (int l = 0; l < height; l++)
 							{
-								for (int k = 0; k < w; k++)
+								for (int k = 0; k < width; k++)
 								{
 									mask[i + k, j + l] = 0;
 								}
 							}
 
 							// Increment and continue
-							i += w;
+							i += width;
 						}
 						else
 						{
