@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Diagnostics;
 using System;
 
 public class LoadChunks : MonoBehaviour 
@@ -20,7 +19,6 @@ public class LoadChunks : MonoBehaviour
 	List<WorldPosition> buildList = new List<WorldPosition>();
 	List<WorldPosition> deleteList = new List<WorldPosition>();
 
-	//Chunk[] deleteList = new Chunk[Config.WorldHeight];
 	List<WorldPosition> despawnList = new List<WorldPosition>();
 	List<WorldPosition> currentBuilds = new List<WorldPosition>();
 
@@ -56,12 +54,9 @@ public class LoadChunks : MonoBehaviour
 
 	public void _start()
 	{
-		//StartCoroutine("ChunkPipeline");
 		pipelineActive = true;
 		spawnTime = Time.time + Config.SpawnTiming;
 		despawnTime = Time.time + Config.SpawnTiming * 0.6f;
-		//StartCoroutine("Spawn");
-		//StartCoroutine("Despawn");
 	}
 
 	public void Reset()
@@ -82,18 +77,6 @@ public class LoadChunks : MonoBehaviour
 		noise.Clear();
 	}
 
-	IEnumerator ChunkPipeline()
-	{
-		for(;;)
-		{
-			FindChunksToLoad();
-			BuildChunks();
-			UpdateChunks();
-
-			yield return null;
-		}
-	}
-
 	void FindChunksToLoad()
 	{
 		if (!loading)
@@ -110,7 +93,7 @@ public class LoadChunks : MonoBehaviour
 			Game.UpdatePosition(playerChunkPos);
 		}
 		
-		if (buildList.Count == 0)
+		if (buildList.Count == 0 && updateList.Count == 0)
 		{	
 			for (int i = 0; i < ChunkData.LoadOrder.Count(); i++)
 			{
@@ -213,6 +196,7 @@ public class LoadChunks : MonoBehaviour
 		}
 
 		currentBuilds.Clear();
+		building = true;
 
 		// Pass the chunks positions in to queue the build processes
 		for (int i = buildList.Count - 1; i >= 0; i--)
@@ -227,8 +211,6 @@ public class LoadChunks : MonoBehaviour
 				break;
 			}
 		}
-
-		building = true;
 
 		StartCoroutine(AwaitBuildComplete());
 	}
@@ -269,12 +251,14 @@ public class LoadChunks : MonoBehaviour
 	
 	void UpdateChunks ()
 	{
-		if (updateList.Count == 0 || !loading)
+		// got to wait for all chunks to build before updating. 
+		// the update chunk may already be built so it would otherwise race ahead.
+		if (updateList.Count == 0 || !loading || building)
 		{
 			return;
 		}
 
-		//Game.Log(updateList.Count.ToString());
+		int updateListCount = updateList.Count;
 
 		for (int i = updateList.Count - 1; i >= 0; i--)
 		{
@@ -292,7 +276,9 @@ public class LoadChunks : MonoBehaviour
 
 			Chunk chunk = World.GetChunk(updateList[i]);
 
-			if (chunk != null && chunk.built && CheckNeighbors(chunk))
+			bool neighbors = CheckNeighbors(chunk);
+
+			if (chunk != null && chunk.built && neighbors)
 			{
 				if (chunk.isActive)
 				{
@@ -305,28 +291,55 @@ public class LoadChunks : MonoBehaviour
 
 	bool CheckNeighbors(Chunk chunk)
 	{
-		int yStart = chunk.pos.y == 0 ? -1 : 1;
-		int yEnd = chunk.pos.y == -3 * Chunk.Size ? 1 : -1;
-
-		for (int xi = -1; xi <= 1; xi++)
+		// check around
+		for (int xi = -1; xi <= 1; xi += 2)
 		{
-			for (int yi = yStart; yi <= yEnd; yi++)
+			WorldPosition pos = new WorldPosition(
+				chunk.pos.x + (xi * Chunk.Size), 
+				chunk.pos.y, 
+				chunk.pos.z);
+
+			Chunk neighbor = World.GetChunk(pos);
+
+			if (neighbor == null || !neighbor.built)
 			{
-				for (int zi = -1; zi <= 1; zi++)
-				{
-					WorldPosition pos = new WorldPosition(
-						chunk.pos.x + (xi * Chunk.Size), 
-						chunk.pos.y + (yi * Chunk.Size), 
-						chunk.pos.z + (zi * Chunk.Size));
-
-					Chunk neighbor = World.GetChunk(pos);
-
-					if (neighbor == null || !neighbor.built)
-					{
-						return false;
-					}
-				}
+				return false;
 			}
+		}
+
+		for (int zi = -1; zi <= 1; zi += 2)
+		{
+			WorldPosition pos = new WorldPosition(
+				chunk.pos.x, 
+				chunk.pos.y, 
+				chunk.pos.z + (zi * Chunk.Size));
+
+			Chunk neighbor = World.GetChunk(pos);
+
+			if (neighbor == null || !neighbor.built)
+			{
+				return false;
+			}
+
+		}
+
+		int yStart = chunk.pos.y == 0 ? -1 : 1;
+		int yEnd = chunk.pos.y == -((Config.WorldSize - 1f) * Chunk.Size) ? 1 : -1;
+
+		// check above and/or below
+		for (int yi = yStart; yi <= yEnd; yi++)
+		{
+				WorldPosition pos = new WorldPosition(
+					chunk.pos.x, 
+					chunk.pos.y + (yi * Chunk.Size), 
+					chunk.pos.z);
+
+				Chunk neighbor = World.GetChunk(pos);
+
+				if (neighbor == null || !neighbor.built)
+				{
+					return false;
+				}
 		}
 
 		return true;
@@ -423,31 +436,6 @@ public class LoadChunks : MonoBehaviour
 			}
 
 			despawnList.RemoveAt(0);
-		}
-	}
-
-	IEnumerator Spawn()
-	{
-		for(;;)
-		{
-			if (loading && spawning) 
-			{
-				ExecuteSpawn();
-				yield return new WaitForSeconds(Config.SpawnTiming);
-			}
-			else
-			{
-				yield return null;
-			}
-		}
-	}
-
-	IEnumerator Despawn()
-	{
-		for(;;)
-		{
-			if (loading && spawning) ExecuteDespawn();
-			yield return null;
 		}
 	}
 
