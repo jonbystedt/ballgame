@@ -246,8 +246,7 @@ CGINCLUDE
 			fogFac = 1.0;
 		//return fogFac; // for debugging
 		
-		//float4 fogCol = unity_FogColor;//do we need the fog color from lighting settings?
-		float4 fogCol;
+		float4 fogCol = unity_FogColor;//do we need the fog color from lighting settings?
 
 		//if(Scattering)
 		fogCol = sunEGround;

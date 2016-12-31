@@ -9,7 +9,7 @@ namespace UnityStandardAssets.ImageEffects
 //#if UNITY_5_4_OR_NEWER
 //    [ImageEffectAllowedInSceneView]
 //#endif
-    class GlobalFogExtended : PostEffectsBase
+    public class GlobalFogExtended : PostEffectsBase
 	{
 		[Tooltip("Apply distance-based fog?")]
         public bool  distanceFog = true;

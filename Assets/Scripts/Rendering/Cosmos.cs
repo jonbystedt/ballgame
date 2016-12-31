@@ -31,6 +31,7 @@ public class Cosmos : MonoBehaviour {
 	public DigitalRuby.ThunderAndLightning.LightningBoltPrefabScript lightningScript;
 	public GameObject lightning;
 	public GlobalFog fog;
+	//public GlobalFogExtended scatterFog;
 	public UnityStandardAssets.ImageEffects.EdgeDetectionColor edges;
 
 	MeshRenderer moonrenderer;
@@ -232,8 +233,12 @@ public class Cosmos : MonoBehaviour {
 			RenderSettings.fogDensity = fogDensityCurve.Evaluate(dot) * Config.FogScale;
 		}
 
-		//fog.Advanced.ScatteringSize = Mathf.Lerp(0.995f, 1f, Mathf.Clamp01(rain.RainIntensity * 2f));
-		//fog.Advanced.ScatteringIntensity = Mathf.Lerp(8f, 0f, Mathf.Clamp01(rain.RainIntensity * 2f));
+		// if (Config.AtmosphericScattering)
+		// {
+		// 	scatterFog.Advanced.ScatteringSize = Mathf.Lerp(0.995f, 1f, Mathf.Clamp01(rain.RainIntensity * 2f));
+		// 	scatterFog.Advanced.ScatteringIntensity = Mathf.Lerp(8f, 0f, Mathf.Clamp01(rain.RainIntensity * 2f));
+		// }
+
 		//Game.Log(RenderSettings.fogDensity.ToString());
 
 		// Skybox Color

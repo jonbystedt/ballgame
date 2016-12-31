@@ -21,6 +21,7 @@ public class Game : MonoBehaviour
 	public EdgeDetectionColor edgeDetectColor;
 	ScreenSpaceAmbientOcclusion ssao;
 	GlobalFog fog;
+	//GlobalFogExtended scatterFog;
 	SunShafts godRays;
 
 	public Camera mainCamera;
@@ -271,8 +272,11 @@ public class Game : MonoBehaviour
 
 		RenderSettings.fog = true;//Config.GlobalFogEnabled;
 		fog = mainCamera.GetComponent<GlobalFog>();
-		fog.enabled = Config.GlobalFogEnabled;
-		//fog.Advanced.UseScattering = Config.AtmosphericScattering;
+		fog.enabled = Config.GlobalFogEnabled;// && !Config.AtmosphericScattering;
+
+		// scatterFog = mainCamera.GetComponent<GlobalFogExtended>();
+		// scatterFog.Advanced.UseScattering = Config.AtmosphericScattering;
+		// scatterFog.enabled = Config.GlobalFogEnabled && Config.AtmosphericScattering;
 
 		if (Config.ShadowsEnabled)
 		{
