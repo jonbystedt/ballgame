@@ -261,7 +261,7 @@ public class Config : MonoBehaviour
 				{
 					MaxItemSpawns = 100;
 					BlockSpawnChance = 0.05f;
-					FogScale = 0.9f;
+					FogScale = 0.8f;
 					ContactShadows = false;
 					GlobalFogEnabled = true;
 					AtmosphericScattering = false;
@@ -279,7 +279,7 @@ public class Config : MonoBehaviour
 				{
 					MaxItemSpawns = 100;
 					BlockSpawnChance = 0.05f;
-					FogScale = 0.8f;
+					FogScale = 0.7f;
 					ContactShadows = false;
 					GlobalFogEnabled = true;
 					AtmosphericScattering = true;
@@ -297,7 +297,7 @@ public class Config : MonoBehaviour
 				{
 					MaxItemSpawns = 100;
 					BlockSpawnChance = 0.05f;
-					FogScale = 0.75f;
+					FogScale = 0.6f;
 					ContactShadows = false;
 					GlobalFogEnabled = true;
 					AtmosphericScattering = true;
