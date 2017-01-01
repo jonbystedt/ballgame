@@ -99,7 +99,7 @@ public class Pickup : SpawnedObject
 						transform.position.y - (transform.localScale.y * 0.5f) + ((1 / (size * 2)) * transform.localScale.y) + ((x / size) * transform.localScale.x),
 						transform.position.z - (transform.localScale.z * 0.5f) + ((1 / (size * 2)) * transform.localScale.z) + ((x / size) * transform.localScale.x)
 					);
-					spawnColor = TileFactory.colors[(x + y + z) % 64];
+					spawnColor = Tile.colors[(x + y + z) % 64];
 					PooledObject obj = World.Spawn.Object(spawn, spawnColor, mass, pos);
 					if (obj != null)
 					{
@@ -193,10 +193,10 @@ public class Pickup : SpawnedObject
 		}
 		else
 		{
-			startColor = TileFactory.Lighten(baseColor, 0.5f);
+			startColor = Tile.Lighten(baseColor, 0.5f);
 		}
 		grad.SetKeys(
-			new GradientColorKey[] { new GradientColorKey(startColor, 0.0f), new GradientColorKey(TileFactory.Darken(baseColor, 0.1f), 0.2f), new GradientColorKey(TileFactory.Brighten(baseColor, 1f), 1.0f)},
+			new GradientColorKey[] { new GradientColorKey(startColor, 0.0f), new GradientColorKey(Tile.Darken(baseColor, 0.1f), 0.2f), new GradientColorKey(Tile.Brighten(baseColor, 1f), 1.0f)},
 			new GradientAlphaKey[] { new GradientAlphaKey(1.0f, 0.0f), new GradientAlphaKey(1.0f, 1.0f)}
 		);
 

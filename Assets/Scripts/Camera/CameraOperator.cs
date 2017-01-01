@@ -146,8 +146,8 @@ public class CameraOperator : MonoBehaviour
 						ushort tbLeft = World.GetBlock(testSpreadLeft);
 						ushort tbRight = World.GetBlock(testSpreadRight);
 
-						bool down = lookingUp ? true : IsEmpty(tbDown);
-						bool up  = lookingUp ? true : IsEmpty(tbUp);
+						bool down = IsEmpty(tbDown);
+						bool up  = IsEmpty(tbUp);
 						bool left = IsEmpty(tbLeft);
 						bool right = IsEmpty(tbRight);
 
@@ -206,13 +206,18 @@ public class CameraOperator : MonoBehaviour
 			}
 
 			// Smooth movement towards the new target
-			targetDist = Mathf.Lerp(lastTargetDist, targetDist, (cameraBlock == Block.Air ? slowClipMoveTime : clipMoveTime));
+			float mt = currentDistance < targetDist 
+				? (cameraBlock == Block.Air ? returnTime : clipMoveTime)
+				: (cameraBlock == Block.Air ? slowClipMoveTime : clipMoveTime);
+			targetDist = Mathf.Lerp(lastTargetDist, targetDist, mt);
 		}
 
 		// Save the target distance
 		lastTargetDist = targetDist;
 
-		float moveTime = currentDistance < targetDist ? returnTime : (cameraBlock == Block.Air ? slowClipMoveTime : clipMoveTime);
+		float moveTime = currentDistance < targetDist 
+						? (cameraBlock == Block.Air ? returnTime: clipMoveTime)
+						: (cameraBlock == Block.Air ? slowClipMoveTime : clipMoveTime);
 		// Smoothly move towards the target distance
 		currentDistance = Mathf.SmoothDamp(currentDistance, targetDist, ref moveVelocity, moveTime);
 

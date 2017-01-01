@@ -176,8 +176,8 @@ public class Cosmos : MonoBehaviour {
 		RenderSettings.ambientLight = mainLight.color;
 
 		// lightning color
-		lightningScript.GlowTintColor = TileFactory.Brighten(TileFactory.Inverse(mainLight.color), 0.8f);
-		lightningScript.LightningTintColor = TileFactory.Lighten(TileFactory.Inverse(mainLight.color), 0.8f);
+		lightningScript.GlowTintColor = Tile.Brighten(Tile.Inverse(mainLight.color), 0.8f);
+		lightningScript.LightningTintColor = Tile.Lighten(Tile.Inverse(mainLight.color), 0.8f);
 
 		// Fog Color
 		if (rain.RainIntensity == 0)
@@ -194,12 +194,12 @@ public class Cosmos : MonoBehaviour {
 		// Outline Color
 		if (Config.ColoredOutlines)
 		{
-			edges.edgesColor = TileFactory.Darken(Color.Lerp(skyColor, Color.gray, 0.5f), 0.2f);
+			edges.edgesColor = Tile.Darken(Color.Lerp(skyColor, Color.gray, 0.5f), 0.2f);
 		}
 
 		// Star Color and Size
-		starColor = Color.Lerp(TileFactory.colors[Mathf.FloorToInt((Random.value + dot) * 64) % 64],Color.black, Mathf.Clamp01(rain.RainIntensity * 3));
-		starColor = TileFactory.Desaturate(starColor, 1 - Mathf.Pow(Random.value,2));
+		starColor = Color.Lerp(Tile.colors[Mathf.FloorToInt((Random.value + dot) * 64) % 64],Color.black, Mathf.Clamp01(rain.RainIntensity * 3));
+		starColor = Tile.Desaturate(starColor, 1 - Mathf.Pow(Random.value,2));
 		starColor.a = Mathf.Lerp(1f, 0f, rain.RainIntensity);
 
 		var ma = stars.main;
@@ -349,15 +349,15 @@ public class Cosmos : MonoBehaviour {
 
 		nightDayColor = new Gradient();
 		gck = new GradientColorKey[5];
-		gck[0].color = Color.Lerp(TileFactory.Brighten(TileFactory.colors[24], 0.8f), Color.black, 0.5f);
+		gck[0].color = Color.Lerp(Tile.Brighten(Tile.colors[24], 0.8f), Color.black, 0.5f);
 		gck[0].time = 0.295f;
-		gck[1].color = Color.Lerp(TileFactory.Brighten(TileFactory.colors[24], 0.2f), Color.black, 0.25f);
+		gck[1].color = Color.Lerp(Tile.Brighten(Tile.colors[24], 0.2f), Color.black, 0.25f);
 		gck[1].time = 0.3f;
-		gck[2].color = TileFactory.Lighten(TileFactory.Brighten(TileFactory.colors[32], 0.7f), 0.2f);
+		gck[2].color = Tile.Lighten(Tile.Brighten(Tile.colors[32], 0.7f), 0.2f);
 		gck[2].time = 0.34f;
-		gck[3].color = TileFactory.Lighten(TileFactory.Brighten(TileFactory.colors[8], 0.9f), 0.9f);
+		gck[3].color = Tile.Lighten(Tile.Brighten(Tile.colors[8], 0.9f), 0.9f);
 		gck[3].time = 0.55f;
-		gck[4].color = Color.Lerp(TileFactory.Brighten(TileFactory.colors[16], 0.9f), Color.white, 0.8f);
+		gck[4].color = Color.Lerp(Tile.Brighten(Tile.colors[16], 0.9f), Color.white, 0.8f);
 		gck[4].time = 0.80f;
 		gak = new GradientAlphaKey[2];
 		gak[0].alpha = 1.0f;
@@ -368,17 +368,17 @@ public class Cosmos : MonoBehaviour {
 
 		nightDayFogColor = new Gradient();
 		gck = new GradientColorKey[6];
-		gck[0].color = TileFactory.Brighten(Color.Lerp(TileFactory.colors[53], Color.black, 0.8f), 0.05f);
+		gck[0].color = Tile.Brighten(Color.Lerp(Tile.colors[53], Color.black, 0.8f), 0.05f);
 		gck[0].time = 0.02f;
-		gck[1].color = TileFactory.Brighten(Color.Lerp(TileFactory.colors[52], Color.black, 0.5f), 0.05f);
+		gck[1].color = Tile.Brighten(Color.Lerp(Tile.colors[52], Color.black, 0.5f), 0.05f);
 		gck[1].time = 0.055f;
-		gck[2].color = TileFactory.Brighten(Color.Lerp(TileFactory.colors[51], Color.black, 0.05f), 0.1f);
+		gck[2].color = Tile.Brighten(Color.Lerp(Tile.colors[51], Color.black, 0.05f), 0.1f);
 		gck[2].time = 0.09f;
-		gck[3].color = TileFactory.Brighten(TileFactory.colors[51], 0.4f);
+		gck[3].color = Tile.Brighten(Tile.colors[51], 0.4f);
 		gck[3].time = 0.14f;
-		gck[4].color = TileFactory.Lighten(TileFactory.Brighten(TileFactory.colors[52], 0.7f), 0.5f);
+		gck[4].color = Tile.Lighten(Tile.Brighten(Tile.colors[52], 0.7f), 0.5f);
 		gck[4].time = 0.2f;
-		gck[5].color = Color.Lerp(TileFactory.Brighten(TileFactory.colors[21], 0.7f), Color.white, 0.65f);
+		gck[5].color = Color.Lerp(Tile.Brighten(Tile.colors[21], 0.7f), Color.white, 0.65f);
 		gck[5].time = 0.75f;
 		nightDayFogColor.SetKeys(gck, gak);
 

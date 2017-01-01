@@ -45,14 +45,14 @@ public class Moonlight : MonoBehaviour {
 
 		color = Color.Lerp(color,Color.black,cosmos.rain.RainIntensity);
 		color.a = Mathf.Lerp(0.0025f, 0f, cosmos.rain.RainIntensity);
-		moonMaterial.SetColor("_EmissionColor", TileFactory.Darken(color, cosmos.rain.RainIntensity));
+		moonMaterial.SetColor("_EmissionColor", Tile.Darken(color, cosmos.rain.RainIntensity));
 		moonMaterial.SetColor("_Color", color);
 
 		color = nightDayColor.Evaluate(dot - 0.05f);
 		color = Color.Lerp(color,Color.black,Mathf.Clamp01(cosmos.rain.RainIntensity + 0.5f));
 		color.a = Mathf.Lerp(0.0025f, 0f, cosmos.rain.RainIntensity);
-		innerMoonMat.SetColor("_EmissionColor", TileFactory.Darken(color, cosmos.rain.RainIntensity));
-		innerMoonMat.SetColor("_Color", TileFactory.Brighten(color, 0.5f));
+		innerMoonMat.SetColor("_EmissionColor", Tile.Darken(color, cosmos.rain.RainIntensity));
+		innerMoonMat.SetColor("_Color", Tile.Brighten(color, 0.5f));
 
 		moon.transform.Rotate(moonSpinDir * Time.deltaTime * moonSpinSpeed);
 		innerMoon.transform.Rotate(-moonSpinDir * 2 * Time.deltaTime * moonSpinSpeed);

@@ -9,7 +9,7 @@ public class Block {
 	public static ushort Air = UInt16.MaxValue - 1;
 	public enum Type { rock, glass, air, undefined };
 	public enum Direction { north, east, south, west, up, down };
-	public struct Tile { public int x; public int y; }
+	public struct TileIndex { public int x; public int y; }
 
 	bool _transparent = false;
 	public bool transparent
@@ -50,7 +50,7 @@ public class Block {
 	public Block(int tileIndex) 
 	{
 		SetTile(tileIndex);
-		Color color = TileFactory.colors[tileIndex];
+		Color color = Tile.colors[tileIndex];
 		this.color.r = color.r;
 		this.color.g = color.g;
 		this.color.b = color.b;
@@ -58,9 +58,9 @@ public class Block {
 		type = Type.rock;
 	}
 
-	public virtual Tile TexturePosition(Direction direction)
+	public virtual TileIndex TexturePosition(Direction direction)
 	{
-		Tile tile = new Tile();
+		TileIndex tile = new TileIndex();
 		tile.x = tileX;
 		tile.y = tileY;
 
@@ -76,7 +76,7 @@ public class Block {
 	public virtual Vector2[] FaceUVs(Direction direction, int width, int height)
 	{
 		Vector2[] UVs = new Vector2[4];
-		Tile tilePos = TexturePosition(direction);
+		TileIndex tilePos = TexturePosition(direction);
 
 		// relative coords of section within 16x16 color area;
 		int x1;

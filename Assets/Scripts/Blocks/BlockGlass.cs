@@ -64,7 +64,7 @@ public class BlockGlass : Block {
 	public override Vector2[] FaceUVs(Direction direction, int width, int height)
 	{
 		Vector2[] UVs = new Vector2[4];
-		Tile tilePos = TexturePosition(direction);
+		TileIndex tilePos = TexturePosition(direction);
 
 		// relative coords of section within 16x16 color area;
 		int x1;

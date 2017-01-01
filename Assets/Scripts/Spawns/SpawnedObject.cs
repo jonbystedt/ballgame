@@ -25,7 +25,9 @@ public class SpawnedObject : PooledObject {
 
 			if (explosion != null)
 			{
-				explosion.startColor = value;
+				explosion.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+				var ma = explosion.main;
+				ma.startColor = value;
 			}
 		}
 	}

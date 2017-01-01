@@ -132,7 +132,7 @@ public class SpawnManager : MonoBehaviour {
 
 		if (pickup.type == PickupType.Basic)
 		{
-			pickup.color = Color.Lerp(TileFactory.Brighten(color, 0.7f), Color.white, 0.1f);
+			pickup.color = Color.Lerp(Tile.Brighten(color, 0.7f), Color.white, 0.1f);
 			pickup.size = 0.5f;
 			pickup.rotationSpeed = 2f;
 			pickup.baseScore = 10;
@@ -142,7 +142,7 @@ public class SpawnManager : MonoBehaviour {
 		}
 		if (pickup.type == PickupType.Silver)
 		{
-			pickup.color = Color.Lerp(TileFactory.Brighten(color,0.3f), Color.white, 0.5f);
+			pickup.color = Color.Lerp(Tile.Brighten(color,0.3f), Color.white, 0.5f);
 			pickup.size = 1f;
 			pickup.baseScore = 50;
 			pickup.driftIntensity = 20000f;
@@ -152,7 +152,7 @@ public class SpawnManager : MonoBehaviour {
 		}
 		if (pickup.type == PickupType.Black)
 		{
-			pickup.color = Color.Lerp(TileFactory.Brighten(color,0.3f), Color.black, 0.5f);
+			pickup.color = Color.Lerp(Tile.Brighten(color,0.3f), Color.black, 0.5f);
 			pickup.size = 1f;
 			pickup.baseScore = 25;
 			pickup.driftIntensity = 10000f;
@@ -361,7 +361,7 @@ public class SpawnManager : MonoBehaviour {
 
 						Spawn.Objects(
 							Spawns.Pickup, 
-							TileFactory.colors[17 + (spawnValue % 32)],
+							Tile.colors[17 + (spawnValue % 32)],
 							weight,
 							new WorldPosition(pos.x + x, sampleSet.spawnMap.height[x, z], pos.z + z), 
 							0.5f, 
@@ -382,7 +382,7 @@ public class SpawnManager : MonoBehaviour {
 
 						Spawn.Objects(
 							Spawns.BouncyBall, 
-							TileFactory.colors[32 + (spawnValue % 32)],
+							Tile.colors[32 + (spawnValue % 32)],
 							weight,
 							new WorldPosition(pos.x + x, sampleSet.spawnMap.height[x, z], pos.z + z), 
 							1.5f,
@@ -402,8 +402,8 @@ public class SpawnManager : MonoBehaviour {
 						Spawn.Objects(
 							Spawns.SuperBouncyBall, 
 							Color.Lerp(
-								TileFactory.Lighten(TileFactory.Brighten(TileFactory.colors[63],0.9f), 0.45f),
-								TileFactory.colors[spawnValue % 64],
+								Tile.Lighten(Tile.Brighten(Tile.colors[63],0.9f), 0.45f),
+								Tile.colors[spawnValue % 64],
 								0.35f
 							),
 							new WorldPosition(pos.x + x, sampleSet.spawnMap.height[x, z], pos.z + z), 
@@ -424,8 +424,8 @@ public class SpawnManager : MonoBehaviour {
 						Spawn.Objects(
 							Spawns.MysteryEgg,
 							Color.Lerp(
-								TileFactory.Darken(TileFactory.Brighten(TileFactory.colors[33], 1f), 0.45f),
-								TileFactory.colors[spawnValue % 64],
+								Tile.Darken(Tile.Brighten(Tile.colors[33], 1f), 0.45f),
+								Tile.colors[spawnValue % 64],
 								0.35f
 							), 
 							new WorldPosition(pos.x + x, sampleSet.spawnMap.height[x, z], pos.z + z), 
