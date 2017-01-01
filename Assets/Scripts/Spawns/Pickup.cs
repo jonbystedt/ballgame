@@ -138,9 +138,18 @@ public class Pickup : SpawnedObject
 
 			ParticleSystem.EmitParams p = new ParticleSystem.EmitParams();
 			p.startLifetime = Mathf.Lerp(1f,12f,impactForce);
-			p.startSize = 0.5f;
 
-			explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(10f, 100f, impactForce * impactForce)));
+			if (type == PickupType.Silver)
+			{
+				p.startSize = 0.35f;
+				explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(20f, 200f, impactForce * impactForce)));
+			}
+			else
+			{
+				p.startSize = 0.25f;
+				explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(30f, 200f, impactForce * impactForce)));
+			}
+
 		}
 		else
 		{
@@ -180,7 +189,7 @@ public class Pickup : SpawnedObject
 		Color startColor;
 		if (type == PickupType.Black)
 		{
-			startColor = TileFactory.Darken(baseColor, 0.3f);
+			startColor = baseColor;
 		}
 		else
 		{

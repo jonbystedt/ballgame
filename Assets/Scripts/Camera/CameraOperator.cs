@@ -2,9 +2,15 @@ using UnityEngine;
 
 public class CameraOperator : MonoBehaviour
 {
-    public float clipMoveTime = 0.05f;              // time taken to move when avoiding cliping (low value = fast)
-    public float returnTime = 0.4f;                 // time taken to move back towards desired position,
-    public float closestDistance = 0.5f;            // the closest distance the camera can be from the target
+	// time taken to move when avoiding clipping (low value = fast)
+    public float clipMoveTime = 0.05f;  
+	public float slowClipMoveTime = 0.1f;
+
+	// time taken to move back towards desired position         
+    public float returnTime = 0.4f; 
+
+	 // the closest distance the camera can be from the target              
+    public float closestDistance = 0.5f;            
 	public float maxCameraHeight = 20f;
 	public float targetAngle = -10f;
 	public float playerDistance = 3f;
@@ -78,9 +84,12 @@ public class CameraOperator : MonoBehaviour
 		float targetDist;
 		Vector3 blockCoords = Vector3.zero; 
 		Vector3 cameraPosition = _camera.transform.position;
+
 		// Normalized direction to the camera
 		Vector3 cameraDirection = (cameraPosition - Game.Player.transform.position).normalized;
 		float spread = 0.9f;
+
+		ushort cameraBlock = Block.Air;
 
 		if (firstPerson)
 		{
@@ -97,10 +106,7 @@ public class CameraOperator : MonoBehaviour
 			// Target camera position, constructed from angle and target distance.
 			cameraPosition = Game.Player.transform.position + cameraDirection * targetDist;
 
-			// Debug Log
-			//WorldPosition cameraPos = World.GetBlockPosition(cameraPosition);
-			//Block cameraBlock = World.GetBlock(cameraPos);
-			//Game.Log("Camera: " + cameraBlock.type.ToString() + " X:" + cameraPos.x.ToString() + " Y:"+ cameraPos.y.ToString() + " Z:" + cameraPos.z.ToString());
+			cameraBlock = World.GetBlock(World.GetBlockPosition(cameraPosition));
 
 			// TODO: World Height
 			if (cameraPosition.y >= -48f)
@@ -200,15 +206,15 @@ public class CameraOperator : MonoBehaviour
 			}
 
 			// Smooth movement towards the new target
-			targetDist = Mathf.Lerp(lastTargetDist, targetDist, clipMoveTime);
+			targetDist = Mathf.Lerp(lastTargetDist, targetDist, (cameraBlock == Block.Air ? slowClipMoveTime : clipMoveTime));
 		}
 
 		// Save the target distance
 		lastTargetDist = targetDist;
-			
+
+		float moveTime = currentDistance < targetDist ? returnTime : (cameraBlock == Block.Air ? slowClipMoveTime : clipMoveTime);
 		// Smoothly move towards the target distance
-		currentDistance = Mathf.SmoothDamp(currentDistance, targetDist, ref moveVelocity,
-			currentDistance > targetDist ? clipMoveTime : returnTime);
+		currentDistance = Mathf.SmoothDamp(currentDistance, targetDist, ref moveVelocity, moveTime);
 
 		// Clamp the distance between the closest allowed and the target distance
 		currentDistance = Mathf.Clamp(currentDistance, closestDistance, targetDist);

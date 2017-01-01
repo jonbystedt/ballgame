@@ -312,7 +312,7 @@ public class Game : MonoBehaviour
 		GameUtils.SeedValue = 0;
 
 		player.GetComponent<Rigidbody>().isKinematic = true;
-		playerActive = false;
+		PlayerActive = false;
 		player.transform.position = Vector3.zero;
 
 		clockText.text = "";

@@ -57,6 +57,7 @@ public class StartGame : MonoBehaviour {
 		input.text = "";
 		message.text = "Enter A Seed";
 		progressBar.sizeDelta = new Vector2(0, progressBar.sizeDelta.y);
+
 		input.ActivateInputField();
 		input.Select();	
 	}

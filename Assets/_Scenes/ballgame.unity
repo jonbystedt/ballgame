@@ -3878,7 +3878,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clipMoveTime: 0.4
-  returnTime: 0.02
+  slowClipMoveTime: 0.04
+  returnTime: 0.1
   closestDistance: 1
   maxCameraHeight: 30
   targetAngle: 0
