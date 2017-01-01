@@ -7661,7 +7661,7 @@ MonoBehaviour:
     m_Mode: 0
     m_NumColorKeys: 7
     m_NumAlphaKeys: 2
-  maxIntensity: 0.8
+  maxIntensity: 0.7
   minIntensity: 0.3
   minPoint: -0.4
   moonSpinDir: {x: 15, y: 30, z: 45}
@@ -8449,7 +8449,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4000011347233578, guid: 466ab6be5a1f64d19ab14bf8649eb2f4, type: 2}
       propertyPath: m_LocalPosition.y
-      value: -45
+      value: -35
       objectReference: {fileID: 0}
     - target: {fileID: 4000011347233578, guid: 466ab6be5a1f64d19ab14bf8649eb2f4, type: 2}
       propertyPath: m_LocalPosition.z
@@ -15220,7 +15220,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   distanceFog: 1
-  excludeFarPixels: 0
+  excludeFarPixels: 1
   useRadialDistance: 0
   heightFog: 0
   height: 1
