@@ -254,7 +254,7 @@ public class Config : MonoBehaviour
 					{
 						QualitySettings.SetQualityLevel(0);
 					}
-					WorldSize = 10;
+					WorldSize = 6;
 				}
 
 				if (value == GraphicsMode.Medium)
@@ -272,7 +272,7 @@ public class Config : MonoBehaviour
 					{
 						QualitySettings.SetQualityLevel(1);
 					}
-					WorldSize = 12;
+					WorldSize = 10;
 				}
 
 				if (value == GraphicsMode.High)
@@ -308,7 +308,7 @@ public class Config : MonoBehaviour
 					{
 						QualitySettings.SetQualityLevel(3);
 					}
-					WorldSize = 16;
+					WorldSize = 18;
 				}
 			}
 

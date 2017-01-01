@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 2362640}
   - component: {fileID: 3352874}
   - component: {fileID: 11431194}
-  - component: {fileID: 11438698}
   m_Layer: 11
   m_Name: Chunk
   m_TagString: Block
@@ -105,19 +104,10 @@ MonoBehaviour:
   outofrange: 0
   playerHit: 0
   transparentChunk: {fileID: 0}
+  _blocks: 
+  _changes: 
   _renderer: {fileID: 0}
   _glassrenderer: {fileID: 0}
---- !u!114 &11438698
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 159346}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ac70379fb8154980ac463bf4b00ed89, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

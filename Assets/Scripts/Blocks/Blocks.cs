@@ -13,12 +13,12 @@ public static class Blocks {
 		UVLookup = new Dictionary<int, Vector2[]>();
 
 		ushort blockId = 0;
-		for (int i = 0; i < Tile.colors.Length; i++, blockId++ )
+		for (int i = 0; i < Tile.Colors.Length; i++, blockId++ )
 		{
 			BlockLookup.Add(blockId, new Block(i));
 		}
 
-		for (int i = 0; i < Tile.colors.Length; i++, blockId++ )
+		for (int i = 0; i < Tile.Colors.Length; i++, blockId++ )
 		{
 			BlockLookup.Add(blockId, new BlockGlass(i));
 		}
@@ -31,7 +31,7 @@ public static class Blocks {
 
 	public static ushort Glass(int index)
 	{
-		return (ushort)(Tile.colors.Length + index);
+		return (ushort)(Tile.Colors.Length + index);
 	}
 
 	public static Block.Type GetType(ushort blockId)
@@ -46,7 +46,7 @@ public static class Blocks {
 			return Block.Type.air;
 		}
 
-		if (blockId < Tile.colors.Length)
+		if (blockId < Tile.Colors.Length)
 		{
 			return Block.Type.rock;
 		}

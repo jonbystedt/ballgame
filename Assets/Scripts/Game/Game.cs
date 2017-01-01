@@ -39,7 +39,7 @@ public class Game : MonoBehaviour
 	
 	private Text scoreText;
 	private Text logMessage;
-	private Text fpsText;
+	private Text dayText;
 	private Text clockText;
 	private Text positionText;
 
@@ -47,13 +47,6 @@ public class Game : MonoBehaviour
 	private CameraOperator camOp;
 	private int score = 0;
 	private int logCount = 2;
-
-	// FPS Counter
-	public float FPSUpdateInterval = 0.5f;
-	private double lastInterval;
-	private int frames = 0;
-	private float fps;
-	//private List<float> fps = new List<float>();
 
 	static Game _instance;
 
@@ -133,7 +126,7 @@ public class Game : MonoBehaviour
 
 		logMessage = HUD.transform.Find("Log").GetComponent<Text>();
 		scoreText = HUD.transform.Find("Score").GetComponent<Text>();
-		fpsText = HUD.transform.Find("FPS").GetComponent<Text>();
+		dayText = HUD.transform.Find("FPS").GetComponent<Text>();
 		clockText = HUD.transform.Find("Clock").GetComponent<Text>();
 		positionText = HUD.transform.Find("Position").GetComponent<Text>();
 
@@ -149,25 +142,11 @@ public class Game : MonoBehaviour
 		//Game.Log(String.Format("The minimum measurable time on this system is: {0} nanoseconds", resolution.ToString()));
 	}
 
-	void Start() 
-	{
-		lastInterval = Time.realtimeSinceStartup;
-		frames = 0;
-	}
-
 	void Update() 
 	{
 		if (!playerActive)
 		{
 			return;
-		}
-
-		++frames;
-
-		float timeNow = Time.realtimeSinceStartup;
-		if (timeNow > lastInterval + FPSUpdateInterval) 
-		{
-			DoFPS(timeNow);
 		}
 
 		if (Input.GetKeyDown (KeyCode.Tab)) 
@@ -176,7 +155,7 @@ public class Game : MonoBehaviour
 
 			if (!showStats)
 			{
-				fpsText.text = "";
+				dayText.text = "";
 				clockText.text = "";
 				positionText.text = "";
 			}
@@ -332,35 +311,47 @@ public class Game : MonoBehaviour
 	public static void UpdateClock(string time)
 	{
 		if (PlayerActive)
+		{
 			_instance.clockText.text = time;
+		}
 	}	
+
+	public static void UpdateDay(string day)
+	{
+		if (PlayerActive && _instance.dayText.text != day)
+		{
+			_instance.dayText.text = day;
+		}
+	}
 
 	public static void UpdatePosition(WorldPosition pos)
 	{
-		if (PlayerActive)
+		if (!PlayerActive)
 		{
-			if (ShowStats)
-			{			
-				_instance.positionText.text = "X: " + pos.x.ToString() + ", Y: " + pos.y.ToString() + ", Z: " + pos.z.ToString();
-			}
-
-			Column column = World.GetColumn(pos);
-			if (column != null && column.chunks[0] != null)
-			{
-				SampleSet results;
-				InterpolatedNoise.Results.TryGetValue(column.region, out results);
-				if (results != null)
-				{
-					LastGoodPosition = new Vector3(
-						pos.x + Chunk.HalfSize + 0.5f,
-						results.spawnMap.height[Chunk.HalfSize, Chunk.HalfSize],
-						pos.z + Chunk.HalfSize + 0.5f
-					);
-				}
-
-			}
+			return;
 		}
-			
+
+		if (ShowStats)
+		{			
+			_instance.positionText.text = "X: " + pos.x.ToString() + ", Y: " + pos.y.ToString() + ", Z: " + pos.z.ToString();
+		}
+
+		// Track position for respawning
+		Column column = World.GetColumn(pos);
+		if (column != null && column.chunks[0] != null)
+		{
+			SampleSet results;
+			InterpolatedNoise.Results.TryGetValue(column.region, out results);
+			if (results != null)
+			{
+				LastGoodPosition = new Vector3(
+					pos.x + Chunk.HalfSize + 0.5f,
+					results.spawnMap.height[Chunk.HalfSize, Chunk.HalfSize],
+					pos.z + Chunk.HalfSize + 0.5f
+				);
+			}
+
+		}		
 	}
 		
 	public static void SetTime(int hours, int minutes)
@@ -389,19 +380,6 @@ public class Game : MonoBehaviour
 		 UnityEngine.Debug.Log(message);
 		_instance.logMessage.text = message;
 	}
-
-	void DoFPS(float timeNow) 
-	{
-		fps = (float)(frames / (timeNow - lastInterval));
-		frames = 0;
-		lastInterval = timeNow;
-
-		if (showStats)
-		{
-			fpsText.text = fps.ToString("f0") + " FPS";
-		}
-	}
-
 
 	public static void PlaySong()
 	{

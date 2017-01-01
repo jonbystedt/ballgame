@@ -98,7 +98,7 @@ public class BouncyBall : SpawnedObject
 		// Add the spawns to the local column's spawn list so that they can be managed.
 		Column column = World.GetColumn(chunkPos);	
 
-		Color color = Tile.colors[SpawnCount % 64];
+		Color color = Tile.Colors[SpawnCount % 64];
 		if (type == BallType.Moon)
 		{
 			color = Tile.Lighten(color, 0.3f);
@@ -110,7 +110,7 @@ public class BouncyBall : SpawnedObject
 
 		if (SpawnCount > 0)
 		{
-			World.Spawn.Objects(SpawnObject, Tile.colors[SpawnCount % 64], transform.position, SpawnCount, 0f, column.spawns);
+			World.Spawn.Objects(SpawnObject, Tile.Colors[SpawnCount % 64], transform.position, SpawnCount, 0f, column.spawns);
 		}
 
 		StartCoroutine(Wait(1f, () => {

@@ -54,7 +54,6 @@ public class Cosmos : MonoBehaviour {
 	public Moonlight moonlight;
 
 	private Color greySkyColor = new Color(0.25f,0.25f,0.25f);
-	private Color rainFogColor = new Color(0.15f,0.15f,0.15f);
 
 	float dot;
 	float tRange;
@@ -63,6 +62,7 @@ public class Cosmos : MonoBehaviour {
 	float targetScale;
 	float baseFog;
 	float _ampm;
+	bool flipDay;
 	Color starColor;
 
 
@@ -188,7 +188,7 @@ public class Cosmos : MonoBehaviour {
 		else
 		{
 			skyColor = Color.Lerp(nightDayFogColor.Evaluate(dot), greySkyColor, rain.RainIntensity);
-			RenderSettings.fogColor = Color.Lerp(nightDayFogColor.Evaluate(dot), rainFogColor, rain.RainIntensity);
+			RenderSettings.fogColor = skyColor;
 		}
 
 		// Outline Color
@@ -198,7 +198,7 @@ public class Cosmos : MonoBehaviour {
 		}
 
 		// Star Color and Size
-		starColor = Color.Lerp(Tile.colors[Mathf.FloorToInt((Random.value + dot) * 64) % 64],Color.black, Mathf.Clamp01(rain.RainIntensity * 3));
+		starColor = Color.Lerp(Tile.Colors[Mathf.FloorToInt((Random.value + dot) * 64) % 64],Color.black, Mathf.Clamp01(rain.RainIntensity * 3));
 		starColor = Tile.Desaturate(starColor, 1 - Mathf.Pow(Random.value,2));
 		starColor.a = Mathf.Lerp(1f, 0f, rain.RainIntensity);
 
@@ -315,28 +315,40 @@ public class Cosmos : MonoBehaviour {
 		// 360/24*60 = 0.25
 		minutes += Mathf.Abs(rotation.x * 4f);
 
-		if (hours24 >= 24f) 
+		if (hours24 >= 24f)
 		{
 			hours24 -= 24f;
+			flipDay = true;
+		}
+
+		if (hours24 == 6 && flipDay)
+		{
 			days++;
+			flipDay = false;
 		}
 
 		hours = hours24 >= 13f ? hours24 -= 12f : hours24;
 
 		if (minutes >= 60f)
+		{
 			minutes -= 60f;
-		
+		}
+
 		am_pm = Vector3.Dot(mainLight.transform.forward, Vector3.forward);
 
 		if (Game.ShowStats)
 		{
 			if (am_pm > 0)
+			{
 				ampm = "PM";
+			}	
 			else
+			{
 				ampm = "AM";
-
-			//Game.UpdateClock(Mathf.FloorToInt(hours).ToString() + ":" + Mathf.FloorToInt(minutes).ToString("D2") + " " + ampm);
-			Game.UpdateClock(Mathf.FloorToInt(days).ToString() + ":" + Mathf.FloorToInt(hours24).ToString() + ":" + Mathf.FloorToInt(minutes).ToString("D2"));
+			}
+			
+			Game.UpdateDay("Day " + days.ToString()); 
+			Game.UpdateClock(Mathf.FloorToInt(hours).ToString() + ":" + Mathf.FloorToInt(minutes).ToString("D2") + " " + ampm);
 		}
 
 		return am_pm;
@@ -349,15 +361,15 @@ public class Cosmos : MonoBehaviour {
 
 		nightDayColor = new Gradient();
 		gck = new GradientColorKey[5];
-		gck[0].color = Color.Lerp(Tile.Brighten(Tile.colors[24], 0.8f), Color.black, 0.5f);
+		gck[0].color = Color.Lerp(Tile.Brighten(Tile.Colors[24], 0.8f), Color.black, 0.5f);
 		gck[0].time = 0.295f;
-		gck[1].color = Color.Lerp(Tile.Brighten(Tile.colors[24], 0.2f), Color.black, 0.25f);
+		gck[1].color = Color.Lerp(Tile.Brighten(Tile.Colors[24], 0.2f), Color.black, 0.25f);
 		gck[1].time = 0.3f;
-		gck[2].color = Tile.Lighten(Tile.Brighten(Tile.colors[32], 0.7f), 0.2f);
+		gck[2].color = Tile.Lighten(Tile.Brighten(Tile.Colors[32], 0.7f), 0.2f);
 		gck[2].time = 0.34f;
-		gck[3].color = Tile.Lighten(Tile.Brighten(Tile.colors[8], 0.9f), 0.9f);
+		gck[3].color = Tile.Lighten(Tile.Brighten(Tile.Colors[8], 0.9f), 0.9f);
 		gck[3].time = 0.55f;
-		gck[4].color = Color.Lerp(Tile.Brighten(Tile.colors[16], 0.9f), Color.white, 0.8f);
+		gck[4].color = Color.Lerp(Tile.Brighten(Tile.Colors[16], 0.9f), Color.white, 0.8f);
 		gck[4].time = 0.80f;
 		gak = new GradientAlphaKey[2];
 		gak[0].alpha = 1.0f;
@@ -368,17 +380,17 @@ public class Cosmos : MonoBehaviour {
 
 		nightDayFogColor = new Gradient();
 		gck = new GradientColorKey[6];
-		gck[0].color = Tile.Brighten(Color.Lerp(Tile.colors[53], Color.black, 0.8f), 0.05f);
+		gck[0].color = Tile.Brighten(Color.Lerp(Tile.Colors[53], Color.black, 0.8f), 0.05f);
 		gck[0].time = 0.02f;
-		gck[1].color = Tile.Brighten(Color.Lerp(Tile.colors[52], Color.black, 0.5f), 0.05f);
+		gck[1].color = Tile.Brighten(Color.Lerp(Tile.Colors[52], Color.black, 0.5f), 0.05f);
 		gck[1].time = 0.055f;
-		gck[2].color = Tile.Brighten(Color.Lerp(Tile.colors[51], Color.black, 0.05f), 0.1f);
+		gck[2].color = Tile.Brighten(Color.Lerp(Tile.Colors[51], Color.black, 0.05f), 0.1f);
 		gck[2].time = 0.09f;
-		gck[3].color = Tile.Brighten(Tile.colors[51], 0.4f);
+		gck[3].color = Tile.Brighten(Tile.Colors[51], 0.4f);
 		gck[3].time = 0.14f;
-		gck[4].color = Tile.Lighten(Tile.Brighten(Tile.colors[52], 0.7f), 0.5f);
+		gck[4].color = Tile.Lighten(Tile.Brighten(Tile.Colors[52], 0.7f), 0.5f);
 		gck[4].time = 0.2f;
-		gck[5].color = Color.Lerp(Tile.Brighten(Tile.colors[21], 0.7f), Color.white, 0.65f);
+		gck[5].color = Color.Lerp(Tile.Brighten(Tile.Colors[21], 0.7f), Color.white, 0.65f);
 		gck[5].time = 0.75f;
 		nightDayFogColor.SetKeys(gck, gak);
 

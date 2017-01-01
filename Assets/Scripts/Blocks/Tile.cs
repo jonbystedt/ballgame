@@ -4,7 +4,7 @@ using UnityEngine;
 
 public static class Tile
 {
-	public static Color[] colors = new Color[64];
+	public static Color[] Colors = new Color[64];
 	static Color darkColor = Color.black;
 	static Color lightColor = Color.white;
 	public static Color DarkColor 

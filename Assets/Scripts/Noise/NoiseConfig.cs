@@ -71,7 +71,7 @@ public static class NoiseConfig {
 			); 
 
 		cave = new NoiseOptions(
-			Mathf.Lerp(0.008f, 0.04f, Mathf.Pow(GameUtils.SeedValue,2)), 
+			Mathf.Lerp(0.008f, 0.02f, Mathf.Pow(GameUtils.SeedValue,2)), 
 			1,
 			Mathf.Lerp(0f, 2f, GameUtils.SeedValue), 
 			Mathf.Lerp(0f, 1f, GameUtils.SeedValue), 

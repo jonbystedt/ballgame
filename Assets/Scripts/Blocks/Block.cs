@@ -50,7 +50,7 @@ public class Block {
 	public Block(int tileIndex) 
 	{
 		SetTile(tileIndex);
-		Color color = Tile.colors[tileIndex];
+		Color color = Tile.Colors[tileIndex];
 		this.color.r = color.r;
 		this.color.g = color.g;
 		this.color.b = color.b;

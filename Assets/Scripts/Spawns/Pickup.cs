@@ -99,7 +99,7 @@ public class Pickup : SpawnedObject
 						transform.position.y - (transform.localScale.y * 0.5f) + ((1 / (size * 2)) * transform.localScale.y) + ((x / size) * transform.localScale.x),
 						transform.position.z - (transform.localScale.z * 0.5f) + ((1 / (size * 2)) * transform.localScale.z) + ((x / size) * transform.localScale.x)
 					);
-					spawnColor = Tile.colors[(x + y + z) % 64];
+					spawnColor = Tile.Colors[(x + y + z) % 64];
 					PooledObject obj = World.Spawn.Object(spawn, spawnColor, mass, pos);
 					if (obj != null)
 					{
