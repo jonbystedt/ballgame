@@ -105,16 +105,18 @@ public class Chunk : PooledObject {
 
 			MeshData meshData = GetMeshData();
 			MeshData transparentMeshData = GetMeshData();
+			MeshData colliderMeshData = GetMeshData();
 
 			World.Mesher.Create(meshData, _blocks, _pos, false, playerHit);
 			World.Mesher.Create(transparentMeshData, _blocks, _pos, true, playerHit);
+			World.Mesher.CreateCollider(colliderMeshData, _blocks, _pos, playerHit);
 
 			if (playerHit)
 			{
 				playerHit = false;
 			}
 
-			StartCoroutine(AwaitMeshData(meshData,transparentMeshData));
+			StartCoroutine(AwaitMeshData(meshData,transparentMeshData, colliderMeshData));
 		}
 	}
 
@@ -217,11 +219,11 @@ public class Chunk : PooledObject {
 		}
 	}
 
-	IEnumerator AwaitMeshData(MeshData meshData, MeshData transparentMeshData)
+	IEnumerator AwaitMeshData(MeshData meshData, MeshData transparentMeshData, MeshData colliderMeshData)
 	{
 		for(;;)
 		{
-			if (meshData.complete && transparentMeshData.complete)
+			if (meshData.complete && transparentMeshData.complete && colliderMeshData.complete)
 			{
 				break;
 			}
@@ -230,10 +232,12 @@ public class Chunk : PooledObject {
 		}
 
 		RenderMesh(meshData);
+		SetColliderMesh(colliderMeshData);
 		transparentChunk.GetComponent<TransparentChunk>().RenderMesh(transparentMeshData);
 
 		ReturnMeshData(meshData);
 		ReturnMeshData(transparentMeshData);
+		ReturnMeshData(colliderMeshData);
 
 		// Update flags
 		if (!rendered)
@@ -264,7 +268,10 @@ public class Chunk : PooledObject {
 
 		NormalCalculator.RecalculateNormals(filter.mesh, 60);
 		filter.mesh.RecalculateBounds();
+	}
 
+	void SetColliderMesh(MeshData meshData)
+	{
 		// collider mesh
 		col.sharedMesh = null;
 		Mesh mesh = new Mesh();

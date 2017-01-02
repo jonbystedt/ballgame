@@ -13,6 +13,11 @@ public class GreedyMesher : MonoBehaviour
 		StartCoroutine(CreateMeshData(meshData, blocks, pos, transparent, fastMesh));
 	}
 
+	public void CreateCollider(MeshData meshData, ushort[] blocks, WorldPosition pos, bool fastMesh)
+	{
+		StartCoroutine(CreateCollisionMeshData(meshData, blocks, pos, fastMesh));
+	}
+
 	IEnumerator CreateMeshData(MeshData meshData, ushort[] blocks, WorldPosition pos,  bool transparent, bool fastMesh)
 	{
 		// Experimental
@@ -212,6 +217,231 @@ public class GreedyMesher : MonoBehaviour
 							meshData.AddQuadTriangles();
 
 							meshData.uv.AddRange(Blocks.GetFaceUVs((ushort)block, dir, width, height)); 
+
+							// Clear this portion of the mask
+							for (int l = 0; l < height; l++)
+							{
+								for (int k = 0; k < width; k++)
+								{
+									mask[i + k, j + l] = 0;
+								}
+							}
+
+							// Increment and continue
+							i += width;
+						}
+						else
+						{
+							i++;
+						}
+					}
+
+					if (!fastMesh && stopwatch.ElapsedTicks > Config.CoroutineTiming / 2f)
+					{
+						yield return null;
+
+						stopwatch.Reset();
+						stopwatch.Start();
+					}
+				}
+			}
+
+			for (int ix = 0; ix <= 2; ix++)
+			{
+				x[ix] = 0;
+				q[ix] = 0;
+			}	
+		}
+
+		ReturnInt3(x);
+		ReturnInt3(q);
+		ReturnInt3(du);
+		ReturnInt3(dv);
+		ReturnMask(mask);
+
+		meshData.complete = true;
+		yield return null;
+	}
+
+	IEnumerator CreateCollisionMeshData(MeshData meshData, ushort[] blocks, WorldPosition pos, bool fastMesh)
+	{
+		// Experimental
+		fastMesh = true;
+
+		Stopwatch stopwatch = new Stopwatch();
+		stopwatch.Start();
+
+		int[,] mask = GetMask();
+		int[] x = GetInt3();
+		int[] q = GetInt3();
+		int[] du = GetInt3();
+		int[] dv = GetInt3();
+
+		// Sweep over 3 axes, 0..2
+		for (int axis = 0; axis < 3; axis++)
+		{
+			// u and v are orthogonal directions to the main axis
+			int u = (axis + 1) % 3; 
+			int v = (axis + 2) % 3;
+
+			q[axis] = 1;
+
+			// Include each side to compute outer visibility
+			for (x[axis] = -1; x[axis] < Chunk.Size; )
+			{
+				// Compute mask for this face
+				for (x[v] = 0; x[v] < Chunk.Size; x[v]++)
+				{
+					for (x[u] = 0; x[u] < Chunk.Size; x[u]++)
+					{
+						ushort front_block = Block.Null;
+						ushort back_block = Block.Null;
+						ushort block = Block.Null;
+
+						// Edge cases. Grab a block from the world to check visibility
+						if (x[axis] == -1)
+						{		
+							block = World.GetBlock(new WorldPosition(pos.x + x[0], pos.y + x[1], pos.z + x[2]));
+
+							if (block != Block.Null && block != Block.Air)
+							{
+								front_block = block;
+							}
+						}
+
+						if (x[axis] == Chunk.Size - 1)
+						{
+							block = World.GetBlock(new WorldPosition(pos.x + x[0] + q[0], pos.y + x[1] + q[1], pos.z + x[2] + q[2]));
+
+							if (block != Block.Null && block != Block.Air)
+							{
+								back_block = block;
+							}
+						}
+
+						// Check visibility within chunk
+						if (0 <= x[axis])
+						{
+							block = blocks[Chunk.BlockIndex(x[0], x[1], x[2])];
+							if (block != Block.Air && block != Block.Null)
+							{
+								front_block = block;
+							}
+						}
+						if (x[axis] < Chunk.Size - 1)
+						{
+							block = blocks[Chunk.BlockIndex(x[0] + q[0], x[1] + q[1], x[2] + q[2])];
+							if (block != Block.Air && block != Block.Null)
+							{
+								back_block = block;
+							}
+						} 
+
+						// if both blocks are something, or both or nothing assign 0 to the mask. this cannot be seen.
+						if ((front_block == Block.Null && back_block == Block.Null) || (front_block != Block.Null && back_block != Block.Null) )
+						{
+							mask[x[u], x[v]] = 0;
+						}
+						// the front block only is nothing
+						else if (front_block != Block.Null)
+						{
+							// We don't include the frontside mesh if x[axis] = -1 as this lies outside the chunk
+							if (x[axis] >= 0)
+							{
+								mask[x[u], x[v]] = 1;
+							}
+							else
+							{
+								mask[x[u], x[v]] = 0;
+							}
+						}
+						else
+						{
+							// We don't include the backside mesh if x[axis] = Chunk.Size - 1 as this lies outside the chunk
+							if (x[axis] < Chunk.Size - 1)
+							{
+								// The sign indicates the side the mesh is on
+								mask[x[u], x[v]] = -1;
+							}
+							else
+							{
+								mask[x[u], x[v]] = 0;
+							}
+						}
+					}
+
+					if (!fastMesh && stopwatch.ElapsedTicks > Config.CoroutineTiming / 2f)
+					{
+						yield return null;
+
+						stopwatch.Reset();
+						stopwatch.Start();
+					}
+				}
+
+				// Increment x[axis]
+				x[axis]++;
+
+				// Generate mesh for mask using lexicographic ordering
+				for (int j = 0; j < Chunk.Size; j++)
+				{
+					for (int i = 0; i < Chunk.Size; )
+					{
+						// this is the block code, signed according to what side the mesh is on
+						int block = mask[i, j];
+
+						if (block != 0)
+						{
+							// compute width. expand as long as the same block code is encountered in the mask
+							int width = 1;
+							for ( ; i + width < Chunk.Size && block == mask[i + width, j]; width++) {}
+
+							// compute height. expand as long as the total height and width have the same block code
+							bool done = false;
+							int height = 1;
+							for ( ; j + height < Chunk.Size; height++)
+							{
+								for (int k = 0; k < width; k++)
+								{
+									if (block != mask[i + k, j + height])
+									{
+										done = true;
+										break;
+									}
+								}
+								if (done)
+								{
+									break;
+								}
+							}
+
+							// Add quad
+							x[u] = i;
+							x[v] = j;
+
+							for (int ix = 0; ix <= 2; ix++)
+							{
+								dv[ix] = 0;
+								du[ix] = 0;
+							}
+
+							if (block > 0)
+							{
+								dv[v] = height;
+								du[u] = width;
+							}
+							else
+							{
+								du[v] = height;
+								dv[u] = width;
+							}
+
+							meshData.AddVertex(new Vector3(x[0], x[1], x[2]));
+							meshData.AddVertex(new Vector3(x[0] + du[0], x[1] + du[1], x[2] + du[2]));
+							meshData.AddVertex(new Vector3(x[0] + du[0] + dv[0], x[1] + du[1] + dv[1], x[2] + du[2] + dv[2]));
+							meshData.AddVertex(new Vector3(x[0] + dv[0], x[1] + dv[1], x[2] + dv[2]));
+
+							meshData.AddQuadTriangles();
 
 							// Clear this portion of the mask
 							for (int l = 0; l < height; l++)
