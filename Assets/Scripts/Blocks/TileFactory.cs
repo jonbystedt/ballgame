@@ -131,13 +131,13 @@ public class TileFactory : MonoBehaviour {
 
 	static void FillSwatchSolid(Texture2D texture, int offsetX, int offsetY, Color color)
 	{
-		color.a = 1f;
-		
+		Color opaque = new Color(color.r, color.g, color.b, 1f);
+
 		for (int x = offsetX; x < offsetX + TileSize; x++)
 		{
 			for (int y = offsetY; y < offsetY + TileSize; y++)
 			{
-				texture.SetPixel(x, y, color);
+				texture.SetPixel(x, y, opaque);
 			}	
 		}
 	}
