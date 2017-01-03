@@ -11,8 +11,6 @@ public class TransparentChunk : PooledObject {
 	
 	public MeshFilter filter;
 	private MeshCollider col;
-
-	//private Mesh[] panes;
 	
 	//Use this for initialization
 	void Start() 
@@ -29,24 +27,15 @@ public class TransparentChunk : PooledObject {
 		filter.mesh.vertices = meshData.vertices.ToArray();
 		filter.mesh.triangles = meshData.triangles.ToArray();
 		filter.mesh.uv = meshData.uv.ToArray();
-		filter.mesh.RecalculateNormals();
-		filter.mesh.RecalculateBounds();
-		;
-
-//		for (int i = 0; i*4 < meshData.vertices.Count; i++)
-//		{
-//			Mesh pane = new Mesh();
-//			pane.vertices = meshData.vertices.GetRange(i*4,4);
-//			pane.triangles = meshData.triangles.GetRange(i*6,6);
-//			pane.uv = meshData.uv.GetRange(i*4,4);
-//			pane.RecalculateNormals();
-//		}
 		
-		col.sharedMesh = null;
-		Mesh mesh = new Mesh();
-		mesh.vertices = meshData.colliderVerts.ToArray();
-		mesh.triangles = meshData.colliderTris.ToArray();
-		mesh.RecalculateNormals();
-		col.sharedMesh = mesh;
+		NormalCalculator.RecalculateNormals(filter.mesh, 60);
+		filter.mesh.RecalculateBounds();
+		
+		// col.sharedMesh = null;
+		// Mesh mesh = new Mesh();
+		// mesh.vertices = meshData.colliderVerts.ToArray();
+		// mesh.triangles = meshData.colliderTris.ToArray();
+		// mesh.RecalculateNormals();
+		// col.sharedMesh = mesh;
 	}
 }
