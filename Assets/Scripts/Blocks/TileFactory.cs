@@ -131,13 +131,11 @@ public class TileFactory : MonoBehaviour {
 
 	static void FillSwatchSolid(Texture2D texture, int offsetX, int offsetY, Color color)
 	{
-		Color opaque = new Color(color.r, color.g, color.b, 1f);
-
 		for (int x = offsetX; x < offsetX + TileSize; x++)
 		{
 			for (int y = offsetY; y < offsetY + TileSize; y++)
 			{
-				texture.SetPixel(x, y, opaque);
+				texture.SetPixel(x, y, color);
 			}	
 		}
 	}
@@ -228,7 +226,7 @@ public class TileFactory : MonoBehaviour {
 	{
 		float valueCap = Random.Range(0.75f, 1.0f);
 		float saturationCap = Random.Range(0.75f, 1.0f);
-		float alphaCap = 0.6f;
+		float alphaCap = 0.5f;
 
 		// Randomized on hue only
 		Color seedColor = Random.ColorHSV(0f, 1f, saturationCap, saturationCap, valueCap, valueCap);
@@ -305,6 +303,8 @@ public class TileFactory : MonoBehaviour {
 		float light;
 		float coin;
 
+		Color color = new Color();
+
 		// Fill in the first range
 		for (int i = 0; i < size; i++)
 		{
@@ -321,7 +321,6 @@ public class TileFactory : MonoBehaviour {
 			if (hue < 0) hue += 1;
 
 			coin = Random.value;
-			Color color = new Color();
 
 			if (type == GradientType.WarmCool)
 			{
@@ -369,7 +368,7 @@ public class TileFactory : MonoBehaviour {
 				color = Color.HSVToRGB(hue, Mathf.Lerp(saturationEnd, saturationStart, i / (float)(size - 1f)), v);
 			}
 
-			color.a = Mathf.Lerp(alphaStart, alphaEnd, i / (float)(size - 1));
+			color.a = Mathf.Lerp(alphaStart, alphaEnd, i / (float)(size - 1f));
 			gradients.Add(color);
 		}
 
@@ -399,17 +398,21 @@ public class TileFactory : MonoBehaviour {
 			if (type == GradientType.WarmCool)
 			{
 				// Use the range to vary the value, then flip it and vary the saturation
-				gradients.Add(Color.Lerp(Color.HSVToRGB(hue, Mathf.Lerp(valueStart, valueEnd, i / (float)(size - 1)), v),
-					Color.HSVToRGB(hue, s,  Mathf.Lerp(saturationEnd, saturationStart, i / (float)(size - 1))), 0.5f));
+				color = Color.Lerp(Color.HSVToRGB(hue, Mathf.Lerp(valueStart, valueEnd, i / (float)(size - 1)), v),
+					Color.HSVToRGB(hue, s,  Mathf.Lerp(saturationEnd, saturationStart, i / (float)(size - 1))), 0.5f);
 			}
 			else if (type == GradientType.SingleColor)
 			{
-				gradients.Add(Color.HSVToRGB(hue, Mathf.Lerp(saturationEnd, saturationStart, i / (float)(size - 1f)), v));
+				color = Color.HSVToRGB(hue, Mathf.Lerp(saturationEnd, saturationStart, i / (float)(size - 1f)), v);
 			}
 			else if (type == GradientType.DarkLight || type == GradientType.ValueColor)
 			{
-				gradients.Add(Color.HSVToRGB(hue, s, Mathf.Lerp(valueStart, valueEnd, i / (float)(size - 1))));
+				color = Color.HSVToRGB(hue, s, Mathf.Lerp(valueStart, valueEnd, i / (float)(size - 1)));
 			}
+ 
+ 			color.a = Mathf.Lerp(alphaStart, alphaEnd, i / (float)(size - 1f));
+			gradients.Add(color);
+			
 		}
 
 		return gradients;
