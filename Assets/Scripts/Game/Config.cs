@@ -298,7 +298,7 @@ public class Config : MonoBehaviour
 					MaxItemSpawns = 100;
 					BlockSpawnChance = 0.05f;
 					FogScale = 0.6f;
-					ContactShadows = true;
+					ContactShadows = false;
 					GlobalFogEnabled = true;
 					AtmosphericScattering = true;
 					ShadowsEnabled = true;
