@@ -21,7 +21,18 @@ public class CameraOperator : MonoBehaviour
 	public bool FirstPerson
 	{
 		get { return firstPerson; }
-		set { firstPerson = value; }
+		set 
+		{ 
+			if (value)
+			{
+				freeLookCamera.m_MoveSpeed = 100000f;
+			}
+			else
+			{
+				freeLookCamera.m_MoveSpeed = 10000f;
+			}
+			firstPerson = value; 
+		}
 	}
 
 	public float Distance
@@ -31,6 +42,7 @@ public class CameraOperator : MonoBehaviour
 
 	public MeshRenderer playerRenderer;
 	public MeshRenderer outlineRenderer;
+	public MeshRenderer solidRenderer;
 	public AnimationCurve curve;
 	//public Vector3 cameraPosition;
 
@@ -64,7 +76,7 @@ public class CameraOperator : MonoBehaviour
 		// TODO: Centralize all input handling
 		if (Input.GetKeyDown (KeyCode.F) && Game.PlayerActive) 
 		{
-			firstPerson = !firstPerson;
+			FirstPerson = !firstPerson;
 		}
 	}
 		
@@ -106,10 +118,11 @@ public class CameraOperator : MonoBehaviour
 			// Target camera position, constructed from angle and target distance.
 			cameraPosition = Game.Player.transform.position + cameraDirection * targetDist;
 
+			// block the camera is thought to be occupying
 			cameraBlock = World.GetBlock(World.GetBlockPosition(cameraPosition));
 
-			// TODO: World Height
-			if (cameraPosition.y >= -48f)
+			// if camera is above the bottom of the world
+			if (cameraPosition.y >= -(Chunk.Size * (Config.WorldHeight - 1f)))
 			{
 				float testDistance = 0f;
 				bool lookingUp = (freeLookCamera.m_TiltAngle < 0);
@@ -243,22 +256,30 @@ public class CameraOperator : MonoBehaviour
 		// Record the actual distance from the camera now
 		cameraDistance = Vector3.Distance(_camera.transform.position, _player.position);
 
-		// switch to wireframe view when close, turn off entirely if past camera clipping plane
-		if (cameraDistance <= 2f) {
+		// player object renderer LOD
+		if (firstPerson || cameraDistance <= 0.7f)
+		{
+			outlineRenderer.enabled = false;
+			playerRenderer.enabled = false;
+			solidRenderer.enabled = false;
+		}
+		else if (cameraDistance <= 2f)
+		{
 			playerRenderer.enabled = false;
 			outlineRenderer.enabled = true;
+			solidRenderer.enabled = false;
+		}
+		else if (cameraDistance <= 4f) {
+			playerRenderer.enabled = true;
+			outlineRenderer.enabled = true;
+			solidRenderer.enabled = false;
 		}
 		else
 		{
 			playerRenderer.enabled = true;
 			outlineRenderer.enabled = true;
-		}
-
-		if (cameraDistance <= 0.7f || (firstPerson && cameraDistance <= 2f )) {
-			outlineRenderer.enabled = false;
-			playerRenderer.enabled = false;
-		}
-			
+			solidRenderer.enabled = true;
+		}			
     }
 
 	bool IsEmpty(ushort block)

@@ -11,7 +11,7 @@ Material:
   m_ShaderKeywords: _LIGHTMAPPING_BAKED _LIGHTMAPPING_STATIC_LIGHTMAPS _UVPRIM_UV1
     _UVSEC_UV1
   m_LightmapFlags: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 3000
   stringTagMap: {}
   m_SavedProperties:
     serializedVersion: 2
@@ -133,7 +133,7 @@ Material:
       second: 1
     - first:
         name: _Outline
-      second: 0.00155
+      second: 0.002
     - first:
         name: _Parallax
       second: 0.02
@@ -170,7 +170,7 @@ Material:
       second: {r: 1, g: 1, b: 1, a: 1}
     - first:
         name: _OutlineColor
-      second: {r: 0, g: 0.66591215, b: 1, a: 1}
+      second: {r: 0, g: 0.66591215, b: 1, a: 0.203}
     - first:
         name: _SpecColor
       second: {r: 0.5514706, g: 0.5514706, b: 0.5514706, a: 1}

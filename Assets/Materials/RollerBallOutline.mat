@@ -7,11 +7,11 @@ Material:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: RollerBallOutline
-  m_Shader: {fileID: 4800000, guid: c53f0ddaf2ea542b78e4a81b3f72d46f, type: 3}
+  m_Shader: {fileID: 4800000, guid: b9be92ee9231e754cae687104ce33c8b, type: 3}
   m_ShaderKeywords: _LIGHTMAPPING_BAKED _LIGHTMAPPING_STATIC_LIGHTMAPS _UVPRIM_UV1
     _UVSEC_UV1
   m_LightmapFlags: 0
-  m_CustomRenderQueue: 3000
+  m_CustomRenderQueue: -1
   stringTagMap: {}
   m_SavedProperties:
     serializedVersion: 2
@@ -111,8 +111,14 @@ Material:
         name: _EmissionScaleUI
       second: 1
     - first:
+        name: _GlossMapScale
+      second: 1
+    - first:
         name: _Glossiness
       second: 0.35
+    - first:
+        name: _GlossyReflections
+      second: 1
     - first:
         name: _Lightmapping
       second: 0
@@ -127,10 +133,16 @@ Material:
       second: 1
     - first:
         name: _Outline
-      second: 0.0069
+      second: 0.2
     - first:
         name: _Parallax
       second: 0.02
+    - first:
+        name: _SmoothnessTextureChannel
+      second: 0
+    - first:
+        name: _SpecularHighlights
+      second: 1
     - first:
         name: _SrcBlend
       second: 1
