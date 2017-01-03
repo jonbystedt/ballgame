@@ -263,6 +263,7 @@ public class GreedyMesher : MonoBehaviour
 		yield return null;
 	}
 
+	// This is basically the same as above, but doesn't track block types to create an optimized collision mesh
 	IEnumerator CreateCollisionMeshData(MeshData meshData, ushort[] blocks, WorldPosition pos, bool fastMesh)
 	{
 		// Experimental
