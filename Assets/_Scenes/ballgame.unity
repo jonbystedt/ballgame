@@ -3799,9 +3799,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f8da2e45c2b0424f94708c855501399, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clipMoveTime: 0.5
+  clipMoveTime: 0.25
   slowClipMoveTime: 0.08
-  returnTime: 0.2
+  returnTime: 0.05
   closestDistance: 1
   maxCameraHeight: 30
   targetAngle: 0

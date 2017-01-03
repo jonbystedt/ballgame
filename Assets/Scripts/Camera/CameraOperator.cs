@@ -56,6 +56,13 @@ public class CameraOperator : MonoBehaviour
 	float collisionDistance;
           
 	float lastTargetDist;
+	float targetDist;
+	float moveTime;
+	Vector3 cameraPosition;
+	Vector3 cameraDirection;
+	float spread;
+	ushort cameraBlock;
+	ushort cameraForwardBlock;
 
 	ModifiedFreeLookCam freeLookCamera;
 
@@ -93,15 +100,14 @@ public class CameraOperator : MonoBehaviour
 			return;
 		}
 
-		float targetDist;
-		Vector3 blockCoords = Vector3.zero; 
-		Vector3 cameraPosition = _camera.transform.position;
+		cameraPosition = _camera.transform.position;
 
 		// Normalized direction to the camera
-		Vector3 cameraDirection = (cameraPosition - Game.Player.transform.position).normalized;
-		float spread = 0.9f;
+		cameraDirection = (cameraPosition - Game.Player.transform.position).normalized;
+		spread = 0.9f;
 
-		ushort cameraBlock = Block.Air;
+		cameraBlock = Block.Air;
+		cameraForwardBlock = Block.Air;
 
 		if (firstPerson)
 		{
@@ -124,94 +130,7 @@ public class CameraOperator : MonoBehaviour
 			// if camera is above the bottom of the world
 			if (cameraPosition.y >= -(Chunk.Size * (Config.WorldHeight - 1f)))
 			{
-				float testDistance = 0f;
-				bool lookingUp = (freeLookCamera.m_TiltAngle < 0);
-
-				// Incremental search for a free location from the camera towards the player
-				do 
-				{
-					// Position forward of target camera position
-					Vector3 forwardPos = cameraPosition - cameraDirection * (testDistance + 1f);
-
-					// Block at the forward position
-					WorldPosition testBlockPosForward = World.GetBlockPosition(forwardPos);
-					ushort tbForward = World.GetBlock(testBlockPosForward);
-
-					// If the forward position looks clear, perform further checks
-					if (IsEmpty(tbForward))
-					{
-						// Block slightly above the forward position
-						WorldPosition testSpreadUp = World.GetBlockPosition(forwardPos + _camera.transform.up * 
-							Mathf.Lerp(spread/3f, spread, freeLookCamera.m_TiltAngle / 15f));
-
-						// Block slightly below the forward position
-						WorldPosition testSpreadDown = World.GetBlockPosition(forwardPos - _camera.transform.up * 
-							Mathf.Lerp(spread/3f, spread, freeLookCamera.m_TiltAngle / 15f));
-
-						// Block slightly left of the forward position
-						WorldPosition testSpreadLeft= World.GetBlockPosition(forwardPos - _camera.transform.right * spread);
-
-						// Block slightly right of the forward position
-						WorldPosition testSpreadRight = World.GetBlockPosition(forwardPos + _camera.transform.right * spread);
-
-						ushort tbUp = World.GetBlock(testSpreadUp);
-						ushort tbDown = World.GetBlock(testSpreadDown);
-						ushort tbLeft = World.GetBlock(testSpreadLeft);
-						ushort tbRight = World.GetBlock(testSpreadRight);
-
-						bool down = IsEmpty(tbDown);
-						bool up  = IsEmpty(tbUp);
-						bool left = IsEmpty(tbLeft);
-						bool right = IsEmpty(tbRight);
-
-						if (up && down && left && right)
-						{
-							if (Mathf.Abs(freeLookCamera.m_TiltAngle) <= 10)
-							{
-								break;
-							}
-							// Diagonals
-							WorldPosition testSpreadUpLeft = World.GetBlockPosition(
-								forwardPos + _camera.transform.up - _camera.transform.right * 
-								Mathf.Lerp(spread/3f, spread/2f, freeLookCamera.m_TiltAngle / 15f)
-								);
-							WorldPosition testSpreadUpRight = World.GetBlockPosition(
-								forwardPos + _camera.transform.up + _camera.transform.right * 
-								Mathf.Lerp(spread/3f, spread/2f, freeLookCamera.m_TiltAngle / 15f)
-								);
-							WorldPosition testSpreadDownLeft = World.GetBlockPosition(
-								forwardPos - _camera.transform.up - _camera.transform.right * 
-								Mathf.Lerp(spread/3f, spread/2f, freeLookCamera.m_TiltAngle / 15f)
-								);
-							WorldPosition testSpreadDownRight = World.GetBlockPosition(
-								forwardPos - _camera.transform.up + _camera.transform.right * 
-								Mathf.Lerp(spread/3f, spread/2f, freeLookCamera.m_TiltAngle / 15f)
-								);
-
-							ushort tbUpLeft = World.GetBlock(testSpreadUpLeft);
-							ushort tbUpRight = World.GetBlock(testSpreadUpRight);
-							ushort tbDownLeft = World.GetBlock(testSpreadDownLeft);
-							ushort tbDownRight = World.GetBlock(testSpreadDownRight);
-
-							bool upLeft = IsEmpty(tbUpLeft);
-							bool upRight = IsEmpty(tbUpRight);
-							bool downLeft = IsEmpty(tbDownLeft);
-							bool downRight = IsEmpty(tbDownRight);
-
-							if (upLeft && upRight && downLeft && downRight)
-							{
-								break;
-							}
-						}
-						
-					}
-
-					testDistance += 0.1f;
-				} 
-				while(testDistance < targetDist); 
-
-				// Adjust target distance
-				targetDist = targetDist - testDistance - 1f;
+				DoFreeBlockSearch(0f);
 			}
 			else
 			{
@@ -219,18 +138,18 @@ public class CameraOperator : MonoBehaviour
 			}
 
 			// Smooth movement towards the new target
-			float mt = currentDistance < targetDist 
+			moveTime = currentDistance < targetDist 
 				? (cameraBlock == Block.Air ? returnTime : clipMoveTime)
 				: (cameraBlock == Block.Air ? slowClipMoveTime : clipMoveTime);
-			targetDist = Mathf.Lerp(lastTargetDist, targetDist, mt);
+			targetDist = Mathf.Lerp(lastTargetDist, targetDist, moveTime);
 		}
 
 		// Save the target distance
 		lastTargetDist = targetDist;
 
-		float moveTime = currentDistance < targetDist 
-						? (cameraBlock == Block.Air ? returnTime: clipMoveTime)
-						: (cameraBlock == Block.Air ? slowClipMoveTime : clipMoveTime);
+		moveTime = currentDistance < targetDist 
+						? (cameraForwardBlock == Block.Air ? returnTime: clipMoveTime)
+						: (cameraForwardBlock == Block.Air ? slowClipMoveTime : clipMoveTime);
 		// Smoothly move towards the target distance
 		currentDistance = Mathf.SmoothDamp(currentDistance, targetDist, ref moveVelocity, moveTime);
 
@@ -281,6 +200,99 @@ public class CameraOperator : MonoBehaviour
 			solidRenderer.enabled = true;
 		}			
     }
+
+	private void DoFreeBlockSearch(float startDistance)
+	{
+		float testDistance = startDistance;
+		bool lookingUp = (freeLookCamera.m_TiltAngle <= 0); // this is unused
+
+		// Incremental search for a free location from the camera towards the player
+		do 
+		{
+			// Position forward of target camera position
+			Vector3 forwardPos = cameraPosition - cameraDirection * (testDistance + 1f);
+
+			// Block at the forward position
+			WorldPosition testBlockPosForward = World.GetBlockPosition(forwardPos);
+			ushort tbForward = World.GetBlock(testBlockPosForward);
+			cameraForwardBlock = tbForward;
+
+			// If the forward position looks clear, perform further checks
+			if (IsEmpty(tbForward))
+			{
+				// Block slightly above the forward position
+				WorldPosition testSpreadUp = World.GetBlockPosition(forwardPos + _camera.transform.up * 
+					Mathf.Lerp(spread/3f, spread, freeLookCamera.m_TiltAngle / 15f));
+
+				// Block slightly below the forward position
+				WorldPosition testSpreadDown = World.GetBlockPosition(forwardPos - _camera.transform.up * 
+					Mathf.Lerp(spread/3f, spread, freeLookCamera.m_TiltAngle / 15f));
+
+				// Block slightly left of the forward position
+				WorldPosition testSpreadLeft= World.GetBlockPosition(forwardPos - _camera.transform.right * spread);
+
+				// Block slightly right of the forward position
+				WorldPosition testSpreadRight = World.GetBlockPosition(forwardPos + _camera.transform.right * spread);
+
+				ushort tbUp = World.GetBlock(testSpreadUp);
+				ushort tbDown = World.GetBlock(testSpreadDown);
+				ushort tbLeft = World.GetBlock(testSpreadLeft);
+				ushort tbRight = World.GetBlock(testSpreadRight);
+
+				bool down = IsEmpty(tbDown);
+				bool up  = IsEmpty(tbUp);
+				bool left = IsEmpty(tbLeft);
+				bool right = IsEmpty(tbRight);
+
+				if (up && down && left && right)
+				{
+					if (Mathf.Abs(freeLookCamera.m_TiltAngle) <= 10)
+					{
+						break;
+					}
+					// Diagonals
+					WorldPosition testSpreadUpLeft = World.GetBlockPosition(
+						forwardPos + _camera.transform.up - _camera.transform.right * 
+						Mathf.Lerp(spread/3f, spread/2f, freeLookCamera.m_TiltAngle / 15f)
+						);
+					WorldPosition testSpreadUpRight = World.GetBlockPosition(
+						forwardPos + _camera.transform.up + _camera.transform.right * 
+						Mathf.Lerp(spread/3f, spread/2f, freeLookCamera.m_TiltAngle / 15f)
+						);
+					WorldPosition testSpreadDownLeft = World.GetBlockPosition(
+						forwardPos - _camera.transform.up - _camera.transform.right * 
+						Mathf.Lerp(spread/3f, spread/2f, freeLookCamera.m_TiltAngle / 15f)
+						);
+					WorldPosition testSpreadDownRight = World.GetBlockPosition(
+						forwardPos - _camera.transform.up + _camera.transform.right * 
+						Mathf.Lerp(spread/3f, spread/2f, freeLookCamera.m_TiltAngle / 15f)
+						);
+
+					ushort tbUpLeft = World.GetBlock(testSpreadUpLeft);
+					ushort tbUpRight = World.GetBlock(testSpreadUpRight);
+					ushort tbDownLeft = World.GetBlock(testSpreadDownLeft);
+					ushort tbDownRight = World.GetBlock(testSpreadDownRight);
+
+					bool upLeft = IsEmpty(tbUpLeft);
+					bool upRight = IsEmpty(tbUpRight);
+					bool downLeft = IsEmpty(tbDownLeft);
+					bool downRight = IsEmpty(tbDownRight);
+
+					if (upLeft && upRight && downLeft && downRight)
+					{
+						break;
+					}
+				}
+				
+			}
+
+			testDistance += 0.05f;
+		} 
+		while(testDistance <= targetDist); 
+
+		// Adjust target distance
+		targetDist = targetDist - testDistance - 1f;
+	}
 
 	bool IsEmpty(ushort block)
 	{
