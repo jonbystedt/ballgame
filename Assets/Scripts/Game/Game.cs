@@ -21,6 +21,7 @@ public class Game : MonoBehaviour
 	public EdgeDetectionColor edgeDetectColor;
 	ScreenSpaceAmbientOcclusion ssao;
 	GlobalFog fog;
+	GlobalFog distanceFog;
 	//GlobalFogExtended scatterFog;
 	SunShafts godRays;
 
@@ -256,6 +257,8 @@ public class Game : MonoBehaviour
 		RenderSettings.fog = true;//Config.GlobalFogEnabled;
 		fog = mainCamera.GetComponent<GlobalFog>();
 		fog.enabled = Config.GlobalFogEnabled;// && !Config.AtmosphericScattering;
+		distanceFog = cosmosCamera.GetComponent<GlobalFog>();
+		distanceFog.enabled = Config.GlobalFogEnabled;
 
 		// scatterFog = mainCamera.GetComponent<GlobalFogExtended>();
 		// scatterFog.Advanced.UseScattering = Config.AtmosphericScattering;
@@ -271,6 +274,9 @@ public class Game : MonoBehaviour
 			sun.shadows = LightShadows.None;
 			moon.shadows = LightShadows.None;
 		}
+
+		RenderSettings.ambientIntensity = 0f;
+		sun.intensity = 0f;
 
 		firstRun = false;
 
@@ -298,9 +304,11 @@ public class Game : MonoBehaviour
 		PlayerActive = false;
 		player.transform.position = new Vector3(0f, 16f, 0f);
 
-		menuGlow.color = Tile.Brighten(RenderSettings.fogColor, 0.6f);
+		menuGlow.color = Tile.Brighten(RenderSettings.fogColor, 0.5f);
 		RenderSettings.fogColor = Tile.Brighten(Color.Lerp(RenderSettings.fogColor,Color.black,0.9f),0.05f);
 		RenderSettings.fogDensity = 10f;
+		RenderSettings.ambientIntensity = 0f;
+		sun.intensity = 0f;
 		afterburner.SetActive(true);
 
 		clockText.text = "";

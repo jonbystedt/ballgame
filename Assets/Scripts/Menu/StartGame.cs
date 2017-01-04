@@ -52,7 +52,7 @@ public class StartGame : MonoBehaviour {
 		animMenuAlpha.SetTrigger("unfade");
 
 		input.text = "";
-		message.text = "Enter A Seed";
+		message.text = "enter world seed";
 		progressBar.sizeDelta = new Vector2(0, progressBar.sizeDelta.y);
 
 		input.ActivateInputField();

@@ -36,11 +36,10 @@ public class Cosmos : MonoBehaviour {
 
 	MeshRenderer moonrenderer;
 	Light mainLight;
-	Material sky;
 	DigitalRuby.ThunderAndLightning.ThunderAndLightningScript lightningController;
 
 	float skySpeed = 1;
-	float skyDelta = 0.001f;
+	float skyDelta = 0.05f;
 	bool daytime = true;
 	bool starsout = false;
 
@@ -69,7 +68,6 @@ public class Cosmos : MonoBehaviour {
 	void Start () 
 	{
 		mainLight = GetComponent<Light>();
-		sky = RenderSettings.skybox;
 		moonrenderer = moon.GetComponent<MeshRenderer>();
 		lightningController = lightning.GetComponent<DigitalRuby.ThunderAndLightning.ThunderAndLightningScript>();
 
@@ -187,7 +185,7 @@ public class Cosmos : MonoBehaviour {
 		}
 		else
 		{
-			skyColor = Color.Lerp(nightDayFogColor.Evaluate(dot), greySkyColor, rain.RainIntensity);
+			skyColor = Color.Lerp(nightDayFogColor.Evaluate(dot), greySkyColor, 0.1f);
 			RenderSettings.fogColor = skyColor;
 		}
 
@@ -196,6 +194,10 @@ public class Cosmos : MonoBehaviour {
 		{
 			edges.edgesColor = Tile.Darken(Color.Lerp(skyColor, Color.gray, 0.5f), 0.2f);
 		}
+
+		// Skybox Color
+		RenderSettings.skybox.SetColor("_Tint", skyColor);
+		DynamicGI.UpdateEnvironment();
 
 		// Star Color and Size
 		starColor = Color.Lerp(Tile.Colors[Mathf.FloorToInt((Random.value + dot) * 64) % 64],Color.black, Mathf.Clamp01(rain.RainIntensity * 3));
@@ -215,7 +217,7 @@ public class Cosmos : MonoBehaviour {
 			{
 				RenderSettings.fogDensity = Mathf.Lerp(Mathf.Lerp(
 					baseFog,
-					baseFog * 2.5f,
+					baseFog * 1.2f,
 					rain.RainIntensity
 				), RenderSettings.fogDensity, skyDelta);
 			} 
@@ -223,7 +225,7 @@ public class Cosmos : MonoBehaviour {
 			{
 				RenderSettings.fogDensity = Mathf.Lerp(Mathf.Lerp(
 					baseFog,
-					baseFog * 5f,
+					baseFog * 1.6f,
 					rain.RainIntensity
 				), RenderSettings.fogDensity, skyDelta);
 			}
@@ -240,9 +242,6 @@ public class Cosmos : MonoBehaviour {
 		// }
 
 		//Game.Log(RenderSettings.fogDensity.ToString());
-
-		// Skybox Color
-		sky.SetColor("_Tint", skyColor);
 	}
 
 	void HandleRotation()
@@ -264,7 +263,6 @@ public class Cosmos : MonoBehaviour {
 			if (daytime)
 			{
 				daytime = false;
-				rain.RainMistThreshold = 0.1f;
 			}
 
 			_ampm = Rotate(nightRotateSpeed * Time.deltaTime * skySpeed);
