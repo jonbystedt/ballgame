@@ -27,21 +27,18 @@ public class StartGame : MonoBehaviour {
 	[HideInInspector] public AnimationClip fadeAlphaAnimationClip;		//Animation clip fading out UI elements alpha
 
 
-	public PlayMusic playMusic;										//Reference to PlayMusic script
-	//private float fastFadeIn = .01f;									//Very short fade time (10 milliseconds) to start playing music immediately without a click/glitch
+	public PlayMusic playMusic;							
+	//private float fastFadeIn = .01f;						
 	private float slowFade = 2f;
-	private ShowPanels showPanels;										//Reference to ShowPanels script on UI GameObject, to show and hide panels
-
+	private ShowPanels showPanels;	
+	public SetOptions setOptions;
 	private LoadChunks loader;
 
 	private RectTransform inputRect;
 	
 	void Awake()
 	{
-		//Get a reference to ShowPanels attached to UI object
-		showPanels = GetComponent<ShowPanels> ();
-
-		//Get a reference to PlayMusic attached to UI object
+		showPanels = GetComponent<ShowPanels>();
 		playMusic = GetComponent<PlayMusic> ();
 
 		loader = GameObject.FindWithTag("Player").GetComponent<LoadChunks>();
@@ -85,6 +82,8 @@ public class StartGame : MonoBehaviour {
 			if (Config._instance != null)
 			{
 				Config.GraphicsMode = Config.GraphicsMode;
+				setOptions.SetMusicLevel(Config.MusicVolume * 0.01f);
+				setOptions.SetSfxLevel(Config.SfxVolume * 0.01f);
 				break;
 			}
 			else
@@ -108,13 +107,14 @@ public class StartGame : MonoBehaviour {
 
 	public void ExecuteStartGame()
 	{
-		Column start = World.Columns[new WorldPosition(0,0,0).GetHashCode()];
-		SampleSet results = InterpolatedNoise.Results[start.region];
+		// Column start = World.Columns[new WorldPosition(0,0,0).GetHashCode()];
+		// SampleSet results = InterpolatedNoise.Results[start.region];
 
-		Game.Player.transform.position = new Vector3(start.region.min.x, results.spawnMap.height[0,0] + 1f, start.region.min.z);
+		//Game.Player.transform.position = new Vector3(start.region.min.x, results.spawnMap.height[0,0] + 1f, start.region.min.z);
 
 		loader.spawning = true;
 		Config.CoroutineTiming = 20000;
+		
 
 		if (changeMusicOnStart) 
 		{

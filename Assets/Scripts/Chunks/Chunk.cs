@@ -47,7 +47,7 @@ public class Chunk : PooledObject {
 	private float chunkDistance;
 	private WorldPosition chunkPosition;
 
-	private List<MeshData> MeshDataPool = new List<MeshData>();
+	public static List<MeshData> MeshDataPool = new List<MeshData>();
 	private Block emptyBlock = new Block();
 	private int chunkOrder;
 	private float slowUpdateTimer = 0f;

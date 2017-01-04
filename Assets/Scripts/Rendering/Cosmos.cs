@@ -230,7 +230,7 @@ public class Cosmos : MonoBehaviour {
 		}
 		else
 		{
-			RenderSettings.fogDensity = fogDensityCurve.Evaluate(dot) * Config.FogScale;
+			RenderSettings.fogDensity = Mathf.Lerp(fogDensityCurve.Evaluate(dot) * Config.FogScale, RenderSettings.fogDensity, skyDelta);
 		}
 
 		// if (Config.AtmosphericScattering)

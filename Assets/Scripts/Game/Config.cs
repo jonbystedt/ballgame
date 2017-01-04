@@ -269,11 +269,12 @@ public class Config : MonoBehaviour
 					ShadowsEnabled = false;
 					Outlines = false;
 					ColoredOutlines = false;
+					StartChunksToLoad = 128;
 					if (QualitySettings.GetQualityLevel() != 0)
 					{
 						QualitySettings.SetQualityLevel(0);
 					}
-					WorldSize = 6;
+					WorldSize = 8;
 				}
 
 				if (value == GraphicsMode.Medium)
@@ -287,11 +288,12 @@ public class Config : MonoBehaviour
 					ShadowsEnabled = false;
 					Outlines = false;
 					ColoredOutlines = false;
+					StartChunksToLoad = 256;
 					if (QualitySettings.GetQualityLevel() != 1)
 					{
 						QualitySettings.SetQualityLevel(1);
 					}
-					WorldSize = 8;
+					WorldSize = 12;
 				}
 
 				if (value == GraphicsMode.High)
@@ -305,11 +307,12 @@ public class Config : MonoBehaviour
 					ShadowsEnabled = true;
 					Outlines = false;
 					ColoredOutlines = false;
+					StartChunksToLoad = 512;
 					if (QualitySettings.GetQualityLevel() != 2)
 					{
 						QualitySettings.SetQualityLevel(2);
 					}
-					WorldSize = 10;
+					WorldSize = 16;
 				}
 
 				if (value == GraphicsMode.Ultra)
@@ -323,11 +326,12 @@ public class Config : MonoBehaviour
 					ShadowsEnabled = true;
 					Outlines = false;
 					ColoredOutlines = false;
+					StartChunksToLoad = 1024;
 					if (QualitySettings.GetQualityLevel() != 3)
 					{
 						QualitySettings.SetQualityLevel(3);
 					}
-					WorldSize = 12;
+					WorldSize = 20;
 				}
 			}
 

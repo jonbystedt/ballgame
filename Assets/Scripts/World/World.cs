@@ -91,6 +91,10 @@ public class World : MonoBehaviour {
 		Chunks.Clear();
 		ChunkList.Clear();
 
+		ObjectPool chunkPool = ObjectPool.GetPool(chunkPrefab);
+		chunkPool.ClearPool();
+		Chunk.MeshDataPool.Clear();
+
 		foreach(KeyValuePair<int,Column> item in Columns)
 		{
 			foreach(PooledObject spawn in item.Value.spawns)

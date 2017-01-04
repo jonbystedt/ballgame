@@ -72,4 +72,10 @@ public class ObjectPool : MonoBehaviour {
 	{
 		return availableObjects.Count;
 	}
+
+	public void ClearPool()
+	{
+		availableObjects = new List<PooledObject>();
+		objCount = 0;
+	}
 }

@@ -28,6 +28,8 @@ public class Game : MonoBehaviour
 	public Camera cosmosCamera;
 	public Light sun;
 	public Light moon;
+	public Image menuGlow;
+	public GameObject afterburner;
 
 	private Vector3 lastGoodPosition;
 	private Vector3 cameraPosition;
@@ -137,6 +139,8 @@ public class Game : MonoBehaviour
 		player.GetComponent<Rigidbody>().isKinematic = true;
 		playerActive = false;
 		UpdateScore(0);
+
+		RenderSettings.fogDensity = 10f;
 
 		// float resolution = 1E9f / Stopwatch.Frequency;
 		//Game.Log(String.Format("The minimum measurable time on this system is: {0} nanoseconds", resolution.ToString()));
@@ -292,7 +296,12 @@ public class Game : MonoBehaviour
 
 		player.GetComponent<Rigidbody>().isKinematic = true;
 		PlayerActive = false;
-		player.transform.position = Vector3.zero;
+		player.transform.position = new Vector3(0f, 16f, 0f);
+
+		menuGlow.color = Tile.Brighten(RenderSettings.fogColor, 0.6f);
+		RenderSettings.fogColor = Tile.Brighten(Color.Lerp(RenderSettings.fogColor,Color.black,0.9f),0.05f);
+		RenderSettings.fogDensity = 10f;
+		afterburner.SetActive(true);
 
 		clockText.text = "";
 		positionText.text = "";
@@ -353,7 +362,7 @@ public class Game : MonoBehaviour
 
 		}		
 	}
-		
+
 	public static void SetTime(int hours, int minutes)
 	{
 		Vector3 rotation = Vector3.zero;
