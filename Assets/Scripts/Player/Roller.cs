@@ -28,7 +28,8 @@ public class Roller : MonoBehaviour
 	bool jumpStarted = false;
 	bool jumping = false;
 	bool boosting = false;
-	bool jumpEnded = false;
+	bool jumpEnded = true;
+	bool jumpGrounded = true;
 	bool boostEnded = false;
 	bool groundPoundFinished = false;
 	bool freeFalling = false;
@@ -59,7 +60,7 @@ public class Roller : MonoBehaviour
 		gravityAssist = maxGravityAssist;
 	}
 
-	public void Move(Vector3 moveDirection, bool jump, bool boost)
+	public void Move(Vector3 moveDirection, bool jump, bool boost, bool pound)
 	{
 		if (jumping && !jump)
 		{
@@ -90,9 +91,15 @@ public class Roller : MonoBehaviour
 			grounded = false;
 		}
 
+		//String logString = "";
+
 		// did we hit the ground?
 		if (grounded)
 		{
+			jumpGrounded = true;
+
+			//logString += "Grounded";
+
             gravityAssist = maxGravityAssist;
             gravityAttenuation = 0;
 
@@ -110,10 +117,13 @@ public class Roller : MonoBehaviour
 			{
 				hoverPower = maxHoverPower;
 				StopCoroutine(hoverRoutine);
+
+				//logString += ", Stop Hover";
 			}
 
 			if (freeFalling)
 			{
+				//logString += ", Stop Falling";
 				freeFalling = false;
 			}
 		}
@@ -121,12 +131,13 @@ public class Roller : MonoBehaviour
 		// are we activating boost?
 		if (boostReady && boost)
 		{
+			//logString += "   Boost";
 			boostIsActive = true;
 			boostReady = false;
-			//_rigidbody.mass += 1000f;
 
 			if (!boostOffInvoked)
 			{
+				//logString += ", Invoke Cancel Boost";
 				Invoke("BoostOff", boostLength);
 				boostOffInvoked = true;
 			}
@@ -141,17 +152,15 @@ public class Roller : MonoBehaviour
 		}
 
 		// ground pound
-		if (boost)
+		if (pound)
 		{
-			if (moveDirection == Vector3.zero && !grounded && !groundPoundFinished)
+			if (!grounded && !groundPoundFinished)
 			{
-				moveDirection = Vector3.down * boostPower * 500f;
+				moveDirection = Vector3.down * boostPower * 100f;
 
 				if (!groundPound && !groundPoundFinished)
 				{
 					groundPound = true;
-					//_rigidbody.mass += 1000f;
-					//_collider.material.bounciness /= 10f;
 				}
 			}
 		}
@@ -161,28 +170,29 @@ public class Roller : MonoBehaviour
 		{
 			if (!grounded)
 			{
-				moveDirection *= boostPower;// * 0.5f;
+				moveDirection *= boostPower;
 			}
 			else
 			{
 				moveDirection *= boostPower;
-				//moveDirection.y -= 0.1f;
 			}			
 		}
 
 		// are we ready for another jump?
 		if (jumpStarted && jumpEnded)
 		{
+			//logString += "   Ready For Jump";
 			jumpEnded = false;
 			jumpStarted = false;
 			freeFalling = true;
 		}
 
 		// handle jumping
-		if (grounded && jumping && !jumpStarted)
+		if (grounded && jumping && !jumpStarted && jumpEnded)
 		{
+			//logString += "   Jump Started";
 			jumpStarted = true;
-			//gravityAssist = 0f;
+			jumpGrounded = false;
 
 			// ...add force in upwards.
 			_rigidbody.AddForce(moveDirection * movePower * airResistance + Vector3.up * jumpPower*2f, ForceMode.Impulse);
@@ -192,8 +202,9 @@ public class Roller : MonoBehaviour
 		}
 
 		// we are the air and jump is being held
-		else if (jumping && hoverPower > 0)
+		else if (jumping && !grounded && hoverPower > 0)
 		{
+			//logString += "   Jumping";
 			_rigidbody.AddForce(moveDirection * movePower * airResistance + Vector3.up * hoverPower, ForceMode.Impulse);
 		}
 
@@ -206,6 +217,7 @@ public class Roller : MonoBehaviour
 		}
 		else
 		{
+			//logString += "   Hovering";
 			// Otherwise just add force in the move direction.
 			_rigidbody.AddForce(moveDirection * movePower);
 		}
@@ -213,8 +225,9 @@ public class Roller : MonoBehaviour
 		// gravity assist when in air
 		if (!grounded)
 		{
-			if (!jumping && !boost && !groundPound)
-			{
+			if ((!jumping || jumpGrounded) && !boost && !groundPound)
+			{ 
+				//logString += "   Falling";
 				if (gravityAssist == maxGravityAssist)
 				{
 					gravityAttenuation = 0;
@@ -228,7 +241,10 @@ public class Roller : MonoBehaviour
 			_rigidbody.AddForce(moveDirection * movePower * airResistance + Vector3.down * gravityAssist, ForceMode.Impulse);
 		}
 
-		//Game.Log(jumpStarted ? "JUMPSTARTED " : "" + (freeFalling ? "FREEFALLING" : ""));
+		//logString += jumpGrounded ? "   JUMPGROUNDED" : "";
+		//logString += jumpEnded ? "   JUMPENDED" : "";
+		//logString += jumpStarted ? "   JUMPSTARTED" : "";
+		//Game.Log(logString);
 	}
 
 	void BoostOff()

@@ -5,20 +5,20 @@ public class RollerController : MonoBehaviour
 {
 	public GameObject boostEffect;
 	public CameraOperator camOp;
+	private Roller roller; 
 
-	private Roller roller; // Reference to the ball controller.
-
-	private Vector3 move;
 	// the world-relative desired move direction, calculated from the camForward and user input.
+	private Vector3 move;
+	private Transform cam; 
+	private Vector3 camForward;
 
-	private Transform cam; // A reference to the main camera in the scenes transform
-	private Vector3 camForward; // The current forward direction of the camera
-
-	private bool jumping; // holding down boost, or not landed jump
+	// holding down boost, or not landed jump
+	private bool jumping; 
 	private bool jumpEnd;
 	private bool boosting;
 	private bool boostEnd;
 	private bool create;
+	private bool pound;
 
 	Rigidbody _rigidbody;
 	Vector3 lastPosition;
@@ -48,6 +48,7 @@ public class RollerController : MonoBehaviour
 		boosting = GameInput.Boosting;
 		jumping = GameInput.Jumping;
 		create = GameInput.CreateBlock;
+		pound = GameInput.GroundPound;
 
 		// calculate camera relative direction to move:
 		camForward = Vector3.Scale(cam.forward, new Vector3(1, 0, 1)).normalized;
@@ -88,7 +89,7 @@ public class RollerController : MonoBehaviour
         }
 
 		// move ball
-		roller.Move(move, jumping, boosting);
+		roller.Move(move, jumping, boosting, pound);
 
 		// bash blocks
 		if (!create && (boosting || jumping))

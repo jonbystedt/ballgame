@@ -39,7 +39,7 @@ public class Cosmos : MonoBehaviour {
 	DigitalRuby.ThunderAndLightning.ThunderAndLightningScript lightningController;
 
 	float skySpeed = 1;
-	float skyDelta = 0.05f;
+	float skyDelta = 0.001f;
 	bool daytime = true;
 	bool starsout = false;
 
@@ -185,7 +185,7 @@ public class Cosmos : MonoBehaviour {
 		}
 		else
 		{
-			skyColor = Color.Lerp(nightDayFogColor.Evaluate(dot), greySkyColor, 0.1f);
+			skyColor = Color.Lerp(nightDayFogColor.Evaluate(dot), greySkyColor, rain.RainIntensity);
 			RenderSettings.fogColor = skyColor;
 		}
 

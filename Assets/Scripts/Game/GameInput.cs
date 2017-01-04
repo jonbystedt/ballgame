@@ -18,12 +18,17 @@ public static class GameInput
 
     public static bool Boosting
     {
-        get { return CrossPlatformInputManager.GetButton("Fire2"); }
+        get { return CrossPlatformInputManager.GetButton("Boost"); }
     }
 
     public static bool CreateBlock
     {
-        get { return CrossPlatformInputManager.GetButton("Fire1"); }
+        get { return CrossPlatformInputManager.GetButton("Create"); }
+    }
+
+    public static bool GroundPound
+    {
+        get { return CrossPlatformInputManager.GetButton("Pound"); }
     }
 
     public static bool SwapInputs
