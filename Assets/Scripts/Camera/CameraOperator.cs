@@ -168,6 +168,10 @@ public class CameraOperator : MonoBehaviour
 			{
 				cameraPosition.y = Game.Player.transform.position.y;
 			}
+			if (FirstPerson)
+			{
+				cameraPosition.y += 1f;
+			}
 			_camera.transform.position = cameraPosition;
 			Game.CameraPosition = cameraPosition;
 		}

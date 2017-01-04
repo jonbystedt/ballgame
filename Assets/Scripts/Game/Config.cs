@@ -11,7 +11,7 @@ public enum GraphicsMode
 
 public class Config : MonoBehaviour 
 {
-	int worldSize = 8;
+	public int worldSize = 8;
 	int mountainBase = 6;
 	int chunkDeleteRadius;
 	int chunkLoadRadius;
@@ -40,6 +40,8 @@ public class Config : MonoBehaviour
 	public int maxOutlineDistance;
 	public int maxSmallObjectCount = 1000;
 	public int maxLargeObjectCount = 100;
+	public int musicVolume = 100;
+	public int sfxVolume = 100;
 
 	private int coroutineTiming = 12000;
 
@@ -78,6 +80,8 @@ public class Config : MonoBehaviour
 				_instance.maxRenderDistance = value * Chunk.Size;
 
 				_instance.maxOutlineDistance = _instance.maxRenderDistance - Mathf.FloorToInt(Chunk.Size * value * 0.25f);
+
+				_instance.worldSize = value;
 			}
 		}
 	}
@@ -167,6 +171,21 @@ public class Config : MonoBehaviour
 	{
 		get { return _instance.swapInputs; }
 		set { _instance.swapInputs = value; }
+	}
+
+	public static int MusicVolume
+	{
+		get { return _instance.musicVolume; }
+		set 
+		{
+			 _instance.musicVolume = value; 
+		}
+	}
+
+	public static int SfxVolume
+	{
+		get { return _instance.sfxVolume; }
+		set { _instance.sfxVolume = value; }
 	}
 
 	// Graphics Settings
@@ -272,7 +291,7 @@ public class Config : MonoBehaviour
 					{
 						QualitySettings.SetQualityLevel(1);
 					}
-					WorldSize = 10;
+					WorldSize = 8;
 				}
 
 				if (value == GraphicsMode.High)
@@ -290,7 +309,7 @@ public class Config : MonoBehaviour
 					{
 						QualitySettings.SetQualityLevel(2);
 					}
-					WorldSize = 14;
+					WorldSize = 10;
 				}
 
 				if (value == GraphicsMode.Ultra)
@@ -308,7 +327,7 @@ public class Config : MonoBehaviour
 					{
 						QualitySettings.SetQualityLevel(3);
 					}
-					WorldSize = 18;
+					WorldSize = 12;
 				}
 			}
 

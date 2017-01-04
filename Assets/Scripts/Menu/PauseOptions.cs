@@ -12,13 +12,15 @@ public class PauseOptions : MonoBehaviour {
 		//Config.Outlines = enabled;
 	}
 
-	public void SetMusicLevel(float musicLvl)
+	public void SetMusicLevel(float musicLevel)
 	{
-		mainMixer.SetFloat("musicVol", musicLvl);
+		mainMixer.SetFloat("musicVol", Mathf.Lerp(-80f, 0f, musicLevel));
+		Config.MusicVolume = Mathf.FloorToInt(musicLevel * 100f);
 	}
-
+		
 	public void SetSfxLevel(float sfxLevel)
 	{
-		mainMixer.SetFloat("sfxVol", sfxLevel);
+		mainMixer.SetFloat("sfxVol", Mathf.Lerp(-80f, 0f, sfxLevel));
+		Config.SfxVolume = Mathf.FloorToInt(sfxLevel * 100f);
 	}
 }
