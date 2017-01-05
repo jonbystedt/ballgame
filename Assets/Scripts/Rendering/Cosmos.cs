@@ -202,8 +202,11 @@ public class Cosmos : MonoBehaviour {
 
 		// Skybox Color
 		RenderSettings.skybox.SetColor("_Tint", skyColor);
-		DynamicGI.UpdateEnvironment();
-
+		if (Time.frameCount % 100 == 0)
+		{
+			DynamicGI.UpdateEnvironment();
+		}
+	
 		// Star Color and Size
 		starColor = Color.Lerp(Tile.Colors[Mathf.FloorToInt((Random.value + dot) * 64) % 64],Color.black, Mathf.Clamp01(rain.RainIntensity * 3));
 		starColor = Tile.Desaturate(starColor, 1 - Mathf.Pow(Random.value,2));

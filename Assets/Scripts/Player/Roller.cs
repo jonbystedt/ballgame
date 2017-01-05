@@ -5,16 +5,18 @@ using System.Collections;
 
 public class Roller : MonoBehaviour
 {
-	[SerializeField] private float movePower = 1000; // The force added to the ball to move it.
-	[SerializeField] private bool useTorque = true; // Whether or not to use torque to move the ball.
-	[SerializeField] private float maxAngularVelocity = 25; // The maximum velocity the ball can rotate at.
-	[SerializeField] private float jumpPower = 500; // The force added to the ball when it jumps.
-	[SerializeField] private float maxHoverPower = 25;
-	[SerializeField] private float boostPower = 75;
-	[SerializeField] private float maxGravityAssist = 650;
+	[SerializeField] private float movePower = 1000f; 
+	[SerializeField] private bool useTorque = true; 
+	[SerializeField] private float maxAngularVelocity = 25f; 
+	[SerializeField] private float jumpPower = 500f; 
+	[SerializeField] private float maxHoverPower = 25f;
+	[SerializeField] private float boostPower = 75f;
+	[SerializeField] private float maxGravityAssist = 650f;
 	[SerializeField] private float airResistance = 0.01f;
 	[SerializeField] private float boostLength = 0.1f;
 	[SerializeField] private float hoverTime = 2f;
+	[SerializeField] private float lift = 25f;
+	[SerializeField] private float stall = 50f;
 
 	public bool asleep = true;
 	public AnimationCurve hoverCurve;
@@ -64,10 +66,14 @@ public class Roller : MonoBehaviour
 
 	public void Move(Vector3 moveDirection, bool jump, bool boost, bool pound)
 	{
+		// *** SET FLAGS ***
+		// player released jump
 		if (jumping && !jump)
 		{
 			jumpEnded = true;
 		}
+
+		// player released boost
 		if (boosting && !boost)
 		{
 			boostEnded = true;
@@ -77,7 +83,7 @@ public class Roller : MonoBehaviour
 		jumping = jump;
 		boosting = boost;
 
-		// get block below player
+		// check if player is on the ground
 		ushort ground = World.GetBlock(World.GetBlockPosition(transform.position - Vector3.up * 0.5f));
 		if (ground != Block.Null && ground != Block.Air && !jumpStarted)
 		{
@@ -88,6 +94,7 @@ public class Roller : MonoBehaviour
 			grounded = false;
 		}
 
+		// player can only pound if they are not grounded
 		if (!grounded && pound)
 		{
 			pounding = true;
@@ -97,162 +104,104 @@ public class Roller : MonoBehaviour
 			pounding = false;
 		}
 
-		//String logString = "";
-
-		// did we hit the ground?
-		if (grounded)
-		{
-			if (asleep)
-			{
-				Game.CameraOp.FirstPerson = false;
-				asleep = false;
-			}
-
-			jumpGrounded = true;
-
-			//logString += "Grounded";
-
-            gravityAssist = maxGravityAssist;
-            gravityAttenuation = 0;
-
-			StopAllCoroutines();
-
-			if (hoverRoutine != null)
-			{
-				hoverPower = maxHoverPower;
-				StopCoroutine(hoverRoutine);
-
-				//logString += ", Stop Hover";
-			}
-
-			if (freeFalling)
-			{
-				//logString += ", Stop Falling";
-				freeFalling = false;
-			}
-		}
-
-		// are we activating boost?
-		if (boostReady && boost)
-		{
-			//logString += "   Boost";
-			boostEnded = false;
-			boostIsActive = true;
-			boostReady = false;
-
-			if (!boostOffInvoked)
-			{
-				//logString += ", Invoke Cancel Boost";
-				Invoke("BoostOff", boostLength);
-				boostOffInvoked = true;
-			}
-
-		}
-
-		// ground pound
-		if (pound && !grounded)
-		{
-			if (groundPoundEnabled)
-			{
-				moveDirection = Vector3.down * boostPower * 100f;
-
-				if (!groundPound)
-				{
-					groundPound = true;
-				}
-			}
-		}
-
-		// handle boost
-		if (boost && boostIsActive)
-		{
-			if (!grounded)
-			{
-				moveDirection *= boostPower;
-			}
-			else
-			{
-				moveDirection *= boostPower;
-			}			
-		}
-
-		// are we ready for another jump?
+		// are we ready for another jump? 
 		if (jumpStarted && jumpEnded)
 		{
-			//logString += "   Ready For Jump";
 			jumpEnded = false;
 			jumpStarted = false;
 			freeFalling = true;
 		}
 
-		// handle jumping
-		if (grounded && jumping && !jumpStarted && jumpEnded)
+		// *** HANDLE HITTING THE GROUND ***
+		if (grounded)
 		{
-			//logString += "   Jump Started";
-			jumpStarted = true;
-			jumpGrounded = false;
-			groundPoundEnabled = true;
-
-			// ...add force in upwards.
-			if (boosting)
-			{
-				float multiplier = Mathf.Lerp(20f, 10f, Mathf.Clamp01((moveDirection.x + moveDirection.y) / 5f));
-				_rigidbody.AddForce(moveDirection * movePower * airResistance + Vector3.up * jumpPower*multiplier, ForceMode.Impulse);
-			}
-			else
-			{
-				_rigidbody.AddForce(moveDirection * movePower * airResistance + Vector3.up * jumpPower*2f, ForceMode.Impulse);
-			}
-			
-
-			// ...hover for a limited time
-			hoverRoutine = StartCoroutine(Hover(hoverTime));
+			HitGround();
 		}
 
-		// we are the air and jump is being held
-		else if (jumping && !grounded && hoverPower > 0)
+		// *** HANDLE BOOST ACTIVATION ***
+		if (boostReady && boost)
 		{
-			//logString += "   Jumping";
-			_rigidbody.AddForce(moveDirection * movePower * airResistance + Vector3.up * hoverPower, ForceMode.Impulse);
+			ActivateBoost();
 		}
 
-		// using torque to rotate the ball...
-		if (useTorque || !boostIsActive)
+		// *** HANDLE GROUND POUND ***
+		if (pound && !grounded && groundPoundEnabled)
 		{
-			// ... add torque around the axis defined by the move direction.
-			_rigidbody.AddTorque(new Vector3(moveDirection.z, 0, -moveDirection.x) * movePower * 0.25f);
-			_rigidbody.AddForce(moveDirection * movePower);
+			moveDirection = HandleGroundPound(moveDirection);
+		}
+
+		// *** HANDLE BOOST ***
+		if (boost && boostIsActive)
+		{
+			moveDirection = HandleBoost(moveDirection);
+		}
+
+		// *** UPWARDS FORCE ***
+		ApplyUpwardsForce(moveDirection);
+
+		// *** TORQUE AND LATERAL FORCE ***
+		ApplyLateralForce(moveDirection);
+
+		// *** GRAVITY ***
+		if (!grounded)
+		{
+			ApplyGravity(moveDirection);
+		}
+	}
+
+	void HitGround()
+	{
+		// world entry animation
+		if (asleep)
+		{
+			Game.CameraOp.FirstPerson = false;
+			asleep = false;
+		}
+
+		jumpGrounded = true;
+
+		gravityAssist = maxGravityAssist;
+		gravityAttenuation = 0;
+
+		StopAllCoroutines();
+
+		if (hoverRoutine != null)
+		{
+			hoverPower = maxHoverPower;
+			StopCoroutine(hoverRoutine);
+		}
+
+		if (freeFalling)
+		{
+			freeFalling = false;
+		}
+	}
+
+	void ActivateBoost()
+	{
+		boostEnded = false;
+		boostIsActive = true;
+		boostReady = false;
+
+		if (!boostOffInvoked)
+		{
+			Invoke("BoostOff", boostLength);
+			boostOffInvoked = true;
+		}
+	}
+
+	Vector3 HandleBoost(Vector3 moveDirection)
+	{
+		if (!grounded)
+		{
+			moveDirection *= boostPower;
 		}
 		else
 		{
-			//logString += "   Hovering";
-			// Otherwise just add force in the move direction.
-			_rigidbody.AddForce(moveDirection * movePower);
-		}
+			moveDirection *= boostPower;
+		}	
 
-		// gravity assist when in air
-		if (!grounded)
-		{
-			if ((!jumping || jumpGrounded) && !groundPound)
-			{ 
-				//logString += "   Falling";
-				if (gravityAssist == maxGravityAssist)
-				{
-					gravityAttenuation = 0;
-				}
-				gravityAssist = Mathf.Lerp(0f, maxGravityAssist - 1f, gravityAttenuation / (freeFalling ? 10f : 100f));
-				gravityAttenuation++;
-
-				StopAllCoroutines();
-				
-			}
-			_rigidbody.AddForce(moveDirection * movePower * airResistance + Vector3.down * gravityAssist, ForceMode.Impulse);
-		}
-
-		//logString += boostEnded ? "   BOOSTENDED" : "";
-		//logString += jumpEnded ? "   JUMPENDED" : "";
-		//logString += jumpStarted ? "   JUMPSTARTED" : "";
-		//Game.Log(logString);
+		return moveDirection;
 	}
 
 	void BoostOff()
@@ -262,10 +211,111 @@ public class Roller : MonoBehaviour
 		boostOffInvoked = false;
 	}
 
+	Vector3 HandleGroundPound(Vector3 moveDirection)
+	{
+		moveDirection += Vector3.down * boostPower * 100f;
+
+		if (!groundPound)
+		{
+			groundPound = true;
+		}
+
+		return moveDirection;
+	}
+
 	void DisableGroundPound()
 	{
 		groundPound = false;
 		groundPoundEnabled = false;
+	}
+
+	void ApplyUpwardsForce(Vector3 moveDirection)
+	{
+		// *** first, handle jumping ***
+		if (grounded && jumping && !jumpStarted && jumpEnded)
+		{
+			//logString += "   Jump Started";
+			jumpStarted = true;
+			jumpGrounded = false;
+			groundPoundEnabled = true;
+
+			// ...add force in upwards. boost jump
+			if (boosting)
+			{
+				float multiplier = Mathf.Lerp(20f, 10f, Mathf.Clamp01((moveDirection.x + moveDirection.y) / 5f));
+				_rigidbody.AddForce(moveDirection * movePower * airResistance + Vector3.up * jumpPower*multiplier, ForceMode.Impulse);
+			}
+			// regular jump
+			else
+			{
+				_rigidbody.AddForce(moveDirection * movePower * airResistance + Vector3.up * jumpPower*2f, ForceMode.Impulse);
+			}
+		
+			// ...hover for a limited time
+			hoverRoutine = StartCoroutine(Hover(hoverTime));
+		}
+
+		// *** then the case when the player is in the air and jump is still being held ***
+		else if (jumping && !grounded && hoverPower > 0)
+		{
+			_rigidbody.AddForce(moveDirection * movePower * airResistance + Vector3.up * hoverPower, ForceMode.Impulse);
+		}
+	}
+
+	void ApplyLateralForce(Vector3 moveDirection)
+	{
+		if (useTorque || !boostIsActive)
+		{
+			// ... add torque around the axis defined by the move direction.
+			_rigidbody.AddTorque(new Vector3(moveDirection.z, 0, -moveDirection.x) * movePower * 0.2f);
+			_rigidbody.AddForce(moveDirection * movePower);
+		}
+		else
+		{
+			// Otherwise just add force in the move direction.
+			_rigidbody.AddForce(moveDirection * movePower);
+		}
+	}
+
+	void ApplyGravity(Vector3 moveDirection)
+	{
+		// *** FALLING ***
+		// in the air and not jumping is falling, whether we have leaped or fallen off a cliff
+		if ((!jumping || jumpGrounded) && !groundPound)
+		{ 
+			//logString += "   Falling";
+			// slowly increase the gravity assist to the maximum. 
+			if (gravityAssist == maxGravityAssist)
+			{
+				gravityAttenuation = 0;
+			}
+
+			// freeFalling indicates that we have fallen off a cliff and should increase much faster.
+			gravityAssist = Mathf.Lerp(0f, maxGravityAssist - 1f, gravityAttenuation / (freeFalling ? 8f : 100f));
+			gravityAttenuation++;
+
+			// stop the hover power calculations from running
+			StopAllCoroutines();
+			
+		}
+		// regular assist, always applied unless boosting. affected by calculation above when falling.
+		if (!boosting)
+		{
+			_rigidbody.AddForce(moveDirection * movePower * airResistance + Vector3.down * gravityAssist, ForceMode.Impulse);
+		}
+		// when boosting, releasing jump should slowly descend, pressing jump should ascend
+		else
+		{
+			if (jumping)
+			{
+				_rigidbody.AddForce(moveDirection * movePower * airResistance + Vector3.up * gravityAssist * lift, ForceMode.Impulse);
+			}
+			else
+			{
+				_rigidbody.AddForce(moveDirection * movePower * airResistance + Vector3.down * gravityAssist * stall, ForceMode.Impulse);
+			}
+
+		}	
 	}
 
 	public void CreateSphere()

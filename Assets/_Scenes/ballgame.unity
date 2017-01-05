@@ -2801,6 +2801,8 @@ MonoBehaviour:
   airResistance: 0.0025
   boostLength: 0.35
   hoverTime: 1.2
+  lift: 0.1
+  stall: 0.25
   asleep: 1
   hoverCurve:
     serializedVersion: 2
@@ -7150,8 +7152,8 @@ MonoBehaviour:
       outSlope: 0
       tangentMode: 0
     - serializedVersion: 2
-      time: 1.0223385
-      value: 0.008864445
+      time: 0.99994564
+      value: 0.0074016787
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -7160,10 +7162,10 @@ MonoBehaviour:
     m_RotationOrder: 0
   fogScale: 0.5
   maxIntensity: 0.8
-  minIntensity: 0.4
+  minIntensity: 0
   minPoint: -0.6
-  maxAmbient: 0.8
-  minAmbient: 0.5
+  maxAmbient: 0.2
+  minAmbient: 0
   minAmbientPoint: -0.4
   dayAtmosphereThickness: 0.8
   nightAtmosphereThickness: 1.9
@@ -7306,7 +7308,7 @@ MonoBehaviour:
     m_NumColorKeys: 7
     m_NumAlphaKeys: 2
   maxIntensity: 0.7
-  minIntensity: 0.3
+  minIntensity: 0
   minPoint: -0.4
   moonSpinDir: {x: 15, y: 30, z: 45}
   moonSpinSpeed: 0.5
