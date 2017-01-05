@@ -302,7 +302,7 @@ public class Game : MonoBehaviour
 
 		player.GetComponent<Rigidbody>().isKinematic = true;
 		PlayerActive = false;
-		player.transform.position = new Vector3(0f, 16f, 0f);
+		player.transform.position = new Vector3(-0.5f, 16f, -0.5f);
 
 		menuGlow.color = Tile.Brighten(RenderSettings.fogColor, 0.5f);
 		RenderSettings.fogColor = Tile.Brighten(Color.Lerp(RenderSettings.fogColor,Color.black,0.9f),0.05f);

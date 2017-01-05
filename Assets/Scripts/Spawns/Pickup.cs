@@ -141,12 +141,12 @@ public class Pickup : SpawnedObject
 
 			if (type == PickupType.Silver)
 			{
-				p.startSize = 0.35f;
+				p.startSize = 0.5f;
 				explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(20f, 200f, impactForce * impactForce)));
 			}
 			else
 			{
-				p.startSize = 0.25f;
+				p.startSize = 0.4f;
 				explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(30f, 200f, impactForce * impactForce)));
 			}
 
@@ -189,7 +189,7 @@ public class Pickup : SpawnedObject
 		Color startColor;
 		if (type == PickupType.Black)
 		{
-			startColor = baseColor;
+			startColor = Tile.Brighten(baseColor, 0.25f);
 		}
 		else
 		{

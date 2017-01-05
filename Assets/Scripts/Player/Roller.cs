@@ -30,7 +30,7 @@ public class Roller : MonoBehaviour
 	bool boosting = false;
 	bool jumpEnded = true;
 	bool jumpGrounded = true;
-	bool boostEnded = false;
+	bool boostEnded = true;
 	bool groundPoundFinished = false;
 	bool freeFalling = false;
 	bool groundPoundActive = true;
@@ -132,6 +132,7 @@ public class Roller : MonoBehaviour
 		if (boostReady && boost)
 		{
 			//logString += "   Boost";
+			boostEnded = false;
 			boostIsActive = true;
 			boostReady = false;
 
@@ -195,7 +196,16 @@ public class Roller : MonoBehaviour
 			jumpGrounded = false;
 
 			// ...add force in upwards.
-			_rigidbody.AddForce(moveDirection * movePower * airResistance + Vector3.up * jumpPower*2f, ForceMode.Impulse);
+			if (boosting)
+			{
+				float multiplier = Mathf.Lerp(20f, 10f, Mathf.Clamp01((moveDirection.x + moveDirection.y) / 5f));
+				_rigidbody.AddForce(moveDirection * movePower * airResistance + Vector3.up * jumpPower*multiplier, ForceMode.Impulse);
+			}
+			else
+			{
+				_rigidbody.AddForce(moveDirection * movePower * airResistance + Vector3.up * jumpPower*2f, ForceMode.Impulse);
+			}
+			
 
 			// ...hover for a limited time
 			hoverRoutine = StartCoroutine(Hover(hoverTime));
@@ -225,7 +235,7 @@ public class Roller : MonoBehaviour
 		// gravity assist when in air
 		if (!grounded)
 		{
-			if ((!jumping || jumpGrounded) && !boost && !groundPound)
+			if ((!jumping || jumpGrounded) && !groundPound)
 			{ 
 				//logString += "   Falling";
 				if (gravityAssist == maxGravityAssist)
@@ -241,7 +251,7 @@ public class Roller : MonoBehaviour
 			_rigidbody.AddForce(moveDirection * movePower * airResistance + Vector3.down * gravityAssist, ForceMode.Impulse);
 		}
 
-		//logString += jumpGrounded ? "   JUMPGROUNDED" : "";
+		//logString += boostEnded ? "   BOOSTENDED" : "";
 		//logString += jumpEnded ? "   JUMPENDED" : "";
 		//logString += jumpStarted ? "   JUMPSTARTED" : "";
 		//Game.Log(logString);
@@ -317,7 +327,7 @@ public class Roller : MonoBehaviour
 		{
 			// Try to hit with the forward normal, fall back to a radial search
 			// TODO: be more selective with search angles
-			if (jumping && !grounded)
+			if (boosting && !grounded)
 			{
 				// Blocks above the player
 				normals.Add(Vector3.up);
