@@ -21,12 +21,14 @@ public class RollerController : MonoBehaviour
 	private bool pound;
 
 	Rigidbody _rigidbody;
+	Collider _collider;
 	Vector3 lastPosition;
 
 	private void Awake()
 	{
 		roller = GetComponent<Roller>();
 		_rigidbody = GetComponent<Rigidbody>();
+		_collider = GetComponent<Collider>();
 		cam = Camera.main.transform;
 
 		// Make sure we don't fall off
@@ -70,9 +72,10 @@ public class RollerController : MonoBehaviour
 			Config.SwapInputs = !Config.SwapInputs;
 		}
 
+		bool boostOn = roller.GetAfterburnerState();
 		if (!camOp.FirstPerson && camOp.Distance > 2f)
-		{
-			boostEffect.SetActive(roller.GetAfterburnerState());
+		{	
+			boostEffect.SetActive(boostOn);
 		}
 		else
 		{

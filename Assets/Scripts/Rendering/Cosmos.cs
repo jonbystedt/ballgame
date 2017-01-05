@@ -93,6 +93,11 @@ public class Cosmos : MonoBehaviour {
 
 	void FixedUpdate()
 	{
+		if (!Game.PlayerActive)
+		{
+			return;
+		}
+
 		// Move the cosmos
 		orbit.transform.position = new Vector3(
 			Game.Player.transform.position.x, 

@@ -189,7 +189,7 @@ public class Pickup : SpawnedObject
 		Color startColor;
 		if (type == PickupType.Black)
 		{
-			startColor = Tile.Brighten(baseColor, 0.25f);
+			startColor = Tile.Brighten(baseColor, 1f);
 		}
 		else
 		{

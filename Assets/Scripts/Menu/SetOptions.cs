@@ -24,7 +24,7 @@ public class SetOptions : MonoBehaviour {
 		}
 		else
 		{
-			mainMixer.SetFloat("musicVol", Mathf.Lerp(-24f, 0f, musicLevel));
+			mainMixer.SetFloat("musicVol", Mathf.Lerp(-48f, 0f, musicLevel));
 		}
 
 		Config.MusicVolume = Mathf.FloorToInt(musicLevel * 100f);
@@ -38,7 +38,7 @@ public class SetOptions : MonoBehaviour {
 		}
 		else
 		{
-			mainMixer.SetFloat("sfxVol", Mathf.Lerp(-24f, 0f, sfxLevel));
+			mainMixer.SetFloat("sfxVol", Mathf.Lerp(-48f, 0f, sfxLevel));
 		}
 		
 		Config.SfxVolume = Mathf.FloorToInt(sfxLevel * 100f);

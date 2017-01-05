@@ -69,10 +69,10 @@ public class LoadChunks : MonoBehaviour
 		progress = 0;
 		Game.ChunksLoaded = 0;
 
-		updateList.Clear();
-		buildList.Clear();
-		deleteList.Clear();
-		despawnList.Clear();
+		updateList = new List<WorldPosition>();
+		buildList = new List<WorldPosition>();
+		deleteList = new List<WorldPosition>();
+		despawnList = new List<WorldPosition>();
 
 		noise.Clear();
 	}

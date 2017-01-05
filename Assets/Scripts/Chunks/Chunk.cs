@@ -14,7 +14,6 @@ public class Chunk : PooledObject {
 	private const byte VOXEL_Y_SHIFT = 4;
 	private const byte VOXEL_Z_SHIFT = 8;
 
-	public bool isNew = true;
 	public bool update = false;
 	public bool updating = false;
 	public bool built = false;
@@ -58,6 +57,8 @@ public class Chunk : PooledObject {
 	public void Initialize()
 	{
 		filter = gameObject.GetComponent<MeshFilter>();
+		filter.mesh.Clear();
+		transparentChunk.GetComponent<MeshFilter>().mesh.Clear();
 		col = gameObject.GetComponent<MeshCollider>();
 
 		_glassrenderer = transparentChunk.GetComponent<MeshRenderer>();
@@ -72,8 +73,6 @@ public class Chunk : PooledObject {
 		rendered = false;
 		surrounded = false;
 		outofrange = false;
-
-		isNew = false;
 
 		if (column != null)
 		{

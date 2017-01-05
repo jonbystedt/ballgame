@@ -54,8 +54,6 @@ public class SpawnManager : MonoBehaviour {
 
 	void Awake()
 	{
-		DontDestroyOnLoad(gameObject);
-
 		if (Spawn == null)
 		{
 			Spawn = this;

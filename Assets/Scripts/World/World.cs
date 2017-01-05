@@ -88,14 +88,8 @@ public class World : MonoBehaviour {
 			DestroyChunk(ChunkList[i]);
 		}
 
-		Chunks.Clear();
-		ChunkList.Clear();
-		Chunk.MeshDataPool.Clear();
-
-		ObjectPool chunkPool = ObjectPool.GetPool(chunkPrefab);
-		chunkPool.ClearPool();
-		ObjectPool transChunkPool = ObjectPool.GetPool(transparentChunkPrefab);
-		transChunkPool.ClearPool();
+		Chunks = new Dictionary<int, Chunk>();
+		ChunkList = new List<Chunk>();
 
 		foreach(KeyValuePair<int,Column> item in Columns)
 		{
@@ -254,6 +248,7 @@ public class World : MonoBehaviour {
 	public static void DestroyChunk(Chunk chunk)
 	{
 		chunk.isActive = false;
+		chunk.StopAllCoroutines();
 		Chunks.Remove(chunk.pos.GetHashCode());
 		ChunkList.Remove(chunk);
 		Serialization.SaveChunk(chunk); 

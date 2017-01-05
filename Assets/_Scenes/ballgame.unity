@@ -526,7 +526,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 753ea9ccf9eee6c42a0954ec8663b992, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 16
+      value: 128
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 753ea9ccf9eee6c42a0954ec8663b992, type: 2}
       propertyPath: m_LocalPosition.z
@@ -2793,7 +2793,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movePower: 50000
   useTorque: 1
-  maxAngularVelocity: 25
+  maxAngularVelocity: 50
   jumpPower: 3500
   maxHoverPower: 1000
   boostPower: 3
@@ -7143,14 +7143,14 @@ MonoBehaviour:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 2
-      time: -0.0010966272
-      value: 0.0053520077
+      time: -0.00026591792
+      value: 0.0062828586
       inSlope: 0
       outSlope: 0
       tangentMode: 0
     - serializedVersion: 2
-      time: 1.0231692
-      value: 0.010593168
+      time: 1.0223385
+      value: 0.008864445
       inSlope: 0
       outSlope: 0
       tangentMode: 0

@@ -342,7 +342,7 @@ public class Config : MonoBehaviour
 
 	void Start()
 	{
-		DontDestroyOnLoad(gameObject);
+		//DontDestroyOnLoad(gameObject);
 
 		if (_instance == null)
 		{

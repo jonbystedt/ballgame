@@ -192,7 +192,7 @@ public class CameraOperator : MonoBehaviour
 			outlineRenderer.enabled = true;
 			solidRenderer.enabled = false;
 		}
-		else if (cameraDistance <= 4f) {
+		else if (cameraDistance <= 6f) {
 			playerRenderer.enabled = true;
 			outlineRenderer.enabled = true;
 			solidRenderer.enabled = false;
