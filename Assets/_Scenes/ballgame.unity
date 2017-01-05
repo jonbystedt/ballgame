@@ -526,7 +526,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 753ea9ccf9eee6c42a0954ec8663b992, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 128
+      value: 256
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 753ea9ccf9eee6c42a0954ec8663b992, type: 2}
       propertyPath: m_LocalPosition.z
@@ -2801,6 +2801,7 @@ MonoBehaviour:
   airResistance: 0.0025
   boostLength: 0.35
   hoverTime: 1.2
+  asleep: 1
   hoverCurve:
     serializedVersion: 2
     m_Curve:

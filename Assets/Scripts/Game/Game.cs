@@ -199,8 +199,10 @@ public class Game : MonoBehaviour
 
 		StartCoroutine(Wait(1f, () => {
 			player.GetComponent<Rigidbody>().isKinematic = false;
-			player.transform.position = new Vector3(-0.5f, 16f, -0.5f);
+			player.transform.position = new Vector3(-0.5f, 32f, -0.5f);
+			player.GetComponent<Roller>().asleep = true;
 			PlayerActive = true;
+			CameraOp.FirstPerson = true;
 			PlaySong();
 		}));
 	}
@@ -303,7 +305,7 @@ public class Game : MonoBehaviour
 
 		player.GetComponent<Rigidbody>().isKinematic = true;
 		PlayerActive = false;
-		player.transform.position = new Vector3(-0.5f, 128f, -0.5f);
+		player.transform.position = new Vector3(-0.5f, 256f, -0.5f);
 
 		menuGlow.color = Tile.Brighten(RenderSettings.fogColor, 0.5f);
 		RenderSettings.fogColor = Tile.Brighten(Color.Lerp(RenderSettings.fogColor,Color.black,0.9f),0.05f);

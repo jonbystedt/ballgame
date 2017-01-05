@@ -16,6 +16,7 @@ public class Roller : MonoBehaviour
 	[SerializeField] private float boostLength = 0.1f;
 	[SerializeField] private float hoverTime = 2f;
 
+	public bool asleep = true;
 	public AnimationCurve hoverCurve;
 	public AnimationCurve gravityCurve;
 	float hoverPower;
@@ -101,6 +102,12 @@ public class Roller : MonoBehaviour
 		// did we hit the ground?
 		if (grounded)
 		{
+			if (asleep)
+			{
+				Game.CameraOp.FirstPerson = false;
+				asleep = false;
+			}
+
 			jumpGrounded = true;
 
 			//logString += "Grounded";
