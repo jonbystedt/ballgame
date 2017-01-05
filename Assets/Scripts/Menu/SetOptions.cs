@@ -18,13 +18,29 @@ public class SetOptions : MonoBehaviour {
 
 	public void SetMusicLevel(float musicLevel)
 	{
-		mainMixer.SetFloat("musicVol", Mathf.Lerp(-80f, 0f, musicLevel));
+		if (musicLevel == 0)
+		{
+			mainMixer.SetFloat("musicVol", -80f);
+		}
+		else
+		{
+			mainMixer.SetFloat("musicVol", Mathf.Lerp(-24f, 0f, musicLevel));
+		}
+
 		Config.MusicVolume = Mathf.FloorToInt(musicLevel * 100f);
 	}
 		
 	public void SetSfxLevel(float sfxLevel)
 	{
-		mainMixer.SetFloat("sfxVol", Mathf.Lerp(-80f, 0f, sfxLevel));
+		if (sfxLevel == 0)
+		{
+			mainMixer.SetFloat("sfxVol", -80f);
+		}
+		else
+		{
+			mainMixer.SetFloat("sfxVol", Mathf.Lerp(-24f, 0f, sfxLevel));
+		}
+		
 		Config.SfxVolume = Mathf.FloorToInt(sfxLevel * 100f);
 	}
 
