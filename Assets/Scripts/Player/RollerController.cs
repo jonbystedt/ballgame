@@ -70,9 +70,9 @@ public class RollerController : MonoBehaviour
 			Config.SwapInputs = !Config.SwapInputs;
 		}
 
-		if (boosting && !camOp.FirstPerson && camOp.Distance > 2f)
+		if (!camOp.FirstPerson && camOp.Distance > 2f)
 		{
-			boostEffect.SetActive(true);
+			boostEffect.SetActive(roller.GetAfterburnerState());
 		}
 		else
 		{
@@ -92,7 +92,7 @@ public class RollerController : MonoBehaviour
 		roller.Move(move, jumping, boosting, pound);
 
 		// bash blocks
-		if (!create && (boosting || jumping))
+		if (!create && (boosting || pound))
 		{
 			ExecuteBashBlocks();
 		}

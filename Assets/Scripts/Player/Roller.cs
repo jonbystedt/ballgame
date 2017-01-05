@@ -28,10 +28,11 @@ public class Roller : MonoBehaviour
 	bool jumpStarted = false;
 	bool jumping = false;
 	bool boosting = false;
+	bool pounding = false;
 	bool jumpEnded = true;
 	bool jumpGrounded = true;
 	bool boostEnded = true;
-	bool groundPoundFinished = false;
+	bool groundPoundEnabled = true;
 	bool freeFalling = false;
 	bool groundPoundActive = true;
 
@@ -75,11 +76,6 @@ public class Roller : MonoBehaviour
 		jumping = jump;
 		boosting = boost;
 
-		if (resetGroundPound)
-		{
-			resetGroundPound = false;
-		}
-
 		// get block below player
 		ushort ground = World.GetBlock(World.GetBlockPosition(transform.position - Vector3.up * 0.5f));
 		if (ground != Block.Null && ground != Block.Air && !jumpStarted)
@@ -89,6 +85,15 @@ public class Roller : MonoBehaviour
 		else
 		{
 			grounded = false;
+		}
+
+		if (!grounded && pound)
+		{
+			pounding = true;
+		}
+		else
+		{
+			pounding = false;
 		}
 
 		//String logString = "";
@@ -104,14 +109,6 @@ public class Roller : MonoBehaviour
             gravityAttenuation = 0;
 
 			StopAllCoroutines();
-
-			if (groundPound)
-			{
-				if (!IsInvoking("DisableGroundPound"))
-				{
-					Invoke("DisableGroundPound", 0.1f);
-				}
-			}
 
 			if (hoverRoutine != null)
 			{
@@ -145,21 +142,14 @@ public class Roller : MonoBehaviour
 
 		}
 
-		// enable ground pound again after boosting
-		if (groundPoundFinished && boostEnded)
-		{
-			groundPoundFinished = false;
-			boostEnded = false;
-		}
-
 		// ground pound
-		if (pound)
+		if (pound && !grounded)
 		{
-			if (!grounded && !groundPoundFinished)
+			if (groundPoundEnabled)
 			{
 				moveDirection = Vector3.down * boostPower * 100f;
 
-				if (!groundPound && !groundPoundFinished)
+				if (!groundPound)
 				{
 					groundPound = true;
 				}
@@ -194,6 +184,7 @@ public class Roller : MonoBehaviour
 			//logString += "   Jump Started";
 			jumpStarted = true;
 			jumpGrounded = false;
+			groundPoundEnabled = true;
 
 			// ...add force in upwards.
 			if (boosting)
@@ -260,7 +251,6 @@ public class Roller : MonoBehaviour
 	void BoostOff()
 	{
 		boostIsActive = false;
-		//_rigidbody.mass -= 1000f;
 		boostReady = true;
 		boostOffInvoked = false;
 	}
@@ -268,9 +258,7 @@ public class Roller : MonoBehaviour
 	void DisableGroundPound()
 	{
 		groundPound = false;
-		resetGroundPound = true;
-		//_rigidbody.mass -= 1000f;
-		//_collider.material.bounciness = 0.01f;
+		groundPoundEnabled = false;
 	}
 
 	public void CreateSphere()
@@ -310,7 +298,7 @@ public class Roller : MonoBehaviour
 		bool groundPounded = false;
 		List<Vector3> normals = new List<Vector3>();
 
-		if (!groundPoundFinished && groundPound)
+		if (groundPoundEnabled && groundPound)
 		{
 			// Normals for a 3x3 square below the player
 			normals.Add(Vector3.down);
@@ -327,7 +315,7 @@ public class Roller : MonoBehaviour
 		{
 			// Try to hit with the forward normal, fall back to a radial search
 			// TODO: be more selective with search angles
-			if (boosting && !grounded)
+			if (!grounded)
 			{
 				// Blocks above the player
 				normals.Add(Vector3.up);
@@ -377,7 +365,7 @@ public class Roller : MonoBehaviour
 				}
 
 				// 1 level below and ground pound active
-				if (b_pos.y < Mathf.RoundToInt(pos.y) && b_pos.y > Mathf.FloorToInt(pos.y - 2) && !groundPoundFinished && groundPound)
+				if (b_pos.y < Mathf.RoundToInt(pos.y) && b_pos.y > Mathf.FloorToInt(pos.y - 2) && groundPound)
 				{
 					bash = true;
 				}
@@ -390,7 +378,7 @@ public class Roller : MonoBehaviour
 			}
 			else
 			{
-				groundPoundFinished = true;
+				groundPounded = true;
 			}
 
 			if (bash)
@@ -419,7 +407,10 @@ public class Roller : MonoBehaviour
 
 		if (groundPounded)
 		{
-			groundPoundFinished = true;
+			if (!IsInvoking("DisableGroundPound"))
+			{
+				Invoke("DisableGroundPound", 0.05f);
+			}
 		}
 	}
 
@@ -523,6 +514,18 @@ public class Roller : MonoBehaviour
 			}
 
 			yield return null;
+		}
+	}
+
+	public bool GetAfterburnerState()
+	{
+		if (boosting || pounding)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
 		}
 	}
 }
