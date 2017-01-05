@@ -194,7 +194,7 @@ public class Roller : MonoBehaviour
 	{
 		if (!grounded)
 		{
-			moveDirection *= boostPower;
+			moveDirection *= boostPower * 1.2f;
 		}
 		else
 		{
@@ -299,7 +299,7 @@ public class Roller : MonoBehaviour
 			
 		}
 		// regular assist, always applied unless boosting. affected by calculation above when falling.
-		if (!boosting)
+		if (!boosting || (boosting && !jumpEnded))
 		{
 			_rigidbody.AddForce(moveDirection * movePower * airResistance + Vector3.down * gravityAssist, ForceMode.Impulse);
 		}
