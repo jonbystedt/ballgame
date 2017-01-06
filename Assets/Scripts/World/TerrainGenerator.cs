@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
+using CielaSpike;
 
 public class TerrainGenerator : MonoBehaviour
 {
@@ -77,7 +78,7 @@ public class TerrainGenerator : MonoBehaviour
 		generator.SampleNoise(sampleSet);
 		PopulateSpawns(sampleSet, column[0].pos);
 
-		StartCoroutine(AwaitSamples(sampleSet, column));
+		this.StartCoroutineAsync(AwaitSamples(sampleSet, column));
 
 		return sampleSet.region;
 	}
@@ -156,7 +157,7 @@ public class TerrainGenerator : MonoBehaviour
 		{	
 			if (sampleSet.results.Values.All(x => x.complete))
 			{
-				Stopwatch stopwatch = Stopwatch.StartNew();
+				//Stopwatch stopwatch = Stopwatch.StartNew();
 
 				// loop through the x and z axis. The GenerateColumn coroutine will build a column of blocks at this position.
 				for (int x = column[0].pos.x; x < column[0].pos.x + Chunk.Size; x++)
@@ -165,13 +166,13 @@ public class TerrainGenerator : MonoBehaviour
 					{
 						GenerateColumn(x, z, sampleSet, column);
 
-						if (stopwatch.ElapsedTicks > Config.CoroutineTiming)
-						{
-							yield return null;
+						// if (stopwatch.ElapsedTicks > Config.CoroutineTiming)
+						// {
+						// 	yield return null;
 
-							stopwatch.Reset();
-							stopwatch.Start();
-						}
+						// 	stopwatch.Reset();
+						// 	stopwatch.Start();
+						// }
 					}
 				}
 

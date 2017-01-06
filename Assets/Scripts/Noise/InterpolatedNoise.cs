@@ -3,6 +3,7 @@ using System.Collections;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using CielaSpike;
 
 public class InterpolatedNoise : MonoBehaviour 
 {
@@ -22,8 +23,8 @@ public class InterpolatedNoise : MonoBehaviour
 
 			foreach(KeyValuePair<string,SampleRegion> result in sampleSet.results)
 			{
-				StartCoroutine(GetSamples(result.Value));
-				StartCoroutine(MapExpand(result.Value));
+				this.StartCoroutineAsync(GetSamples(result.Value));
+				this.StartCoroutineAsync(MapExpand(result.Value));
 			}
 		}
 	}
@@ -31,8 +32,8 @@ public class InterpolatedNoise : MonoBehaviour
 
 	IEnumerator GetSamples(SampleRegion i)
 	{
-		Stopwatch stopwatch = new Stopwatch();
-		stopwatch.Start();
+		// Stopwatch stopwatch = new Stopwatch();
+		// stopwatch.Start();
 
 		int sampleX = (i.region.sizeX / (i.sampleRate * 2)) + 1;
 		int sampleY = (i.region.sizeY / i.sampleRate) + 1;
@@ -82,12 +83,12 @@ public class InterpolatedNoise : MonoBehaviour
 						i.options.persistance
 					);
 
-					if (stopwatch.ElapsedTicks > Config.CoroutineTiming)
-					{
-						yield return null;
-						stopwatch.Reset();
-						stopwatch.Start();
-					}
+					// if (stopwatch.ElapsedTicks > Config.CoroutineTiming)
+					// {
+					// 	yield return null;
+					// 	stopwatch.Reset();
+					// 	stopwatch.Start();
+					// }
 				}
 			}
 		}
@@ -113,8 +114,8 @@ public class InterpolatedNoise : MonoBehaviour
 			}
 		}
 
-		Stopwatch stopwatch = new Stopwatch();
-		stopwatch.Start();
+		// Stopwatch stopwatch = new Stopwatch();
+		// stopwatch.Start();
 
 		if (i.interpolates == null)
 		{
@@ -159,13 +160,13 @@ public class InterpolatedNoise : MonoBehaviour
 										GameUtils.TriLerp (v000, v100, v010, v110, v001, v101, v011, v111, tx, ty, tz)
 									+ 1f) * (i.options.scale / 2f)));
 
-								if (stopwatch.ElapsedTicks > Config.CoroutineTiming)
-								{
-									yield return null;
+								// if (stopwatch.ElapsedTicks > Config.CoroutineTiming)
+								// {
+								// 	yield return null;
 
-									stopwatch.Reset();
-									stopwatch.Start();
-								}
+								// 	stopwatch.Reset();
+								// 	stopwatch.Start();
+								// }
 							}
 						}
 					}
