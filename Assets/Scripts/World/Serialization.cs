@@ -1,17 +1,37 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.IO;
+using System.IO.Compression;
 using System;
+using ICSharpCode.SharpZipLib.Core;
+using ICSharpCode.SharpZipLib.Zip;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization;
 
 public static class Serialization 
 {
-	public static string saveFolderName = "sbbSaves";
+	public static string saveFolderName = "worlds";
 
-	public static string SaveLocation(string worldName)
+	public static DirectoryInfo SaveDirectory()
 	{
-		string saveLocation = saveFolderName + "/" + worldName + "/";
+		DirectoryInfo saveDirectory;
+		string saveLocation = saveFolderName + "/" + World.Seed + "/";
+
+		if (!Directory.Exists(saveLocation))
+		{
+			saveDirectory = Directory.CreateDirectory(saveLocation);
+		}
+		else
+		{
+			saveDirectory = new DirectoryInfo(saveLocation);
+		}
+
+		return saveDirectory;
+	}
+
+	public static string SaveLocation()
+	{
+		string saveLocation = saveFolderName + "/" + World.Seed + "/";
 
 		if (!Directory.Exists(saveLocation))
 		{
@@ -19,6 +39,11 @@ public static class Serialization
 		}
 
 		return saveLocation;
+	}
+
+	public static string SaveName()
+	{
+		return saveFolderName + "/" + World.Seed;
 	}
 
 	public static string FileName(WorldPosition chunkLocation)
@@ -35,7 +60,7 @@ public static class Serialization
 			return;
 		}
 
-		string saveFile = SaveLocation(World.Seed);
+		string saveFile = SaveLocation();
 		saveFile += FileName(chunk.pos);
 
 		IFormatter formatter = new BinaryFormatter();
@@ -46,7 +71,7 @@ public static class Serialization
 
 	public static bool Load(Chunk chunk)
 	{
-		string saveFile = SaveLocation(World.Seed);
+		string saveFile = SaveLocation();
 		saveFile += FileName(chunk.pos);
 
 		if (!File.Exists (saveFile))
@@ -65,6 +90,41 @@ public static class Serialization
 		}
 		stream.Close();
 		return true;
+	}
+
+	public static void Compress()
+	{
+		string[] files = Directory.GetFiles(SaveLocation());
+
+		if (files.Length == 0)
+		{
+			return;
+		}
+
+		FileStream saveFile = File.Create(SaveName() + ".world");
+		ZipOutputStream zipStream = new ZipOutputStream(saveFile);
+
+		for(int i = 0; i < files.Length; i++)
+		{
+			string fileName = files[i];
+			FileInfo fi = new FileInfo(fileName);
+
+			string entryName = fileName.Substring(World.Seed.Length - 1);
+			entryName = ZipEntry.CleanName(entryName);
+			ZipEntry newEntry = new ZipEntry(entryName);
+			newEntry.DateTime = fi.LastWriteTime;
+
+			newEntry.Size = fi.Length;
+
+			zipStream.PutNextEntry(newEntry);
+
+			byte[] buffer = new byte[4096];
+			using (FileStream streamReader = File.OpenRead(fileName))
+			{
+				StreamUtils.Copy(streamReader, zipStream, buffer);
+			}
+			zipStream.CloseEntry();
+		}
 	}
 }
 

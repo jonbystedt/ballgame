@@ -1,5 +1,3 @@
-using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using System;
 
@@ -10,22 +8,11 @@ public class Save
 
 	public Save(Chunk chunk)
 	{
-		for (int x = 0; x < Chunk.Size; x++)
+		for (int i = 0; i < chunk._changes.Count; i++)
 		{
-			for (int y = 0; y < Chunk.Size; y++)
-			{
-				for (int z = 0; z < Chunk.Size; z++)
-				{
-					uint index = Chunk.BlockIndex(x, y, z);
-					if (chunk._blocks[index] == Block.Null || !chunk._changes[index]) 
-					{
-						continue;
-					}
-
-					WorldPosition pos = new WorldPosition(x, y, z);
-					blocks.Add(pos, chunk._blocks[index]);
-				}
-			}
+			uint index = chunk._changes[i];
+			WorldPosition pos = Chunk.BlockPosition(index);
+			blocks.Add(pos, chunk._blocks[index]);
 		}
 	}
 }

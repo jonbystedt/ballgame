@@ -19,7 +19,7 @@ public static class VoxelEditor
 
 	public static void SetBlock(WorldPosition pos, ushort block)
 	{
-		SetBlock(pos, block, false);
+		SetBlock(pos, block, true);
 	}
 
 	public static void SetSphere(WorldPosition pos, ushort block, int diameter)

@@ -55,7 +55,6 @@ public class World : MonoBehaviour {
 	}
 
 	static World _instance;
-	static Block undefinedBlock = new Block();
 
 	void Start() 
 	{
@@ -83,10 +82,7 @@ public class World : MonoBehaviour {
 
 	public void Reset()
 	{
-		for (int i = ChunkList.Count - 1; i >= 0; i--)
-		{
-			DestroyChunk(ChunkList[i]);
-		}
+		DestroyChunks();
 
 		Chunks = new Dictionary<int, Chunk>();
 		ChunkList = new List<Chunk>();
@@ -256,6 +252,14 @@ public class World : MonoBehaviour {
 		chunk.ReturnToPool();
 	}
 
+	public static void DestroyChunks()
+	{
+		for (int i = ChunkList.Count - 1; i >= 0; i--)
+		{
+			DestroyChunk(ChunkList[i]);
+		}
+	}
+
 	static Column GetColumn(int x, int z)
 	{
 		Column column = null;
@@ -315,7 +319,7 @@ public class World : MonoBehaviour {
 			chunk.SetBlock(x - chunk.pos.x, y - chunk.pos.y, z - chunk.pos.z, block);
 			if (playerHit) 
 			{
-				chunk._changes[Chunk.BlockIndex(x - chunk.pos.x, y - chunk.pos.y, z - chunk.pos.z)] = true;
+				chunk._changes.Add(Chunk.BlockIndex(x - chunk.pos.x, y - chunk.pos.y, z - chunk.pos.z));
 			}
 			chunk.playerHit = playerHit;
 			chunk.update = true;

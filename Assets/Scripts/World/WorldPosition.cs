@@ -13,6 +13,13 @@ public struct WorldPosition
 		this.z = z;
 	}
 
+	public WorldPosition(Vector3 gamePosition)
+	{
+		this.x = Mathf.FloorToInt(gamePosition.x);
+		this.y = Mathf.FloorToInt(gamePosition.y);
+		this.z = Mathf.FloorToInt(gamePosition.z);
+	}
+
 	public Vector3 ToVector3()
 	{
 		return new Vector3(x,y,z);

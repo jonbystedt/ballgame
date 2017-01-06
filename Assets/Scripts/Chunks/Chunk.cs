@@ -36,7 +36,7 @@ public class Chunk : PooledObject {
 	public PooledObject transparentChunk;
 	public Column column;
 	public ushort[] _blocks;
-	public bool[] _changes;
+	public List<uint> _changes;
 	
 	private MeshFilter filter;
 	private MeshCollider col;
@@ -65,7 +65,7 @@ public class Chunk : PooledObject {
 		_renderer = gameObject.GetComponent<MeshRenderer>();
 
 		_blocks = new ushort[Size * Size * Size];
-		_changes = new bool[Size * Size * Size];
+		_changes = new List<uint>();
 
 		update = false;
 		updating = false;
@@ -84,7 +84,6 @@ public class Chunk : PooledObject {
 		for (int i = 0; i < _blocks.Length; i++)
 		{
 			_blocks[i] = Block.Null;
-			_changes[i] = false;
 		}
 
 		StartCoroutine(SlowUpdate());
@@ -346,10 +345,7 @@ public class Chunk : PooledObject {
 
 	public void SetBlocksUnmodified()
 	{
-		for (int i = 0; i < _changes.Length; i++)
-		{
-			_changes[i] = false;
-		}
+		_changes.Clear();
 	}
 	
 	public static bool InRange(int index)
@@ -402,6 +398,11 @@ public class Chunk : PooledObject {
 		uint blockZ = (index >> VOXEL_Z_SHIFT) & 0xF;
 
 		return new UIntVec3(blockX, blockY, blockZ);
+	}
+
+	public static WorldPosition BlockPosition(uint index)
+	{
+		return new WorldPosition((Vector3)GetBlockDataPosition(index));
 	}
 
 }

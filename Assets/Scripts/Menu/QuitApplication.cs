@@ -7,6 +7,8 @@ public class QuitApplication : MonoBehaviour {
 		//If we are running in a standalone build of the game
 	#if UNITY_STANDALONE
 		//Quit the application
+		World.DestroyChunks();
+		Serialization.Compress();
 		Application.Quit();
 	#endif
 
