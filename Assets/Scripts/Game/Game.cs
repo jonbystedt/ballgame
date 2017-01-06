@@ -118,6 +118,33 @@ public class Game : MonoBehaviour
 		get { return _instance.mainCamera; }
 	}
 
+	public void Reset()
+	{
+		loader.Reset();
+		world.Reset();
+		TileFactory.Clear();
+		GameUtils.SeedValue = 0;
+		Serialization.Reset();
+
+		player.GetComponent<Rigidbody>().isKinematic = true;
+		PlayerActive = false;
+		player.transform.position = new Vector3(-0.5f, 256f, -0.5f);
+
+		menuGlow.color = Tile.Brighten(RenderSettings.fogColor, 0.5f);
+		RenderSettings.fogColor = Tile.Brighten(Color.Lerp(RenderSettings.fogColor, Color.black, 0.9f), 0.05f);
+		RenderSettings.fogDensity = 10f;
+		RenderSettings.ambientIntensity = 0f;
+		sun.intensity = 0f;
+		afterburner.SetActive(true);
+
+		clockText.text = "";
+		positionText.text = "";
+
+		startGame.playMusic.StopPlaying();
+
+		showPanels.ShowMenu();
+	}
+
 	void Awake()
 	{
 		//DontDestroyOnLoad(gameObject);
@@ -240,6 +267,7 @@ public class Game : MonoBehaviour
 		cosmos.CreateSky();
 
 		World.Seed = seed;
+		Serialization.Decompress();
 
 		// These populate the object pools
 		ChunkData.SetLoadOrder();
@@ -294,32 +322,6 @@ public class Game : MonoBehaviour
 	public static string Initialize()
 	{
 		return _instance._initialize("");
-	}
-
-	public void Reset()
-	{
-		loader.Reset();
-		world.Reset();
-		TileFactory.Clear();
-		GameUtils.SeedValue = 0;
-
-		player.GetComponent<Rigidbody>().isKinematic = true;
-		PlayerActive = false;
-		player.transform.position = new Vector3(-0.5f, 256f, -0.5f);
-
-		menuGlow.color = Tile.Brighten(RenderSettings.fogColor, 0.5f);
-		RenderSettings.fogColor = Tile.Brighten(Color.Lerp(RenderSettings.fogColor,Color.black,0.9f),0.05f);
-		RenderSettings.fogDensity = 10f;
-		RenderSettings.ambientIntensity = 0f;
-		sun.intensity = 0f;
-		afterburner.SetActive(true);
-
-		clockText.text = "";
-		positionText.text = "";
-
-		startGame.playMusic.StopPlaying();
-
-		showPanels.ShowMenu();
 	}
 
 	public static void UpdateScore(int value) 

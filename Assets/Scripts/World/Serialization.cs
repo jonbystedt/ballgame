@@ -10,121 +10,201 @@ using System.Runtime.Serialization;
 
 public static class Serialization 
 {
-	public static string saveFolderName = "worlds";
+	public static string SaveFolderName = "worlds";
 
-	public static DirectoryInfo SaveDirectory()
+	static DirectoryInfo saveDirectory;
+	static string saveLocation;
+	static string fileName;
+	static Save save;
+	static string saveFile;
+	static IFormatter formatter = new BinaryFormatter();
+	static FileStream fileStream;
+
+	public static void Reset()
 	{
-		DirectoryInfo saveDirectory;
-		string saveLocation = saveFolderName + "/" + World.Seed + "/";
-
-		if (!Directory.Exists(saveLocation))
-		{
-			saveDirectory = Directory.CreateDirectory(saveLocation);
-		}
-		else
-		{
-			saveDirectory = new DirectoryInfo(saveLocation);
-		}
-
-		return saveDirectory;
+		saveDirectory = null;
+		saveLocation = "";
 	}
 
-	public static string SaveLocation()
+	public static DirectoryInfo SaveDirectory
 	{
-		string saveLocation = saveFolderName + "/" + World.Seed + "/";
-
-		if (!Directory.Exists(saveLocation))
+		get
 		{
-			Directory.CreateDirectory(saveLocation);
-		}
+			if (saveDirectory != null)
+			{
+				return saveDirectory;
+			}
 
-		return saveLocation;
+			saveLocation = SaveFolderName + "/" + World.Seed + "/";
+
+			if (!Directory.Exists(saveLocation))
+			{
+				saveDirectory = Directory.CreateDirectory(saveLocation);
+			}
+			else
+			{
+				saveDirectory = new DirectoryInfo(saveLocation);
+			}
+
+			return saveDirectory;
+		}
 	}
 
-	public static string SaveName()
+
+	public static string SaveLocation
 	{
-		return saveFolderName + "/" + World.Seed;
+		get
+		{
+			if (!String.IsNullOrEmpty(saveLocation))
+			{
+				return saveLocation;
+			}
+
+			saveLocation = Path.Combine(SaveFolderName, World.Seed);
+
+			if (!Directory.Exists(saveLocation))
+			{
+				Directory.CreateDirectory(saveLocation);
+			}
+
+			return saveLocation;
+		}
 	}
 
 	public static string FileName(WorldPosition chunkLocation)
 	{
-		string fileName = chunkLocation.x + "," + chunkLocation.y + "," + chunkLocation.z + ".bin";
+		fileName = chunkLocation.x + "," + chunkLocation.y + "," + chunkLocation.z + ".bin";
 		return fileName;
 	}
 
+	// TODO: Need to write to single file at offset as this won't scale?
 	public static void SaveChunk(Chunk chunk)
 	{
-		Save save = new Save(chunk);
+		save = new Save(chunk);
 		if (save.blocks.Count == 0)
 		{
 			return;
 		}
 
-		string saveFile = SaveLocation();
-		saveFile += FileName(chunk.pos);
+		saveFile = Path.Combine(SaveLocation, FileName(chunk.pos));
 
-		IFormatter formatter = new BinaryFormatter();
-		Stream stream = new FileStream(saveFile, FileMode.Create, FileAccess.Write, FileShare.None);
-		formatter.Serialize(stream, save);
-		stream.Close();
+		using (fileStream = new FileStream(saveFile, FileMode.Create, FileAccess.Write, FileShare.None))
+		{
+			formatter.Serialize(fileStream, save);
+		}
 	}
 
 	public static bool Load(Chunk chunk)
 	{
-		string saveFile = SaveLocation();
-		saveFile += FileName(chunk.pos);
+		saveFile = Path.Combine(SaveLocation, FileName(chunk.pos));
 
-		if (!File.Exists (saveFile))
+		if (!File.Exists(saveFile))
 		{
 			return false;
 		}
 
-		IFormatter formatter = new BinaryFormatter();
-		FileStream stream = new FileStream(saveFile, FileMode.Open);
-
-		Save save = (Save)formatter.Deserialize(stream);
-
-		foreach (var block in save.blocks)
+		using (fileStream = new FileStream(saveFile, FileMode.Open))
 		{
-			chunk._blocks[Chunk.BlockIndex(block.Key.x, block.Key.y, block.Key.z)] = block.Value;
+			save = (Save)formatter.Deserialize(fileStream);
+
+			foreach (var block in save.blocks)
+			{
+				chunk._blocks[Chunk.BlockIndex(block.Key.x, block.Key.y, block.Key.z)] = block.Value;
+			}
 		}
-		stream.Close();
+
 		return true;
 	}
 
 	public static void Compress()
 	{
-		string[] files = Directory.GetFiles(SaveLocation());
+		string[] files = Directory.GetFiles(SaveLocation);
 
 		if (files.Length == 0)
 		{
 			return;
 		}
 
-		FileStream saveFile = File.Create(SaveName() + ".world");
-		ZipOutputStream zipStream = new ZipOutputStream(saveFile);
-
-		for(int i = 0; i < files.Length; i++)
+		using (fileStream = File.Create(SaveLocation + ".world"))
 		{
-			string fileName = files[i];
-			FileInfo fi = new FileInfo(fileName);
-
-			string entryName = fileName.Substring(World.Seed.Length - 1);
-			entryName = ZipEntry.CleanName(entryName);
-			ZipEntry newEntry = new ZipEntry(entryName);
-			newEntry.DateTime = fi.LastWriteTime;
-
-			newEntry.Size = fi.Length;
-
-			zipStream.PutNextEntry(newEntry);
-
-			byte[] buffer = new byte[4096];
-			using (FileStream streamReader = File.OpenRead(fileName))
+			ZipOutputStream zipStream = new ZipOutputStream(fileStream);
+			zipStream.SetLevel(3);
+			
+			for (int i = 0; i < files.Length; i++)
 			{
-				StreamUtils.Copy(streamReader, zipStream, buffer);
+				string fileName = files[i];
+				FileInfo fi = new FileInfo(fileName);
+
+				string entryName = fileName.Substring(SaveLocation.Length);
+				entryName = ZipEntry.CleanName(entryName);
+				ZipEntry newEntry = new ZipEntry(entryName);
+				newEntry.DateTime = fi.LastWriteTime;
+				newEntry.Size = fi.Length;
+
+				zipStream.PutNextEntry(newEntry);
+
+				byte[] buffer = new byte[4096];
+				using (FileStream streamReader = File.OpenRead(fileName))
+				{
+					StreamUtils.Copy(streamReader, zipStream, buffer);
+				}
+				zipStream.CloseEntry();
 			}
-			zipStream.CloseEntry();
+
+			zipStream.IsStreamOwner = true;
+			zipStream.Close();
 		}
+
+		Directory.Delete(SaveLocation, true);
+	}
+
+	public static void Decompress()
+	{
+		string saveFile = SaveLocation + ".world";
+
+		if (!File.Exists(saveFile))
+		{
+			return;
+		}
+
+		ZipFile zipFile = null;
+
+		try
+		{
+			using (fileStream = File.OpenRead(saveFile))
+			{
+				zipFile = new ZipFile(fileStream);
+
+				foreach (ZipEntry entry in zipFile)
+				{
+					if (!entry.IsFile)
+					{
+						continue;
+					}
+					fileName = entry.Name;
+
+					byte[] buffer = new byte[4096];
+					Stream zipStream =  zipFile.GetInputStream(entry);
+					string zipPath = Path.Combine(SaveLocation, fileName);
+
+					using (FileStream streamWriter = File.Create(zipPath))
+					{
+						StreamUtils.Copy(zipStream, streamWriter, buffer);
+					}
+				}
+			}
+
+			File.Delete(saveFile);
+		} 
+		finally
+		{
+			if (zipFile != null)
+			{
+				zipFile.IsStreamOwner = true;
+				zipFile.Close();
+			}
+		}
+		
 	}
 }
 
