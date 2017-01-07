@@ -1,16 +1,16 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.IO;
-using System.IO.Compression;
+﻿using System.IO;
 using System;
+using System.Text;
 using ICSharpCode.SharpZipLib.Core;
 using ICSharpCode.SharpZipLib.Zip;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization;
+using YamlDotNet.Serialization;
 
 public static class Serialization 
 {
 	public static string SaveFolderName = "worlds";
+	public static string SettingsFileName = "ballgame_settings.config";
 
 	static DirectoryInfo saveDirectory;
 	static string saveLocation;
@@ -18,6 +18,7 @@ public static class Serialization
 	static Save save;
 	static string saveFile;
 	static IFormatter formatter = new BinaryFormatter();
+	static Serializer yaml = new Serializer();
 	static FileStream fileStream;
 
 	public static void Reset()
@@ -88,10 +89,18 @@ public static class Serialization
 
 		saveFile = Path.Combine(SaveLocation, FileName(chunk.pos));
 
-		using (fileStream = new FileStream(saveFile, FileMode.Create, FileAccess.Write, FileShare.None))
+		try
 		{
-			formatter.Serialize(fileStream, save);
+			using (fileStream = new FileStream(saveFile, FileMode.Create, FileAccess.Write, FileShare.None))
+			{
+				formatter.Serialize(fileStream, save);
+			}
 		}
+		catch (Exception ex)
+		{
+			Game.Log(ex.Message);
+		}
+
 	}
 
 	public static bool Load(Chunk chunk)
@@ -118,6 +127,11 @@ public static class Serialization
 
 	public static void Compress()
 	{
+		if (String.IsNullOrEmpty(World.Seed))
+		{
+			return;
+		}
+
 		string[] files = Directory.GetFiles(SaveLocation);
 
 		if (files.Length == 0)
@@ -205,6 +219,32 @@ public static class Serialization
 			}
 		}
 		
+	}
+
+	public static void WriteConfig()
+	{
+        var sb = new StringBuilder();
+        var stringWriter = new StringWriter(sb);
+        yaml.Serialize(stringWriter, Config.Settings);
+
+		using (StreamWriter sw = File.CreateText(SettingsFileName)) 
+		{
+			sw.WriteLine(sb.ToString());
+		} 
+	}
+
+	public static bool ReadConfig()
+	{
+		if (!File.Exists(SettingsFileName))
+		{
+			return false;
+		}
+
+		var sr = new StringReader(System.IO.File.ReadAllText(SettingsFileName));
+        var deserializer = new Deserializer();
+        Config.Settings = deserializer.Deserialize<GameConfig>(sr);
+
+		return true;
 	}
 }
 

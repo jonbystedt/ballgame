@@ -81,7 +81,17 @@ public class StartGame : MonoBehaviour {
 		{
 			if (Config._instance != null)
 			{
+				if (!Serialization.ReadConfig())
+				{
+					Config.Settings.graphicsQuality = 1;
+					Config.Settings.worldSize = 12;
+					Config.Settings.musicVol = 80;
+					Config.Settings.sfxVol = 80;
+					Config.Settings.swapInputs = false;
+				}
+
 				Config.GraphicsMode = Config.GraphicsMode;
+				Config.WorldSize = Config.Settings.worldSize;
 				setOptions.SetMusicLevel(Config.MusicVolume * 0.01f);
 				setOptions.SetSfxLevel(Config.SfxVolume * 0.01f);
 				break;

@@ -13,7 +13,10 @@ public class SetOptions : MonoBehaviour {
 	void Start()
 	{
 		graphicsModeText.text = Config.GraphicsMode.ToString();
+		graphicsModeSlider.enabled = false;
 		graphicsModeSlider.value = (float)Config.GraphicsMode;
+		graphicsModeSlider.enabled = true;
+		worldSizeSlider.value = Mathf.Floor((Config.WorldSize / 2f) - 3f);
 	}
 
 	public void SetMusicLevel(float musicLevel)
@@ -49,22 +52,19 @@ public class SetOptions : MonoBehaviour {
 		Config.GraphicsMode = (GraphicsMode)(int)value;
 		graphicsModeText.text = Config.GraphicsMode.ToString();
 
-		worldSizeSlider.value = Mathf.Floor((Config.WorldSize / 2f) - 3f);
-		worldSizeText.text = Config.WorldSize.ToString();
+		// TODO: This would be a problem if it were possible to use the UI with a controller
+		if (Input.GetMouseButton(0))
+		{
+			Config.WorldSize = 8 + ((int)value * 4);
+			worldSizeSlider.value = Mathf.Floor((Config.WorldSize / 2f) - 3f);
+			worldSizeText.text = Config.WorldSize.ToString();
+		}
 	}
 
 	public void SetWorldSize(float worldSize)
 	{
 		Config.WorldSize = Mathf.FloorToInt(6f + (worldSize * 2f));
 		worldSizeText.text = Config.WorldSize.ToString();
-		if (worldSize == 0)
-		{
-			Config.FogScale = 1.2f;
-		}
-		else
-		{
-			Config.FogScale = 0.95f - (worldSize * 0.05f);
-		}
 	}
 
 }

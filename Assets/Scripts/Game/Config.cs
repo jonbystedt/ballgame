@@ -11,7 +11,6 @@ public enum GraphicsMode
 
 public class Config : MonoBehaviour 
 {
-	public int worldSize = 8;
 	int mountainBase = 6;
 	int chunkDeleteRadius;
 	int chunkLoadRadius;
@@ -49,23 +48,28 @@ public class Config : MonoBehaviour
 
 	public static int WorldHeight = 4;
 
+	// Serializable game configuration object
+	public static GameConfig Settings;
+
 	public static int WorldSize
 	{
 		get 
 		{ 
-			if (_instance != null) 
-			{
-				return _instance.worldSize; 
-			}
-			else
-			{
-				return 8;
-			}
+			return Settings.worldSize;
 		}
 		set 
 		{
 			if (_instance != null)
 			{
+				// set fog scale
+				float baseFog = 0.95f;
+				if (Config.GraphicsMode == 0)
+				{
+					baseFog = 1.2f;
+				}
+
+				Config.FogScale = baseFog - (value * 0.05f);
+
 				// Load chunks out in a radius of 3 world sizes
 				_instance.chunkLoadRadius = value + Mathf.FloorToInt(value / 2f);
 
@@ -81,7 +85,7 @@ public class Config : MonoBehaviour
 
 				_instance.maxOutlineDistance = _instance.maxRenderDistance - Mathf.FloorToInt(Chunk.Size * value * 0.25f);
 
-				_instance.worldSize = value;
+				Settings.worldSize = value;
 			}
 		}
 	}
@@ -169,23 +173,23 @@ public class Config : MonoBehaviour
 	// Controls
 	public static bool SwapInputs
 	{
-		get { return _instance.swapInputs; }
-		set { _instance.swapInputs = value; }
+		get { return Settings.swapInputs; }
+		set { Settings.swapInputs = value; }
 	}
 
 	public static int MusicVolume
 	{
-		get { return _instance.musicVolume; }
+		get { return Settings.musicVol; }
 		set 
 		{
-			 _instance.musicVolume = value; 
+			 Settings.musicVol = value; 
 		}
 	}
 
 	public static int SfxVolume
 	{
-		get { return _instance.sfxVolume; }
-		set { _instance.sfxVolume = value; }
+		get { return Settings.sfxVol; }
+		set { Settings.sfxVol = value; }
 	}
 
 	// Graphics Settings
@@ -251,12 +255,15 @@ public class Config : MonoBehaviour
 
 	public static GraphicsMode GraphicsMode
 	{
-		get { if (_instance != null) return _instance.graphicsMode; else return GraphicsMode.Medium; }
+		get 
+		{ 
+			return (GraphicsMode)Settings.graphicsQuality; 
+		}
 		set 
 		{ 
 			if (_instance != null)
 			{
-				_instance.graphicsMode = value; 
+				Settings.graphicsQuality = (int)value; 
 
 				if (value == GraphicsMode.Low)
 				{
@@ -274,7 +281,6 @@ public class Config : MonoBehaviour
 					{
 						QualitySettings.SetQualityLevel(0);
 					}
-					WorldSize = 8;
 				}
 
 				if (value == GraphicsMode.Medium)
@@ -293,7 +299,6 @@ public class Config : MonoBehaviour
 					{
 						QualitySettings.SetQualityLevel(1);
 					}
-					WorldSize = 12;
 				}
 
 				if (value == GraphicsMode.High)
@@ -312,7 +317,6 @@ public class Config : MonoBehaviour
 					{
 						QualitySettings.SetQualityLevel(2);
 					}
-					WorldSize = 16;
 				}
 
 				if (value == GraphicsMode.Ultra)
@@ -331,7 +335,6 @@ public class Config : MonoBehaviour
 					{
 						QualitySettings.SetQualityLevel(3);
 					}
-					WorldSize = 20;
 				}
 			}
 
