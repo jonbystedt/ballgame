@@ -25,17 +25,8 @@ public class World : MonoBehaviour {
 		get { return _seed; }
 		set
 		{
+			_instance.seed.text = value;
 			_seed = value;
-
-			int n;
-			if (int.TryParse(_seed, out n))
-			{
-				_instance.seed.text = n.ToString();
-			}
-			else
-			{
-				_instance.seed.text = _seed + " (" + _seed.GetHashCode().ToString() + ")";
-			}
 		}
 	}
 

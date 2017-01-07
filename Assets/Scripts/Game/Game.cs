@@ -36,6 +36,7 @@ public class Game : MonoBehaviour
 
 	private bool playerActive = false;
 	private bool showStats = false;
+	private bool showScore = true;
 	private bool firstRun = true;
 	private int chunksLoaded = 0;
 	
@@ -44,6 +45,7 @@ public class Game : MonoBehaviour
 	private Text dayText;
 	private Text clockText;
 	private Text positionText;
+	private Text nameText;
 
 	private StartGame startGame;
 	private CameraOperator camOp;
@@ -156,6 +158,7 @@ public class Game : MonoBehaviour
 
 		logMessage = HUD.transform.Find("Log").GetComponent<Text>();
 		scoreText = HUD.transform.Find("Score").GetComponent<Text>();
+		nameText = HUD.transform.Find("Name").GetComponent<Text>();
 		dayText = HUD.transform.Find("FPS").GetComponent<Text>();
 		clockText = HUD.transform.Find("Clock").GetComponent<Text>();
 		positionText = HUD.transform.Find("Position").GetComponent<Text>();
@@ -184,7 +187,22 @@ public class Game : MonoBehaviour
 
 		if (Input.GetKeyDown (KeyCode.Tab)) 
 		{
-			showStats = !showStats;
+			if (!showStats && showScore)
+			{
+				showStats = true;
+			}
+			else if (showStats && showScore)
+			{
+				showStats = false;
+				showScore = false;
+			}
+			else
+			{
+				showScore = true;
+			}
+
+			nameText.enabled = showScore;
+			scoreText.enabled = showScore;
 
 			if (!showStats)
 			{
@@ -298,8 +316,16 @@ public class Game : MonoBehaviour
 
 		if (Config.ShadowsEnabled)
 		{
-			sun.shadows = LightShadows.Soft;
-			moon.shadows = LightShadows.Hard;
+			if (Config.GraphicsMode == GraphicsMode.Ultra)
+			{
+				sun.shadows = LightShadows.Soft;
+				moon.shadows = LightShadows.Soft;
+			}
+			else
+			{
+				sun.shadows = LightShadows.Hard;
+				moon.shadows = LightShadows.Hard;
+			}
 		}
 		else
 		{

@@ -43,7 +43,7 @@ public class Cosmos : MonoBehaviour {
 	bool daytime = true;
 	bool starsout = false;
 
-	public float days = 0;
+	public float days = 1;
 	public float hours = 12;
 	public float hours24 = 12;
 	public float minutes = 0;
@@ -61,7 +61,6 @@ public class Cosmos : MonoBehaviour {
 	float targetScale;
 	float baseFog;
 	float _ampm;
-	bool flipDay;
 	Color starColor;
 
 
@@ -260,6 +259,7 @@ public class Cosmos : MonoBehaviour {
 		{
 			if (!daytime)
 			{
+				days++;
 				daytime = true;
 				Game.PlaySong();
 			}
@@ -324,13 +324,6 @@ public class Cosmos : MonoBehaviour {
 		if (hours24 >= 24f)
 		{
 			hours24 -= 24f;
-			flipDay = true;
-		}
-
-		if (hours24 == 6 && flipDay)
-		{
-			days++;
-			flipDay = false;
 		}
 
 		hours = hours24 >= 13f ? hours24 -= 12f : hours24;

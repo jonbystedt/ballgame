@@ -59,8 +59,6 @@ public class PlayMusic : MonoBehaviour {
 		musicSource.clip = request.GetAudioClip(false, true);
 		musicSource.Play();
 
-		Game.Log(songFiles[currentTrack].Name.Split('.')[0]);
-
 		Invoke("FadeOut", musicSource.clip.length - 2f);
 
 		// Make sure songs don't play too close to each other

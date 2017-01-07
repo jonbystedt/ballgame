@@ -11,7 +11,6 @@ public enum GraphicsMode
 
 public class Config : MonoBehaviour 
 {
-	int mountainBase = 6;
 	int chunkDeleteRadius;
 	int chunkLoadRadius;
 	int despawnRadius;
@@ -88,11 +87,6 @@ public class Config : MonoBehaviour
 				Settings.worldSize = value;
 			}
 		}
-	}
-
-	public static int MountainBase
-	{
-		get { return _instance.mountainBase; }
 	}
 
 	// World Size Settings

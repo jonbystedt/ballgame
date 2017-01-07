@@ -66,12 +66,12 @@ public static class NoiseConfig {
 			Mathf.FloorToInt(Mathf.Lerp(1,3,GameUtils.SeedValue)),
 			Mathf.Lerp(0f, 4f, GameUtils.SeedValue), 
 			Mathf.Lerp(0f, 1f, GameUtils.SeedValue), 
-			64,
+			64 - Mathf.FloorToInt(Mathf.Lerp(0, 32, Mathf.Pow(GameUtils.SeedValue, 2))),
 			Mathf.Pow(GameUtils.SeedValue - 0.5f, 8 + Mathf.FloorToInt(GameUtils.SeedValue * 8) % 8)
 			); 
 
 		cave = new NoiseOptions(
-			Mathf.Lerp(0.008f, 0.02f, Mathf.Pow(GameUtils.SeedValue,2)), 
+			Mathf.Lerp(0.008f, 0.01f, Mathf.Pow(GameUtils.SeedValue,2)), 
 			1,
 			Mathf.Lerp(0f, 2f, GameUtils.SeedValue), 
 			Mathf.Lerp(0f, 1f, GameUtils.SeedValue), 
@@ -80,16 +80,16 @@ public static class NoiseConfig {
 			);
 
 		pattern = new NoiseOptions(
-			Mathf.Lerp(0.0008f, 0.04f, Mathf.Pow(GameUtils.SeedValue,3)), 
+			Mathf.Lerp(0.008f, 0.02f, Mathf.Pow(GameUtils.SeedValue,3)), 
 			1,
 			Mathf.Lerp(0f, 4f, GameUtils.SeedValue), 
 			Mathf.Lerp(0f, 1f, GameUtils.SeedValue), 
 			1024,
-			Mathf.Pow(GameUtils.SeedValue - 0.5f, 10 + Mathf.FloorToInt(GameUtils.SeedValue * 8) % 8)
+			Mathf.Pow((GameUtils.SeedValue * 0.25f) - 0.125f, 12 + Mathf.FloorToInt(GameUtils.SeedValue * 8) % 8)
 			);
 
 		stripe = new NoiseOptions(
-			Mathf.Lerp(0.00000001f, 1f, Mathf.Pow(GameUtils.SeedValue,2)),  
+			Mathf.Lerp(0.000001f, 0.1f, GameUtils.SeedValue),  
 			Mathf.FloorToInt(Mathf.Lerp(1,4,GameUtils.SeedValue)), 
 			Mathf.Lerp(0f, 4f, GameUtils.SeedValue),
 			Mathf.Lerp(0f, 2f, GameUtils.SeedValue),
@@ -97,7 +97,7 @@ public static class NoiseConfig {
 			Mathf.Pow(GameUtils.SeedValue - 0.5f, 6 + Mathf.FloorToInt(GameUtils.SeedValue * 8) % 8)
 			);
 
-		Game.Log(stripe.drift.ToString() + " " + pattern.drift.ToString() + " " + terrain.drift.ToString() + " " + mountain.drift.ToString());
+		//Game.Log(stripe.drift.ToString() + " " + pattern.drift.ToString() + " " + terrain.drift.ToString() + " " + mountain.drift.ToString());
 
 		variance = GameUtils.SeedValue;
 		spawnTypes = new NoiseOptions(
