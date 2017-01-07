@@ -253,6 +253,12 @@ public class Config : MonoBehaviour
 		set { _instance.coroutineTiming = value; }
 	}
 
+	public static string Resolution
+	{
+		get { return Settings.resolution; }
+		set { Settings.resolution = value; }
+	}
+
 	public static GraphicsMode GraphicsMode
 	{
 		get 

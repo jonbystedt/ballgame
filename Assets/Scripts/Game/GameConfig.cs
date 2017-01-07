@@ -8,4 +8,5 @@ public struct GameConfig
 	public int graphicsQuality { get; set; }
 	public int worldSize { get; set; }
 	public bool swapInputs { get; set; }
+	public string resolution { get; set; }
 }

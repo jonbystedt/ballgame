@@ -88,8 +88,9 @@ public class StartGame : MonoBehaviour {
 					Config.Settings.musicVol = 80;
 					Config.Settings.sfxVol = 80;
 					Config.Settings.swapInputs = false;
+					Config.Settings.resolution = Screen.width.ToString() + "x" + Screen.height.ToString();
 				}
-
+				setOptions.SetResolution(Config.Settings.resolution);
 				Config.GraphicsMode = Config.GraphicsMode;
 				Config.WorldSize = Config.Settings.worldSize;
 				setOptions.SetMusicLevel(Config.MusicVolume * 0.01f);

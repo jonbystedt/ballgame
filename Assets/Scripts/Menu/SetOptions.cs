@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
+using System;
+using System.Collections.Generic;
 
 public class SetOptions : MonoBehaviour {
 
@@ -9,14 +11,31 @@ public class SetOptions : MonoBehaviour {
 	public Text worldSizeText;
 	public Slider graphicsModeSlider;
 	public Slider worldSizeSlider;
+	public Dropdown resolutionDropdown;
 
 	void Start()
 	{
 		graphicsModeText.text = Config.GraphicsMode.ToString();
-		graphicsModeSlider.enabled = false;
 		graphicsModeSlider.value = (float)Config.GraphicsMode;
-		graphicsModeSlider.enabled = true;
+
+		worldSizeText.text = Config.WorldSize.ToString();
 		worldSizeSlider.value = Mathf.Floor((Config.WorldSize / 2f) - 3f);
+
+		List<string> resolutions = new List<string>();
+		int selected = 0;
+		for(int i = 0; i < Screen.resolutions.Length; i++)
+		{
+			var res = Screen.resolutions[i];
+			resolutions.Add(res.width.ToString() + "x" + res.height.ToString());
+
+			if (res.height == Screen.height && res.width == Screen.width)
+			{
+				selected = i;
+			}
+		}
+		resolutionDropdown.ClearOptions();
+		resolutionDropdown.AddOptions(resolutions);
+		resolutionDropdown.value = selected;
 	}
 
 	public void SetMusicLevel(float musicLevel)
@@ -65,6 +84,27 @@ public class SetOptions : MonoBehaviour {
 	{
 		Config.WorldSize = Mathf.FloorToInt(6f + (worldSize * 2f));
 		worldSizeText.text = Config.WorldSize.ToString();
+	}
+
+	public void SetResolution(int index)
+	{
+		string resolution = resolutionDropdown.options[index].text;
+		string[] axes = resolution.Split('x');
+		int width = Int32.Parse(axes[0]);
+		int height = Int32.Parse(axes[1]);
+
+		Screen.SetResolution(width, height, true);
+		Config.Resolution = resolution;
+	}
+
+	public void SetResolution(string resolution)
+	{
+		string[] axes = resolution.Split('x');
+		int width = Int32.Parse(axes[0]);
+		int height = Int32.Parse(axes[1]);
+
+		Screen.SetResolution(width, height, true);
+		Config.Resolution = resolution;
 	}
 
 }
