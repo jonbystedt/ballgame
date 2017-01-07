@@ -62,13 +62,13 @@ public class Config : MonoBehaviour
 			if (_instance != null)
 			{
 				// set fog scale
-				float baseFog = 0.95f;
+				float baseFog = 1.2f;
 				if (Config.GraphicsMode == 0)
 				{
-					baseFog = 1.2f;
+					baseFog = 1.6f;
 				}
 
-				Config.FogScale = baseFog - (value * 0.05f);
+				Config.FogScale = baseFog - (value * 0.035f);
 
 				// Load chunks out in a radius of 3 world sizes
 				_instance.chunkLoadRadius = value + Mathf.FloorToInt(value / 2f);

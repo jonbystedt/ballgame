@@ -23,15 +23,20 @@ public class SetOptions : MonoBehaviour {
 
 		List<string> resolutions = new List<string>();
 		int selected = 0;
+		int selectIndex = 0;
 		for(int i = 0; i < Screen.resolutions.Length; i++)
 		{
 			var res = Screen.resolutions[i];
-			resolutions.Add(res.width.ToString() + "x" + res.height.ToString());
-
-			if (res.height == Screen.height && res.width == Screen.width)
+			string resString = res.width.ToString() + "x" + res.height.ToString();
+			if (!resolutions.Contains(resString))
 			{
-				selected = i;
-			}
+				if (res.height == Screen.height && res.width == Screen.width)
+				{
+					selected = selectIndex;
+				}
+				selectIndex++;
+				resolutions.Add(resString);
+			}	
 		}
 		resolutionDropdown.ClearOptions();
 		resolutionDropdown.AddOptions(resolutions);

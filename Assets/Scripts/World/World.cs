@@ -266,11 +266,6 @@ public class World : MonoBehaviour {
 		Column column = null;
 		Columns.TryGetValue(new WorldPosition(x, 0, z).GetHashCode(), out column);
 
-		if (column == null)
-		{
-			Game.Log("Null Column Requested.");
-		}
-
 		return column;
 	}
 

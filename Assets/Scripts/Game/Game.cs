@@ -3,7 +3,6 @@ using UnityEngine.UI;
 using System.Collections;
 using System;
 using UnityStandardAssets.ImageEffects;
-using UnityEngine.SceneManagement;
 
 public class Game : MonoBehaviour 
 {
@@ -19,7 +18,7 @@ public class Game : MonoBehaviour
 
 	public EdgeDetection edgeDetect;
 	public EdgeDetectionColor edgeDetectColor;
-	ScreenSpaceAmbientOcclusion ssao;
+	HBAO hbao;
 	GlobalFog fog;
 	GlobalFog distanceFog;
 	//GlobalFogExtended scatterFog;
@@ -132,6 +131,7 @@ public class Game : MonoBehaviour
 
 		menuGlow.color = Tile.Brighten(RenderSettings.fogColor, 0.5f);
 		RenderSettings.fogColor = Tile.Brighten(Color.Lerp(RenderSettings.fogColor, Color.black, 0.9f), 0.05f);
+		RenderSettings.skybox.SetColor("_Tint", RenderSettings.fogColor);
 		RenderSettings.fogDensity = 10f;
 		RenderSettings.ambientIntensity = 0f;
 		sun.intensity = 0f;
@@ -169,6 +169,7 @@ public class Game : MonoBehaviour
 		UpdateScore(0);
 
 		RenderSettings.fogDensity = 10f;
+		RenderSettings.skybox.SetColor("_Tint", RenderSettings.fogColor);
 
 		// float resolution = 1E9f / Stopwatch.Frequency;
 		//Game.Log(String.Format("The minimum measurable time on this system is: {0} nanoseconds", resolution.ToString()));
@@ -243,11 +244,11 @@ public class Game : MonoBehaviour
 	{
 		if (String.IsNullOrEmpty(seed))
 		{
-			seed = GameUtils.GenerateSeed(5);
+			seed = GameUtils.GenerateSeed(5).Trim();
 		}
 		else
 		{
-			seed = seed.ToUpper();
+			seed = seed.ToUpper().Trim();
 		}
 
 		int n;
@@ -282,8 +283,8 @@ public class Game : MonoBehaviour
 		edgeDetect.enabled = Config.Outlines;
 		edgeDetectColor.enabled = Config.ColoredOutlines;
 
-		ssao = mainCamera.GetComponent<ScreenSpaceAmbientOcclusion>();
-		ssao.enabled = Config.ContactShadows;
+		hbao = mainCamera.GetComponent<HBAO>();
+		hbao.enabled = Config.ContactShadows;
 
 		RenderSettings.fog = true;//Config.GlobalFogEnabled;
 		fog = mainCamera.GetComponent<GlobalFog>();

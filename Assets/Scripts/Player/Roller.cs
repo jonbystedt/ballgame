@@ -267,7 +267,7 @@ public class Roller : MonoBehaviour
 		if (useTorque || !boostIsActive)
 		{
 			// ... add torque around the axis defined by the move direction.
-			_rigidbody.AddTorque(new Vector3(moveDirection.z, 0, -moveDirection.x) * movePower * 0.2f);
+			_rigidbody.AddTorque(new Vector3(moveDirection.z, 0, -moveDirection.x) * movePower * 0.01f);
 			_rigidbody.AddForce(moveDirection * movePower);
 		}
 		else
