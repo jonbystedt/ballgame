@@ -4,6 +4,7 @@ using System.Collections;
 public class RollerController : MonoBehaviour
 {
 	public GameObject boostEffect;
+	public Light boostLight;
 	public CameraOperator camOp;
 	private Roller roller; 
 
@@ -80,6 +81,14 @@ public class RollerController : MonoBehaviour
 		else
 		{
 			boostEffect.SetActive(false);
+		}
+		if (boostOn)
+		{
+			boostLight.intensity = 1f;
+		}
+		else
+		{
+			boostLight.intensity = 0f;
 		}
 	}
 

@@ -33,7 +33,7 @@ public class Moonlight : MonoBehaviour {
 		float i = ((maxIntensity - minIntensity) * dot) + minIntensity;
 
 		moonlight.intensity = Mathf.Lerp(i, i / 10, cosmos.rain.RainIntensity);
-		moonSpotlight.intensity = Mathf.Lerp(i, i / 3, cosmos.rain.RainIntensity);
+		moonSpotlight.intensity = Mathf.Lerp(i * 0.25f, (i * 0.25f) / 3, cosmos.rain.RainIntensity);
 
 		//Debug.Log ("Moon Intensity: " + i.ToString());
 		//Game.Log(dot.ToString("N2"));

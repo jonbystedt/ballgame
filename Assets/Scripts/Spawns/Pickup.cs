@@ -125,10 +125,13 @@ public class Pickup : SpawnedObject
 			return;
 		}
 
+		explosion.Stop();
+		explosion.Clear();
+
 		var ma = explosion.main;
 		if (type == PickupType.Silver || type == PickupType.Black)
 		{
-			ma.simulationSpeed = Mathf.Lerp(2f, 9f, impactForce);
+			ma.simulationSpeed = Mathf.Lerp(1f, 3f, impactForce);
 
 			var col = explosion.colorOverLifetime;
 			col.enabled = true;
@@ -137,17 +140,19 @@ public class Pickup : SpawnedObject
 			col.color = gradient;
 
 			ParticleSystem.EmitParams p = new ParticleSystem.EmitParams();
-			p.startLifetime = Mathf.Lerp(1f,12f,impactForce);
+			p.startLifetime = Mathf.Lerp(8f, 12f, impactForce);
 
 			if (type == PickupType.Silver)
 			{
-				p.startSize = 0.5f;
-				explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(20f, 200f, impactForce * impactForce)));
+				p.startSize = 0.4f;
+				explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(10f, 100f, impactForce * impactForce)));
+				World.Spawn.Objects(Spawns.Pickup, Tile.Inverse(baseColor), transform.position, 4, Config.SpawnDelay);
 			}
 			else
 			{
-				p.startSize = 0.4f;
-				explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(30f, 200f, impactForce * impactForce)));
+				p.startSize = 0.5f;
+				explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(8f, 80f, impactForce * impactForce)));
+				World.Spawn.Objects(Spawns.Pickup, Tile.Inverse(baseColor), transform.position, 4, Config.SpawnDelay);
 			}
 
 		}
@@ -160,7 +165,7 @@ public class Pickup : SpawnedObject
 			p.startSize = 0.5f;
 			p.startColor = color;
 
-			explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(5f, 50f, impactForce * impactForce)));
+			explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(8f, 50f, impactForce * impactForce)));
 		}
 	}
 
@@ -189,14 +194,14 @@ public class Pickup : SpawnedObject
 		Color startColor;
 		if (type == PickupType.Black)
 		{
-			startColor = Tile.Brighten(baseColor, 1f);
+			startColor = Tile.Brighten(Tile.Lighten(baseColor, 0.5f), 1f);
 		}
 		else
 		{
 			startColor = Tile.Lighten(baseColor, 0.5f);
 		}
 		grad.SetKeys(
-			new GradientColorKey[] { new GradientColorKey(startColor, 0.0f), new GradientColorKey(Tile.Darken(baseColor, 0.1f), 0.2f), new GradientColorKey(Tile.Brighten(baseColor, 1f), 1.0f)},
+			new GradientColorKey[] { new GradientColorKey(startColor, 0.0f), new GradientColorKey(Tile.Lighten(baseColor, 0.3f), 0.2f), new GradientColorKey(Tile.Brighten(baseColor, 1f), 1.0f)},
 			new GradientAlphaKey[] { new GradientAlphaKey(1.0f, 0.0f), new GradientAlphaKey(1.0f, 1.0f)}
 		);
 

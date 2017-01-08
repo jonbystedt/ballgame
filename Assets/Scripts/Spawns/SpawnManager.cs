@@ -150,7 +150,7 @@ public class SpawnManager : MonoBehaviour {
 		}
 		if (pickup.type == PickupType.Black)
 		{
-			pickup.color = Color.Lerp(Tile.Brighten(color,0.3f), Color.black, 0.5f);
+			pickup.color = Color.Lerp(Tile.Brighten(color,0.3f), Color.black, 0.25f);
 			pickup.size = 1f;
 			pickup.baseScore = 25;
 			pickup.driftIntensity = 10000f;
@@ -305,6 +305,14 @@ public class SpawnManager : MonoBehaviour {
 	}
 
 	// Spawn with delay, add to list, set color
+	public void Objects(Spawns o, Color color, Vector3 pos, int count, float delay)
+	{
+		Column column = World.GetColumn(new WorldPosition(pos));
+		if (column != null && column.spawns != null)
+		{
+			Objects(o, color, 0f, pos, count, delay, column.spawns);
+		}	
+	}
 	public void Objects(Spawns o, Color color, Vector3 pos, int count, float delay, List<PooledObject> spawns)
 	{
 		Objects(o, color, 0f, pos, count, delay, spawns);
@@ -330,13 +338,14 @@ public class SpawnManager : MonoBehaviour {
 		SampleSet sampleSet = InterpolatedNoise.Results[region];
 
 		int totalRange = NoiseConfig.spawnTypes.scale;
-        int floor = Mathf.FloorToInt(totalRange / 10f);
+		int floor = Mathf.FloorToInt(Mathf.Lerp(0f, totalRange / 5f, Config.SpawnIntensity / 100f));
 		int exclusion = 0;
 		int range;
 		int upper;
 		int lower;
         float weight;
         float intensity;
+		float power = Mathf.Lerp(1f, 7f, 1f - (Config.SpawnIntensity / 100f));
 
 		for (int x = 0; x < Chunk.Size; x++)
 		{
@@ -346,7 +355,8 @@ public class SpawnManager : MonoBehaviour {
 
 				if (spawnValue != Chunk.NoSpawn)
 				{
-                    intensity = Mathf.Pow(sampleSet.spawnMap.intensity[x, z] / (float)NoiseConfig.spawnIntensity.scale, 3f);
+
+                    intensity = Mathf.Pow(sampleSet.spawnMap.intensity[x, z] / (float)NoiseConfig.spawnIntensity.scale, power);
 					exclusion = Mathf.FloorToInt(Mathf.Lerp(totalRange - floor, 0, intensity));
 					range = totalRange - exclusion;
 

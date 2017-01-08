@@ -6,23 +6,23 @@ using Random = UnityEngine.Random;
 
 public static class GameUtils 
 {
-	public const int VARIANCE_TABLE_SIZE = 100;
-	public static float[] VarianceTable = new float[VARIANCE_TABLE_SIZE];
+	public const int SEED_TABLE_SIZE = 1024;
+	public static float[] SeedTable = new float[SEED_TABLE_SIZE];
 
-	static int _varianceCount = 0;
-	public static float SeedValue 
+	static int _seedCount = 0;
+	public static float Seed 
 	{
 		get
 		{
-			if (_varianceCount == VARIANCE_TABLE_SIZE)
+			if (_seedCount == SEED_TABLE_SIZE)
 			{
-				_varianceCount = 0;
+				_seedCount = 0;
 			}
-			return VarianceTable[_varianceCount++];
+			return SeedTable[_seedCount++];
 		}
 		set
 		{
-			_varianceCount = Mathf.FloorToInt(value);
+			_seedCount = Mathf.FloorToInt(value);
 		}
 	}
 
@@ -70,9 +70,9 @@ public static class GameUtils
 
 	public static void CreateVarianceTable()
 	{
-		for (int i = 0; i < VARIANCE_TABLE_SIZE; i++)
+		for (int i = 0; i < SEED_TABLE_SIZE; i++)
 		{
-			VarianceTable[i] = Random.value;
+			SeedTable[i] = Random.value;
 		}
 	}
 

@@ -146,6 +146,12 @@ public class Config : MonoBehaviour
 		set { _instance.spawnDelay = value; }
 	}
 
+	public static int SpawnIntensity
+	{
+		get { return Settings.spawnIntensity; }
+		set { Settings.spawnIntensity = value; }
+	}
+
 	public static float BlockSpawnChance
 	{
 		get { return _instance.blockSpawnChance; }

@@ -52,6 +52,9 @@ public class Game : MonoBehaviour
 	private int score = 0;
 	private int logCount = 2;
 
+	private string randomWord;
+	private string randomWordUrl = "http://www.setgetgo.com/randomword/get.php";
+
 	static Game _instance;
 
 	public static int ChunksLoaded
@@ -124,7 +127,7 @@ public class Game : MonoBehaviour
 		loader.Reset();
 		world.Reset();
 		TileFactory.Clear();
-		GameUtils.SeedValue = 0;
+		GameUtils.Seed = 0;
 		Serialization.Reset();
 
 		player.GetComponent<Rigidbody>().isKinematic = true;
@@ -143,6 +146,8 @@ public class Game : MonoBehaviour
 		positionText.text = "";
 
 		startGame.playMusic.StopPlaying();
+
+		StartCoroutine(GetRandomWord());
 
 		showPanels.ShowMenu();
 	}
@@ -173,6 +178,8 @@ public class Game : MonoBehaviour
 
 		RenderSettings.fogDensity = 10f;
 		RenderSettings.skybox.SetColor("_Tint", RenderSettings.fogColor);
+
+		StartCoroutine(GetRandomWord());
 
 		// float resolution = 1E9f / Stopwatch.Frequency;
 		//Game.Log(String.Format("The minimum measurable time on this system is: {0} nanoseconds", resolution.ToString()));
@@ -262,7 +269,14 @@ public class Game : MonoBehaviour
 	{
 		if (String.IsNullOrEmpty(seed))
 		{
-			seed = GameUtils.GenerateSeed(5).Trim();
+			if (String.IsNullOrEmpty(randomWord))
+			{
+				seed = GameUtils.GenerateSeed(5).Trim();
+			}
+			else
+			{
+				seed = randomWord;
+			}
 		}
 		else
 		{
@@ -436,6 +450,13 @@ public class Game : MonoBehaviour
 		{
 			_instance.startGame.PlayNewMusic();
 		}
+	}
+
+	IEnumerator GetRandomWord()
+	{
+		WWW www = new WWW(randomWordUrl);
+        yield return www;
+		randomWord = www.text.ToUpper();
 	}
 
 	IEnumerator Wait(float time, Action callback)

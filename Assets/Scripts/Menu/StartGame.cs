@@ -85,6 +85,7 @@ public class StartGame : MonoBehaviour {
 				{
 					Config.Settings.graphicsQuality = 1;
 					Config.Settings.worldSize = 12;
+					Config.Settings.spawnIntensity = 50;
 					Config.Settings.musicVol = 80;
 					Config.Settings.sfxVol = 80;
 					Config.Settings.swapInputs = false;
