@@ -131,7 +131,7 @@ public class Pickup : SpawnedObject
 		var ma = explosion.main;
 		if (type == PickupType.Silver || type == PickupType.Black)
 		{
-			ma.simulationSpeed = Mathf.Lerp(1f, 3f, impactForce);
+			ma.simulationSpeed = Mathf.Lerp(1f, 5f, impactForce);
 
 			var col = explosion.colorOverLifetime;
 			col.enabled = true;
@@ -140,11 +140,11 @@ public class Pickup : SpawnedObject
 			col.color = gradient;
 
 			ParticleSystem.EmitParams p = new ParticleSystem.EmitParams();
-			p.startLifetime = Mathf.Lerp(12f, 24f, impactForce);
+			p.startLifetime = Mathf.Lerp(1f, 16f, impactForce);
 
 			if (type == PickupType.Silver)
 			{
-				p.startSize = 0.4f;
+				p.startSize = 0.5f;
 				explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(10f, 50f, impactForce * impactForce)));
 				World.Spawn.Objects(Spawns.Pickup, Tile.Inverse(baseColor), transform.position, 4, Config.SpawnDelay);
 			}

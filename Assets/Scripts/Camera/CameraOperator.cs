@@ -92,11 +92,7 @@ public class CameraOperator : MonoBehaviour
 	{
 		if (!Game.PlayerActive)
 		{
-			// Move the camera
-			if (!float.IsNaN(currentDistance))
-			{
-				_camera.transform.localPosition = -Vector3.forward * currentDistance; 
-			}
+			_camera.transform.position = Game.CameraPosition;
 			return;
 		}
 

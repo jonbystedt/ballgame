@@ -178,7 +178,6 @@ public class Game : MonoBehaviour
 
 		player.GetComponent<Rigidbody>().isKinematic = true;
 		playerActive = false;
-		UpdateScore(0);
 
 		RenderSettings.fogDensity = 10f;
 		RenderSettings.skybox.SetColor("_Tint", RenderSettings.fogColor);
@@ -250,21 +249,23 @@ public class Game : MonoBehaviour
 	{
 		SetTime(6,0);
 
-		scoreText.text = "0";
-		nameText.text = World.Seed;
-
 		if (ShowStats)
 		{
 			UpdatePosition(World.GetChunkPosition(player.transform.position));
 		}
 
 		StartCoroutine(Wait(1f, () => {
+
+			UpdateScore(0);
+			nameText.text = World.Seed;
+
 			player.GetComponent<Rigidbody>().isKinematic = false;
 			player.transform.position = new Vector3(-0.5f, 32f, -0.5f);
 			player.GetComponent<Roller>().asleep = true;
 			PlayerActive = true;
 			CameraOp.FirstPerson = true;
 			PlaySong();
+			
 		}));
 	}
 
