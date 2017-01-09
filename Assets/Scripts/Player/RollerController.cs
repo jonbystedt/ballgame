@@ -82,14 +82,18 @@ public class RollerController : MonoBehaviour
 		{
 			boostEffect.SetActive(false);
 		}
-		if (boostOn)
+		if ((int)Config.GraphicsMode >= 2)
 		{
-			boostLight.intensity = 1f;
+			if (boostOn)
+			{
+				boostLight.intensity = 1f;
+			}
+			else
+			{
+				boostLight.intensity = 0f;
+			}
 		}
-		else
-		{
-			boostLight.intensity = 0f;
-		}
+
 	}
 
 

@@ -67,7 +67,7 @@ public class Config : MonoBehaviour
 					baseFog = 1.6f;
 				}
 
-				Config.FogScale = baseFog - (value * 0.035f);
+				Config.FogScale = baseFog - (value * 0.0333f);
 
 				// Load chunks out in a radius of 3 world sizes
 				_instance.chunkLoadRadius = value + Mathf.FloorToInt(value / 2f);

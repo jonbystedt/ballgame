@@ -38,7 +38,7 @@ public class TerrainGenerator : MonoBehaviour
 
 	float stretchFactor;
 	float squishFactor;
-	bool poleFlip;
+	bool flipStripes;
 	bool[] modPatterns = new bool[12];
 	bool glassy1;
 	bool glassy2;
@@ -108,7 +108,7 @@ public class TerrainGenerator : MonoBehaviour
 
 		SampleRegion stripes;
 
-		if (!poleFlip)
+		if (!flipStripes)
 		{
 			stripes= new SampleRegion(
 				NoiseConfig.stripe, 
@@ -775,7 +775,6 @@ public class TerrainGenerator : MonoBehaviour
 		hollowValue = hollowValue * persistance 
 						+ Mathf.Lerp(0, hollowValue * (1f / persistance), (float)ToWorldHeight(y) / (float)WORLD_BLOCK_HEIGHT);
 
-		
 		return reverseHollowTaper ? 1f - hollowValue : hollowValue;
 	}
 
@@ -816,8 +815,6 @@ public class TerrainGenerator : MonoBehaviour
 
 		caveBreakPoint = Mathf.FloorToInt(Mathf.Lerp(364, 640, GameUtils.Seed));
 
-		Game.Log(NoiseConfig.cave.frequency.ToString() + " : " + caveBreakPoint.ToString());
-
 		glassRockBreakPoint = Mathf.FloorToInt(Mathf.Lerp(0, 256, GameUtils.Seed));
 		stripeColorBreakPoint = Mathf.FloorToInt(Mathf.Lerp(0, 1024, GameUtils.Seed));
 		glassStripeColorBreakPoint = Mathf.FloorToInt(Mathf.Lerp(0, 1024, GameUtils.Seed));
@@ -828,9 +825,9 @@ public class TerrainGenerator : MonoBehaviour
 		glassIncrease1 = Mathf.FloorToInt(Mathf.Lerp(0, 512, Mathf.Pow(GameUtils.Seed, 2)));
 		glassIncrease2 = Mathf.FloorToInt(Mathf.Lerp(0, 512, Mathf.Pow(GameUtils.Seed, 2)));
 
-		poleFlip = GameUtils.Seed > 0.98f ? true : false;
+		flipStripes = GameUtils.Seed > 0.98f ? true : false;
 
-		modScale = Mathf.FloorToInt(Mathf.Lerp(0, 128, Mathf.Pow(GameUtils.Seed,2)));
+		modScale = Mathf.FloorToInt(Mathf.Lerp(2, 128, Mathf.Pow(GameUtils.Seed,2)));
 
 		stretchFactor = Mathf.Lerp(0, 1000, Mathf.Pow(GameUtils.Seed,2));
 		squishFactor = Mathf.Lerp(0, 100, Mathf.Pow(GameUtils.Seed,2));
@@ -848,8 +845,8 @@ public class TerrainGenerator : MonoBehaviour
 		reverseHollowTaper = GameUtils.Seed > 0.95 ? true : false;
 
         hollowFormation = GameUtils.Seed;
-		hollowMountains = Mathf.Pow(GameUtils.Seed * 0.1f, 5f);
-		hollowGlass = Mathf.Pow(GameUtils.Seed * 0.1f, 5f);
+		hollowMountains = Mathf.Pow(GameUtils.Seed * 0.2f, 12f);
+		hollowGlass = Mathf.Pow(GameUtils.Seed * 0.2f, 12f);
 
 		float stripedChance = GameUtils.Seed;
 		float patternedChance = GameUtils.Seed / 2f;

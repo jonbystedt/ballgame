@@ -83,12 +83,14 @@ public static class NoiseConfig {
 
 		pattern = new NoiseOptions(
 			Mathf.Lerp(0.006f, 0.01f, Mathf.Pow(GameUtils.Seed,3)), 
-			1,
+			Mathf.FloorToInt(Mathf.Lerp(1, 4, GameUtils.Seed)),
 			Mathf.Lerp(0f, 4f, GameUtils.Seed), 
 			Mathf.Lerp(0f, 1f, GameUtils.Seed), 
 			1024,
 			Mathf.Pow((GameUtils.Seed * 0.25f) - 0.125f, 12 + Mathf.FloorToInt(GameUtils.Seed * 8) % 8)
 			);
+		
+		Game.Log(pattern.frequency.ToString() + " : " + pattern.octaves.ToString() + " : " + pattern.lacunarity.ToString() + " : " + pattern.persistance.ToString());
 
 		stripe = new NoiseOptions(
 			Mathf.Lerp(0.00001f, 0.1f, GameUtils.Seed),  

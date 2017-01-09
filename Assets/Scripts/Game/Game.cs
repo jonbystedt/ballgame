@@ -202,6 +202,7 @@ public class Game : MonoBehaviour
 			{
 				showStats = false;
 				showScore = false;
+				logMessage.text = "";
 			}
 			else
 			{
@@ -456,7 +457,10 @@ public class Game : MonoBehaviour
 	{
 		WWW www = new WWW(randomWordUrl);
         yield return www;
-		randomWord = www.text.ToUpper();
+		if (www.text.Length <= 16)
+		{
+			randomWord = www.text.ToUpper();
+		}
 	}
 
 	IEnumerator Wait(float time, Action callback)
