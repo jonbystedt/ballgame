@@ -50,9 +50,8 @@ public static class NoiseConfig {
 		rainBreakValue = rainBreakValue + Mathf.FloorToInt(seed * seed * 350);
 		lightningBreakValue = lightningBreakValue + Mathf.FloorToInt(seed * seed * 250);
 
-		seed = GameUtils.Seed;
 		terrain = new NoiseOptions(
-			Mathf.Lerp(0.00001f, 0.025f, Mathf.Pow(seed, 1.2f)),
+			Mathf.Lerp(0.00001f, 0.025f, Mathf.Pow(GameUtils.Seed, 1.2f)),
 			Mathf.FloorToInt(Mathf.Lerp(1,3,GameUtils.Seed)),
 			Mathf.Lerp(0f, 4f, GameUtils.Seed), 
 			Mathf.Lerp(0f, 0.5f, GameUtils.Seed), 
@@ -60,9 +59,8 @@ public static class NoiseConfig {
 			Mathf.Pow(GameUtils.Seed - 0.5f, 10 + Mathf.FloorToInt(GameUtils.Seed * 10) % 10)
 			); 
 
-		seed = GameUtils.Seed;
 		mountain = new NoiseOptions(
-			Mathf.Lerp(0.00005f, 0.025f, Mathf.Pow(seed, 1.2f)),
+			Mathf.Lerp(0.00005f, 0.025f, Mathf.Pow(GameUtils.Seed, 1.2f)),
 			Mathf.FloorToInt(Mathf.Lerp(1,3,GameUtils.Seed)),
 			Mathf.Lerp(0f, 4f, GameUtils.Seed), 
 			Mathf.Lerp(0f, 1f, GameUtils.Seed), 
@@ -79,8 +77,6 @@ public static class NoiseConfig {
 			Mathf.Pow(GameUtils.Seed - 0.5f, 12 + Mathf.FloorToInt(GameUtils.Seed * 10) % 10)
 			);
 
-		
-
 		pattern = new NoiseOptions(
 			Mathf.Lerp(0.006f, 0.01f, Mathf.Pow(GameUtils.Seed,3)), 
 			Mathf.FloorToInt(Mathf.Lerp(1, 4, GameUtils.Seed)),
@@ -90,7 +86,7 @@ public static class NoiseConfig {
 			Mathf.Pow((GameUtils.Seed * 0.25f) - 0.125f, 12 + Mathf.FloorToInt(GameUtils.Seed * 8) % 8)
 			);
 		
-		Game.Log(pattern.frequency.ToString() + " : " + pattern.octaves.ToString() + " : " + pattern.lacunarity.ToString() + " : " + pattern.persistance.ToString());
+		//Game.Log(pattern.frequency.ToString() + " : " + pattern.octaves.ToString() + " : " + pattern.lacunarity.ToString() + " : " + pattern.persistance.ToString());
 
 		stripe = new NoiseOptions(
 			Mathf.Lerp(0.00001f, 0.1f, GameUtils.Seed),  

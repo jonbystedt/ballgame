@@ -68,7 +68,7 @@ public static class GameUtils
 		return impactForce;
 	}
 
-	public static void CreateVarianceTable()
+	public static void CreateSeedTable()
 	{
 		for (int i = 0; i < SEED_TABLE_SIZE; i++)
 		{

@@ -140,18 +140,18 @@ public class Pickup : SpawnedObject
 			col.color = gradient;
 
 			ParticleSystem.EmitParams p = new ParticleSystem.EmitParams();
-			p.startLifetime = Mathf.Lerp(8f, 12f, impactForce);
+			p.startLifetime = Mathf.Lerp(12f, 24f, impactForce);
 
 			if (type == PickupType.Silver)
 			{
 				p.startSize = 0.4f;
-				explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(10f, 100f, impactForce * impactForce)));
+				explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(10f, 50f, impactForce * impactForce)));
 				World.Spawn.Objects(Spawns.Pickup, Tile.Inverse(baseColor), transform.position, 4, Config.SpawnDelay);
 			}
 			else
 			{
 				p.startSize = 0.5f;
-				explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(8f, 80f, impactForce * impactForce)));
+				explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(8f, 40f, impactForce * impactForce)));
 				World.Spawn.Objects(Spawns.Pickup, Tile.Inverse(baseColor), transform.position, 4, Config.SpawnDelay);
 			}
 

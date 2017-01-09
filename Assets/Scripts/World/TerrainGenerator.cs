@@ -845,8 +845,8 @@ public class TerrainGenerator : MonoBehaviour
 		reverseHollowTaper = GameUtils.Seed > 0.95 ? true : false;
 
         hollowFormation = GameUtils.Seed;
-		hollowMountains = Mathf.Pow(GameUtils.Seed * 0.2f, 12f);
-		hollowGlass = Mathf.Pow(GameUtils.Seed * 0.2f, 12f);
+		hollowMountains = Mathf.Pow(GameUtils.Seed * 0.16f, 12f);
+		hollowGlass = Mathf.Pow(GameUtils.Seed * 0.16f, 12f);
 
 		float stripedChance = GameUtils.Seed;
 		float patternedChance = GameUtils.Seed / 2f;

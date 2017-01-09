@@ -60,6 +60,8 @@ public class Config : MonoBehaviour
 		{
 			if (_instance != null)
 			{
+				// start chunks
+				StartChunksToLoad = 128 * Mathf.FloorToInt((value - 2f) * 0.25f);
 				// set fog scale
 				float baseFog = 1.2f;
 				if (Config.GraphicsMode == 0)
@@ -86,6 +88,90 @@ public class Config : MonoBehaviour
 
 				Settings.worldSize = value;
 			}
+		}
+	}
+
+	public static GraphicsMode GraphicsMode
+	{
+		get 
+		{ 
+			return (GraphicsMode)Settings.graphicsQuality; 
+		}
+		set 
+		{ 
+			if (_instance != null)
+			{
+				Settings.graphicsQuality = (int)value; 
+
+				if (value == GraphicsMode.Low)
+				{
+					MaxItemSpawns = 100;
+					BlockSpawnChance = 0.05f;
+					ContactShadows = false;
+					GlobalFogEnabled = false;
+					FogScale = 1.2f;
+					AtmosphericScattering = false;
+					ShadowsEnabled = false;
+					Outlines = false;
+					ColoredOutlines = false;
+					if (QualitySettings.GetQualityLevel() != 0)
+					{
+						QualitySettings.SetQualityLevel(0);
+					}
+				}
+
+				if (value == GraphicsMode.Medium)
+				{
+					MaxItemSpawns = 100;
+					BlockSpawnChance = 0.05f;
+					FogScale = 0.8f;
+					ContactShadows = false;
+					GlobalFogEnabled = true;
+					AtmosphericScattering = false;
+					ShadowsEnabled = false;
+					Outlines = false;
+					ColoredOutlines = false;
+					if (QualitySettings.GetQualityLevel() != 1)
+					{
+						QualitySettings.SetQualityLevel(1);
+					}
+				}
+
+				if (value == GraphicsMode.High)
+				{
+					MaxItemSpawns = 100;
+					BlockSpawnChance = 0.05f;
+					FogScale = 0.7f;
+					ContactShadows = false;
+					GlobalFogEnabled = true;
+					AtmosphericScattering = true;
+					ShadowsEnabled = true;
+					Outlines = false;
+					ColoredOutlines = false;
+					if (QualitySettings.GetQualityLevel() != 2)
+					{
+						QualitySettings.SetQualityLevel(2);
+					}
+				}
+
+				if (value == GraphicsMode.Ultra)
+				{
+					MaxItemSpawns = 100;
+					BlockSpawnChance = 0.05f;
+					FogScale = 0.6f;
+					ContactShadows = true;
+					GlobalFogEnabled = true;
+					AtmosphericScattering = true;
+					ShadowsEnabled = true;
+					Outlines = false;
+					ColoredOutlines = false;
+					if (QualitySettings.GetQualityLevel() != 3)
+					{
+						QualitySettings.SetQualityLevel(3);
+					}
+				}
+			}
+
 		}
 	}
 
@@ -257,94 +343,6 @@ public class Config : MonoBehaviour
 	{
 		get { return Settings.resolution; }
 		set { Settings.resolution = value; }
-	}
-
-	public static GraphicsMode GraphicsMode
-	{
-		get 
-		{ 
-			return (GraphicsMode)Settings.graphicsQuality; 
-		}
-		set 
-		{ 
-			if (_instance != null)
-			{
-				Settings.graphicsQuality = (int)value; 
-
-				if (value == GraphicsMode.Low)
-				{
-					MaxItemSpawns = 100;
-					BlockSpawnChance = 0.05f;
-					ContactShadows = false;
-					GlobalFogEnabled = false;
-					FogScale = 1.2f;
-					AtmosphericScattering = false;
-					ShadowsEnabled = false;
-					Outlines = false;
-					ColoredOutlines = false;
-					StartChunksToLoad = 128;
-					if (QualitySettings.GetQualityLevel() != 0)
-					{
-						QualitySettings.SetQualityLevel(0);
-					}
-				}
-
-				if (value == GraphicsMode.Medium)
-				{
-					MaxItemSpawns = 100;
-					BlockSpawnChance = 0.05f;
-					FogScale = 0.8f;
-					ContactShadows = false;
-					GlobalFogEnabled = true;
-					AtmosphericScattering = false;
-					ShadowsEnabled = false;
-					Outlines = false;
-					ColoredOutlines = false;
-					StartChunksToLoad = 256;
-					if (QualitySettings.GetQualityLevel() != 1)
-					{
-						QualitySettings.SetQualityLevel(1);
-					}
-				}
-
-				if (value == GraphicsMode.High)
-				{
-					MaxItemSpawns = 100;
-					BlockSpawnChance = 0.05f;
-					FogScale = 0.7f;
-					ContactShadows = false;
-					GlobalFogEnabled = true;
-					AtmosphericScattering = true;
-					ShadowsEnabled = true;
-					Outlines = false;
-					ColoredOutlines = false;
-					StartChunksToLoad = 512;
-					if (QualitySettings.GetQualityLevel() != 2)
-					{
-						QualitySettings.SetQualityLevel(2);
-					}
-				}
-
-				if (value == GraphicsMode.Ultra)
-				{
-					MaxItemSpawns = 100;
-					BlockSpawnChance = 0.05f;
-					FogScale = 0.6f;
-					ContactShadows = true;
-					GlobalFogEnabled = true;
-					AtmosphericScattering = true;
-					ShadowsEnabled = true;
-					Outlines = false;
-					ColoredOutlines = false;
-					StartChunksToLoad = 1024;
-					if (QualitySettings.GetQualityLevel() != 3)
-					{
-						QualitySettings.SetQualityLevel(3);
-					}
-				}
-			}
-
-		}
 	}
 
 	public static Config _instance;
