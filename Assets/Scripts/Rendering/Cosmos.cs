@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityStandardAssets.ImageEffects;
+using Random = UnityEngine.Random;
 
 public class Cosmos : MonoBehaviour {
 
@@ -40,6 +42,7 @@ public class Cosmos : MonoBehaviour {
 
 	float skySpeed = 1;
 	float skyDelta = 0.001f;
+	float moonDelta = 0.01f;
 	bool daytime = true;
 	bool starsout = false;
 
@@ -61,6 +64,7 @@ public class Cosmos : MonoBehaviour {
 	float targetScale;
 	float baseFog;
 	float _ampm;
+	float fullSizeMoon;
 	Color starColor;
 
 
@@ -68,6 +72,7 @@ public class Cosmos : MonoBehaviour {
 	{
 		mainLight = GetComponent<Light>();
 		moonrenderer = moon.GetComponent<MeshRenderer>();
+		fullSizeMoon = moonrenderer.transform.localScale.y;
 		lightningController = lightning.GetComponent<DigitalRuby.ThunderAndLightning.ThunderAndLightningScript>();
 
 		stars.Clear();
@@ -283,9 +288,9 @@ public class Cosmos : MonoBehaviour {
 			starsout = false;
 		}
 
-		if (daytime && dot >= 0.5f && _ampm < 0f && moonrenderer.enabled)
+		if (daytime && dot >= 0.5f && _ampm < 0f && moonrenderer.transform.localScale.y == fullSizeMoon)
 		{
-			moonrenderer.enabled = false;
+			StartCoroutine(ShrinkMoon());
 		}
 
 		if (daytime && dot <= 0.3f && _ampm > 0f && !starsout)
@@ -296,12 +301,50 @@ public class Cosmos : MonoBehaviour {
 			starsout = true;
 		}
 
-		if (daytime && dot <= 0.5f && _ampm > 0f && !moonrenderer.enabled)
+		if (daytime && dot <= 0.5f && _ampm > 0f && moonrenderer.transform.localScale.y < fullSizeMoon)
 		{
-			moonrenderer.enabled = true;
+			StartCoroutine(GrowMoon());
 		}
 
 		//Game.Log(dot.ToString("F2") + " " + ampm.ToString());
+	}
+
+	IEnumerator ShrinkMoon()
+	{
+		for (;;)
+		{
+			if (moonrenderer.transform.localScale.y > 0.001f)
+			{
+				moonrenderer.transform.localScale *= (1f - moonDelta);
+				yield return null;
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+
+	IEnumerator GrowMoon()
+	{
+		for (;;)
+		{
+			if (moonrenderer.transform.localScale.y < fullSizeMoon)
+			{
+				moonrenderer.transform.localScale *= (1f + moonDelta);
+
+				if (moonrenderer.transform.localScale.y > fullSizeMoon)
+				{
+					moonrenderer.transform.localScale = new Vector3(fullSizeMoon, fullSizeMoon, fullSizeMoon);
+				}
+
+				yield return null;
+			}
+			else
+			{
+				break;
+			}
+		}
 	}
 
 	void HandleCosmosControls()

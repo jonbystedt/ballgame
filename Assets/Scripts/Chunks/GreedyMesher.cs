@@ -78,8 +78,8 @@ public class GreedyMesher : MonoBehaviour
 						}
 
 						// Check visibility within chunk
-						if (!transparent)
-						{
+						// if (!transparent)
+						// {
 							if (0 <= x[axis]
 								&& Blocks.GetType(blocks[Chunk.BlockIndex(x[0], x[1], x[2])]) == Block.Type.rock)
 							{
@@ -90,8 +90,11 @@ public class GreedyMesher : MonoBehaviour
 							{
 								back_block = blocks[Chunk.BlockIndex(x[0] + q[0], x[1] + q[1], x[2] + q[2])];
 							}
-						}
-						else
+						// }
+						// else
+						// {
+						bool maskAssigned = false;
+						if (transparent)
 						{
 							if (0 <= x[axis] 
 								&& Blocks.GetType(blocks[Chunk.BlockIndex(x[0], x[1], x[2])]) == Block.Type.glass)
@@ -103,37 +106,60 @@ public class GreedyMesher : MonoBehaviour
 							{
 								back_block = blocks[Chunk.BlockIndex(x[0] + q[0], x[1] + q[1], x[2] + q[2])];
 							}
+						// }
+							Block.Type frontType = Blocks.GetType(front_block);
+							Block.Type backType = Blocks.GetType(back_block);
+							// if this is transparent and one block is rock and one is glass, this cannot be seen.
+							if (frontType == Block.Type.glass && backType == Block.Type.rock || frontType == Block.Type.rock && backType == Block.Type.glass)
+							{
+								mask[x[u], x[v]] = 0;
+								maskAssigned = true;
+							}
+
+							if (frontType == Block.Type.rock)
+							{
+								front_block = Block.Null;
+							}
+
+							if (backType == Block.Type.rock)
+							{
+								back_block = Block.Null;
+							}
 						}
 
-						// if both blocks are something, or both or nothing assign 0 to the mask. this cannot be seen.
-						if ((front_block == Block.Null && back_block == Block.Null) || (front_block != Block.Null && back_block != Block.Null) )
+						if (!maskAssigned)
 						{
-							mask[x[u], x[v]] = 0;
-						}
-						// the front block only is nothing
-						else if (front_block != Block.Null)
-						{
-							// We don't include the frontside mesh if x[axis] = -1 as this lies outside the chunk
-							if (x[axis] >= 0)
-							{
-								mask[x[u], x[v]] = (int)(front_block + 1);
-							}
-							else
+							// if both blocks are something, or both or nothing assign 0 to the mask. this cannot be seen.
+							if ((front_block == Block.Null && back_block == Block.Null) || (front_block != Block.Null && back_block != Block.Null) )
 							{
 								mask[x[u], x[v]] = 0;
 							}
-						}
-						else
-						{
-							// We don't include the backside mesh if x[axis] = Chunk.Size - 1 as this lies outside the chunk
-							if (x[axis] < Chunk.Size - 1)
+
+							// the front block only is nothing
+							else if (front_block != Block.Null)
 							{
-								// The sign indicates the side the mesh is on
-								mask[x[u], x[v]] = -(int)(back_block + 1);
+								// We don't include the frontside mesh if x[axis] = -1 as this lies outside the chunk
+								if (x[axis] >= 0)
+								{
+									mask[x[u], x[v]] = (int)(front_block + 1);
+								}
+								else
+								{
+									mask[x[u], x[v]] = 0;
+								}
 							}
 							else
 							{
-								mask[x[u], x[v]] = 0;
+								// We don't include the backside mesh if x[axis] = Chunk.Size - 1 as this lies outside the chunk
+								if (x[axis] < Chunk.Size - 1)
+								{
+									// The sign indicates the side the mesh is on
+									mask[x[u], x[v]] = -(int)(back_block + 1);
+								}
+								else
+								{
+									mask[x[u], x[v]] = 0;
+								}
 							}
 						}
 					}

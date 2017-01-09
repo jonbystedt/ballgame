@@ -14,7 +14,6 @@ public class World : MonoBehaviour {
 	public SpawnManager spawn;
 	public TerrainGenerator generator;
 	public GreedyMesher mesher;
-	public Text seed;
 
 	static Chunk[] columnChunks = new Chunk[Config.WorldHeight];
 
@@ -25,7 +24,6 @@ public class World : MonoBehaviour {
 		get { return _seed; }
 		set
 		{
-			_instance.seed.text = value;
 			_seed = value;
 		}
 	}

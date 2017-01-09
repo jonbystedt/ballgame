@@ -297,10 +297,12 @@ public class TileFactory : MonoBehaviour {
 		//float hueRange = Random.Range(0f,0.25f);
 		float hueRange = Mathf.Lerp(0f, 1f, Random.value * Random.value * Random.value);
 		float hue;
-		float darkest = Random.value / 2f;
-		float lightest = Random.value / 2f;
+		float darkest = Random.value;
+		float lightest = Random.value;
+		float desaturateMax = Random.value;
 		float dark;
 		float light;
+		float desat;
 		float coin;
 
 		Color color = new Color();
@@ -324,14 +326,14 @@ public class TileFactory : MonoBehaviour {
 
 			if (type == GradientType.WarmCool)
 			{
-				if (coin < 0.25)
+				if (coin < 0.5)
 				{
 					dark = Mathf.Lerp(0, darkest, Random.value);
 					// Run from saturation to value
 					color = Tile.Darken(Color.Lerp(Color.HSVToRGB(hue, Mathf.Lerp(valueEnd, valueStart, i / (float)(size - 1)), v),
 						Color.HSVToRGB(hue, s,  Mathf.Lerp(saturationStart, saturationEnd, i / (float)(size - 1))), 0.5f), dark);
 				} 
-				else if (coin < 0.5)
+				else if (coin < 0.75)
 				{
 					light = Mathf.Lerp(0, lightest, Random.value);
 					// Run from saturation to value
@@ -342,6 +344,13 @@ public class TileFactory : MonoBehaviour {
 				{
 					color = Color.Lerp(Color.HSVToRGB(hue, Mathf.Lerp(valueEnd, valueStart, i / (float)(size - 1)), v),
 						Color.HSVToRGB(hue, s,  Mathf.Lerp(saturationStart, saturationEnd, i / (float)(size - 1))), 0.5f);
+				}
+
+				// desaturate world
+				if (Random.value < 0.75f)
+				{
+					desat = Mathf.Lerp(0, desaturateMax, Random.value);
+					color = Tile.Desaturate(color, desat);
 				}
 			}
 			else if (type == GradientType.SingleColor)

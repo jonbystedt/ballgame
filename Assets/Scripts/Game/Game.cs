@@ -144,6 +144,10 @@ public class Game : MonoBehaviour
 
 		clockText.text = "";
 		positionText.text = "";
+		dayText.text = "";
+		scoreText.text = "";
+		nameText.text = "";
+		logMessage.text = "";
 
 		startGame.playMusic.StopPlaying();
 
@@ -245,6 +249,9 @@ public class Game : MonoBehaviour
 	public void _begin()
 	{
 		SetTime(6,0);
+
+		scoreText.text = "0";
+		nameText.text = World.Seed;
 
 		if (ShowStats)
 		{
