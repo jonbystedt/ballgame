@@ -23,17 +23,144 @@ public class InterpolatedNoise : MonoBehaviour
 
 			foreach(KeyValuePair<string,SampleRegion> result in sampleSet.results)
 			{
-				this.StartCoroutineAsync(GetSamples(result.Value));
-				this.StartCoroutineAsync(MapExpand(result.Value));
+				if (Config.Multithreaded)
+				{
+					this.StartCoroutineAsync(GetSamplesAsync(result.Value));
+					this.StartCoroutineAsync(MapExpandAsync(result.Value));
+				}
+				else
+				{
+					this.StartCoroutine(GetSamples(result.Value));
+					this.StartCoroutine(MapExpand(result.Value));
+				}
 			}
 		}
 	}
 		
 
+	IEnumerator GetSamplesAsync(SampleRegion i)
+	{
+		int sampleX = (i.region.sizeX / (i.sampleRate * 2)) + 1;
+		int sampleY = (i.region.sizeY / i.sampleRate) + 1;
+		int sampleZ = (i.region.sizeZ / (i.sampleRate * 2)) + 1;
+
+		if (i.samples == null || i.samples.Length != sampleX * sampleY * sampleZ)
+		{
+			i.samples = new float[sampleX, sampleY, sampleZ];
+		}
+
+		for (int z = 0; z < sampleZ; z++)
+		{
+			for (int x = 0; x < sampleX; x++)
+			{
+				// distance calculation for drift
+				Vector2 location = new Vector2(
+					(x * i.sampleRate + (i.region.min.x / 2f)) * i.zoom.x,
+					(z * i.sampleRate + (i.region.min.z / 2f)) * i.zoom.z
+					);
+				float distance = Mathf.Abs(Vector2.Distance(Vector2.zero, location));
+				 
+				for (int y = 0; y < sampleY; y++)
+				{
+					// x and z are calculated above
+					Vector3 position = new Vector3(
+						location.x,
+						(y * i.sampleRate + i.region.min.y) * i.zoom.y,
+						location.y
+						);
+
+					// with drift
+					i.samples[x, y, z] = NoiseGenerator.Sum(
+						i.method, 
+						position, 
+						i.options.frequency + (i.options.drift * distance), 
+						i.options.octaves, 
+						i.options.lacunarity, 
+						i.options.persistance
+					);
+				}
+			}
+		}
+
+		i.sampled = true;
+
+		yield return null;
+	}
+
+
+	IEnumerator MapExpandAsync(SampleRegion i)
+	{
+		// Wait for the sampling coroutine to complete.
+		for (;;)
+		{
+			if (!i.sampled)
+			{
+				yield return null;
+			} 
+			else
+			{
+				break;
+			}
+		}
+
+		if (i.interpolates == null)
+		{
+			i.interpolates = new int[
+				(i.region.sizeX / i.sampleRate) * i.sampleRate, 
+				(i.region.sizeY / i.sampleRate) * i.sampleRate, 
+				(i.region.sizeZ / i.sampleRate) * i.sampleRate
+			];
+		}
+
+		int sampleX = i.region.sizeX / (i.sampleRate * 2) + 1;
+		int sampleY = i.region.sizeY / i.sampleRate + 1;
+		int sampleZ = i.region.sizeZ / (i.sampleRate * 2) + 1;
+
+		for (int z = 0; z < sampleZ - 1; z++)
+		{
+			for (int y = 0; y < sampleY - 1; y++)
+			{
+				for (int x = 0; x < sampleX -1; x++)
+				{
+					float v000 = i.samples[x, y, z];
+					float v100 = i.samples[x + 1, y, z];
+					float v010 = i.samples[x, y + 1, z];
+					float v110 = i.samples[x + 1, y + 1, z];
+					float v001 = i.samples[x, y, z + 1];
+					float v101 = i.samples[x + 1, y, z + 1];
+					float v011 = i.samples[x, y + 1, z + 1];
+					float v111 = i.samples[x + 1, y + 1, z + 1];
+
+					for (int zi = 0; zi < i.sampleRate * 2; ++zi)
+					{
+						for (int yi = 0; yi < i.sampleRate; ++yi)
+						{
+							for (int xi = 0; xi < i.sampleRate * 2; ++xi)
+							{
+								float tx = (float)xi / (i.sampleRate * 2);
+								float ty = (float)yi / i.sampleRate;
+								float tz = (float)zi / (i.sampleRate * 2);
+
+								i.interpolates[x * (i.sampleRate * 2) + xi, y * i.sampleRate + yi, z * (i.sampleRate * 2) + zi]
+									= Mathf.FloorToInt(((
+										GameUtils.TriLerp (v000, v100, v010, v110, v001, v101, v011, v111, tx, ty, tz)
+									+ 1f) * (i.options.scale / 2f)));
+							}
+						}
+					}
+				}
+			}
+		}
+
+		i.complete = true;
+
+		yield return null;
+	}
+
 	IEnumerator GetSamples(SampleRegion i)
 	{
-		// Stopwatch stopwatch = new Stopwatch();
-		// stopwatch.Start();
+		Stopwatch stopwatch = new Stopwatch();
+		stopwatch.Start();
 
 		int sampleX = (i.region.sizeX / (i.sampleRate * 2)) + 1;
 		int sampleY = (i.region.sizeY / i.sampleRate) + 1;
@@ -64,15 +191,6 @@ public class InterpolatedNoise : MonoBehaviour
 						location.y
 						);
 
-					// i.samples[x, y, z] = NoiseGenerator.Sum(
-					// 	i.method, 
-					// 	position, 
-					// 	i.options.frequency, 
-					// 	i.options.octaves, 
-					// 	i.options.lacunarity, 
-					// 	i.options.persistance
-					// 	);
-
 					// with drift
 					i.samples[x, y, z] = NoiseGenerator.Sum(
 						i.method, 
@@ -83,12 +201,12 @@ public class InterpolatedNoise : MonoBehaviour
 						i.options.persistance
 					);
 
-					// if (stopwatch.ElapsedTicks > Config.CoroutineTiming)
-					// {
-					// 	yield return null;
-					// 	stopwatch.Reset();
-					// 	stopwatch.Start();
-					// }
+					if (stopwatch.ElapsedTicks > Config.CoroutineTiming)
+					{
+						yield return null;
+						stopwatch.Reset();
+						stopwatch.Start();
+					}
 				}
 			}
 		}
@@ -114,8 +232,8 @@ public class InterpolatedNoise : MonoBehaviour
 			}
 		}
 
-		// Stopwatch stopwatch = new Stopwatch();
-		// stopwatch.Start();
+		Stopwatch stopwatch = new Stopwatch();
+		stopwatch.Start();
 
 		if (i.interpolates == null)
 		{
@@ -160,13 +278,13 @@ public class InterpolatedNoise : MonoBehaviour
 										GameUtils.TriLerp (v000, v100, v010, v110, v001, v101, v011, v111, tx, ty, tz)
 									+ 1f) * (i.options.scale / 2f)));
 
-								// if (stopwatch.ElapsedTicks > Config.CoroutineTiming)
-								// {
-								// 	yield return null;
+								if (stopwatch.ElapsedTicks > Config.CoroutineTiming)
+								{
+									yield return null;
 
-								// 	stopwatch.Reset();
-								// 	stopwatch.Start();
-								// }
+									stopwatch.Reset();
+									stopwatch.Start();
+								}
 							}
 						}
 					}

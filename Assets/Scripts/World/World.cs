@@ -306,7 +306,6 @@ public class World : MonoBehaviour {
 			{
 				chunk._changes.Add(Chunk.BlockIndex(x - chunk.pos.x, y - chunk.pos.y, z - chunk.pos.z));
 			}
-			chunk.playerHit = playerHit;
 			chunk.update = true;
 
 			// Check if adjacent chunks will need an update
@@ -345,7 +344,6 @@ public class World : MonoBehaviour {
 			Chunk chunk = GetChunk(GetChunkPosition(pos));
 			if (chunk != null) 
 			{
-				chunk.playerHit = playerHit;
 				chunk.update = true;
 			}
 		}

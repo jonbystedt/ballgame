@@ -77,7 +77,14 @@ public class TerrainGenerator : MonoBehaviour
 		generator.SampleNoise(sampleSet);
 		PopulateSpawns(sampleSet, column[0].pos);
 
-		this.StartCoroutineAsync(AwaitSamples(sampleSet, column));
+		if (Config.Multithreaded)
+		{
+			this.StartCoroutineAsync(AwaitSamplesAsync(sampleSet, column));
+		}
+		else
+		{
+			StartCoroutine(AwaitSamples(sampleSet, column));
+		}
 
 		return sampleSet.region;
 	}
@@ -150,28 +157,18 @@ public class TerrainGenerator : MonoBehaviour
 	}
 
 
-	IEnumerator AwaitSamples(SampleSet sampleSet, Chunk[] column)
+	IEnumerator AwaitSamplesAsync(SampleSet sampleSet, Chunk[] column)
 	{
 		for(;;)
 		{	
 			if (sampleSet.results.Values.All(x => x.complete))
 			{
-				//Stopwatch stopwatch = Stopwatch.StartNew();
-
 				// loop through the x and z axis. The GenerateColumn coroutine will build a column of blocks at this position.
 				for (int x = column[0].pos.x; x < column[0].pos.x + Chunk.Size; x++)
 				{
 					for (int z = column[0].pos.z; z < column[0].pos.z + Chunk.Size; z++)
 					{
 						GenerateColumn(x, z, sampleSet, column);
-
-						// if (stopwatch.ElapsedTicks > Config.CoroutineTiming)
-						// {
-						// 	yield return null;
-
-						// 	stopwatch.Reset();
-						// 	stopwatch.Start();
-						// }
 					}
 				}
 
@@ -193,6 +190,51 @@ public class TerrainGenerator : MonoBehaviour
 
 		yield return null;
 	}
+
+	IEnumerator AwaitSamples(SampleSet sampleSet, Chunk[] column)
+	{
+		for(;;)
+		{	
+			if (sampleSet.results.Values.All(x => x.complete))
+			{
+				Stopwatch stopwatch = Stopwatch.StartNew();
+
+				// loop through the x and z axis. The GenerateColumn coroutine will build a column of blocks at this position.
+				for (int x = column[0].pos.x; x < column[0].pos.x + Chunk.Size; x++)
+				{
+					for (int z = column[0].pos.z; z < column[0].pos.z + Chunk.Size; z++)
+					{
+						GenerateColumn(x, z, sampleSet, column);
+
+						if (stopwatch.ElapsedTicks > Config.CoroutineTiming)
+						{
+							yield return null;
+
+							stopwatch.Reset();
+							stopwatch.Start();
+						}
+					}
+				}
+
+				for (int i = 0; i < column.Length; i++)
+				{
+					Chunk chunk = column[i];
+					chunk.SetBlocksUnmodified();
+					Serialization.Load(chunk);
+					chunk.built = true;
+				}
+
+				break;
+			} 
+			else
+			{
+				yield return null;
+			}
+		}
+
+		yield return null;
+	}
+
 
 	public void GenerateColumn(int x, int z, SampleSet sampleSet, Chunk[] column)
 	{
@@ -259,10 +301,15 @@ public class TerrainGenerator : MonoBehaviour
 				int colorIndex;
 				int modIndex;
 
+				bool beach = false;
+				if (y <= beachHeight)
+				{
+					beach = true;
+				}
+
 				// mountains if less than or equal to the height of a 2D noisemap, and not in the 'cave' negative space
 				if (y <= mountainHeight)
 				{
-					bool beach = false;
 					// glass or rock? if the value of the 3D 'glass' noisemap is greater than the breakpoint this is potentially rock
                     if (glassRockBreakPoint < glassValue) 
 					{
@@ -270,20 +317,12 @@ public class TerrainGenerator : MonoBehaviour
 						// but if the value of the 'glass' noisemap is greater than the 'hollow' cutoff this is air
 						if (glassValue > NoiseConfig.pattern.scale - Mathf.FloorToInt((hollowMountainValue * (float)NoiseConfig.pattern.scale)))
 						{
-							if (y <= beachHeight)
+							chunk.SetBlock (localX, localY, localZ, Block.Air);
+							if (!air)
 							{
-								beach = true;
+								sampleSet.spawnMap.height[localX, localZ] = y;
 							}
-							else
-							{
-								chunk.SetBlock (localX, localY, localZ, Block.Air);
-								if (!air)
-								{
-									sampleSet.spawnMap.height[localX, localZ] = y;
-								}
-								air = true;
-							}
-	
+							air = true;
 						}
 						// two distinct rock stripes provided by the 3D noisemap 'stripes'
 						else if (stripeValue > stripeColorBreakPoint  && (caveChance < caveValue || beach)) 
@@ -317,19 +356,12 @@ public class TerrainGenerator : MonoBehaviour
 						// If we are less than the corresponding 'hollow' value this is air
 						if (glassValue < NoiseConfig.pattern.scale * hollowGlassValue) 
 						{
-							if (y <= beachHeight)
+							chunk.SetBlock (localX, localY, localZ, Block.Air);
+							if (!air)
 							{
-								beach = true;
+								sampleSet.spawnMap.height[localX, localZ] = y;
 							}
-							else
-							{
-								chunk.SetBlock (localX, localY, localZ, Block.Air);
-								if (!air)
-								{
-									sampleSet.spawnMap.height[localX, localZ] = y;
-								}
-								air = true;
-							}
+							air = true;
 						}
 						// glass sections
 						// have rock stripes
@@ -368,7 +400,7 @@ public class TerrainGenerator : MonoBehaviour
 
 									if (modPatterns[9])
 									{
-										colorIndex = colorIndex = GetModIndex(colorIndex, caveValue, stripeValue, 32);
+										colorIndex = GetModIndex(colorIndex, caveValue, stripeValue, 32);
 									}
 
 									chunk.SetBlock (localX, localY, localZ, Blocks.Rock(colorIndex));
@@ -415,7 +447,6 @@ public class TerrainGenerator : MonoBehaviour
 									{
 										colorIndex = GetModIndex(colorIndex, glassValue, stripeValue, 32);
 									}
-
 									
 									chunk.SetBlock (localX, localY, localZ, Blocks.Glass(colorIndex));
 									air = false;
@@ -813,7 +844,7 @@ public class TerrainGenerator : MonoBehaviour
 		cloudEasing = 16 + Mathf.FloorToInt(Mathf.Lerp(0, 16, Mathf.Pow(GameUtils.Seed, 2)));
 		hollowPersistance = Mathf.Pow(GameUtils.Seed, 10);
 
-		caveBreakPoint = Mathf.FloorToInt(Mathf.Lerp(364, 640, GameUtils.Seed));
+		caveBreakPoint = Mathf.FloorToInt(Mathf.Lerp(256, 768, GameUtils.Seed));
 
 		glassRockBreakPoint = Mathf.FloorToInt(Mathf.Lerp(0, 256, GameUtils.Seed));
 		stripeColorBreakPoint = Mathf.FloorToInt(Mathf.Lerp(0, 1024, GameUtils.Seed));
@@ -845,8 +876,8 @@ public class TerrainGenerator : MonoBehaviour
 		reverseHollowTaper = GameUtils.Seed > 0.95 ? true : false;
 
         hollowFormation = GameUtils.Seed;
-		hollowMountains = Mathf.Pow(GameUtils.Seed * 0.16f, 12f);
-		hollowGlass = Mathf.Pow(GameUtils.Seed * 0.16f, 12f);
+		hollowMountains = Mathf.Pow(GameUtils.Seed * 0.1f, 12f);
+		hollowGlass = Mathf.Pow(GameUtils.Seed * 0.1f, 12f);
 
 		float stripedChance = GameUtils.Seed;
 		float patternedChance = GameUtils.Seed / 2f;

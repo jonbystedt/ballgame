@@ -59,7 +59,7 @@ public class RollerController : MonoBehaviour
 
 		if (create)
 		{
-			roller.CreateBlocks();
+    			roller.CreateBlocks();
 		}
 
 		// TODO: Centralize all input handling
@@ -84,7 +84,7 @@ public class RollerController : MonoBehaviour
 		}
 		if ((int)Config.GraphicsMode >= 2)
 		{
-			if (boostOn)
+			if (boostOn && !camOp.FirstPerson)
 			{
 				boostLight.intensity = 1f;
 			}

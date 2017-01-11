@@ -35,6 +35,9 @@ public class StartGame : MonoBehaviour {
 	private LoadChunks loader;
 
 	private RectTransform inputRect;
+
+	int defaultCoroutineTiming = 20000;
+	int maxCoroutineTiming = 100000;
 	
 	void Awake()
 	{
@@ -90,6 +93,15 @@ public class StartGame : MonoBehaviour {
 					Config.Settings.sfxVol = 80;
 					Config.Settings.swapInputs = false;
 					Config.Settings.resolution = Screen.width.ToString() + "x" + Screen.height.ToString();
+					Config.Settings.multithreaded = true;
+				#if UNITY_STANDALONE_OSX
+					Config.Settings.multithreaded = false;
+				#endif
+					Config.Settings.coroutineTiming = defaultCoroutineTiming;
+				}
+				else
+				{
+					defaultCoroutineTiming = Config.Settings.coroutineTiming;
 				}
 				setOptions.SetResolution(Config.Settings.resolution);
 				Config.GraphicsMode = Config.GraphicsMode;
@@ -112,7 +124,7 @@ public class StartGame : MonoBehaviour {
 
 		loader.loading = true;
 		loader._start();
-		Config.CoroutineTiming = 100000;
+		Config.CoroutineTiming = maxCoroutineTiming;
 		message.text = "Building World";
 		StartCoroutine("WaitForChunkLoad");
 	}
@@ -125,8 +137,7 @@ public class StartGame : MonoBehaviour {
 		//Game.Player.transform.position = new Vector3(start.region.min.x, results.spawnMap.height[0,0] + 1f, start.region.min.z);
 
 		loader.spawning = true;
-		Config.CoroutineTiming = 20000;
-		
+		Config.CoroutineTiming = defaultCoroutineTiming;
 
 		if (changeMusicOnStart) 
 		{

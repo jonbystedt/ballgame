@@ -43,7 +43,7 @@ public class Cosmos : MonoBehaviour {
 	float skySpeed = 1;
 	float skyDelta = 0.001f;
 	float moonDelta = 0.01f;
-	bool daytime = true;
+	public static bool Daytime = true;
 	bool starsout = false;
 
 	public float days = 1;
@@ -180,7 +180,11 @@ public class Cosmos : MonoBehaviour {
 
 		// set light color
 		mainLight.color = nightDayColor.Evaluate(dot);
-		RenderSettings.ambientLight = mainLight.color;
+
+		if (Daytime)
+		{
+			RenderSettings.ambientLight = mainLight.color;
+		}
 
 		// lightning color
 		lightningScript.GlowTintColor = Tile.Brighten(Tile.Inverse(mainLight.color), 0.8f);
@@ -206,10 +210,6 @@ public class Cosmos : MonoBehaviour {
 
 		// Skybox Color
 		RenderSettings.skybox.SetColor("_Tint", skyColor);
-		if (Time.frameCount % 100 == 0)
-		{
-			DynamicGI.UpdateEnvironment();
-		}
 	
 		// Star Color and Size
 		starColor = Color.Lerp(Tile.Colors[Mathf.FloorToInt((Random.value + dot) * 64) % 64],Color.black, Mathf.Clamp01(rain.RainIntensity * 3));
@@ -225,7 +225,7 @@ public class Cosmos : MonoBehaviour {
 		{
 			baseFog = fogDensityCurve.Evaluate(dot) * Config.FogScale;
 
-			if (daytime)
+			if (Daytime)
 			{
 				RenderSettings.fogDensity = Mathf.Lerp(Mathf.Lerp(
 					baseFog,
@@ -247,6 +247,11 @@ public class Cosmos : MonoBehaviour {
 			RenderSettings.fogDensity = Mathf.Lerp(fogDensityCurve.Evaluate(dot) * Config.FogScale, RenderSettings.fogDensity, skyDelta);
 		}
 
+		if (Time.frameCount % 100 == 0)
+		{
+			DynamicGI.UpdateEnvironment();
+		}
+
 		// if (Config.AtmosphericScattering)
 		// {
 		// 	scatterFog.Advanced.ScatteringSize = Mathf.Lerp(0.995f, 1f, Mathf.Clamp01(rain.RainIntensity * 2f));
@@ -262,10 +267,10 @@ public class Cosmos : MonoBehaviour {
 		// slightly before and after the minimumn ambient point
 		if (dot > 0.05f) 
 		{
-			if (!daytime)
+			if (!Daytime)
 			{
 				days++;
-				daytime = true;
+				Daytime = true;
 				Game.PlaySong();
 			}
 
@@ -273,27 +278,27 @@ public class Cosmos : MonoBehaviour {
 		}
 		else
 		{
-			if (daytime)
+			if (Daytime)
 			{
-				daytime = false;
+				Daytime = false;
 			}
 
 			_ampm = Rotate(nightRotateSpeed * Time.deltaTime * skySpeed);
 		}
 
-		if (daytime && dot >= 0.2f && _ampm < 0f && starsout)
+		if (Daytime && dot >= 0.2f && _ampm < 0f && starsout)
 		{
 			var em = stars.emission;
 			em.enabled = false;
 			starsout = false;
 		}
 
-		if (daytime && dot >= 0.3f && _ampm < 0f && moonrenderer.transform.localScale.y == fullSizeMoon)
+		if (Daytime && dot >= 0.3f && _ampm < 0f && moonrenderer.transform.localScale.y == fullSizeMoon)
 		{
 			StartCoroutine(ShrinkMoon());
 		}
 
-		if (daytime && dot <= 0.3f && _ampm > 0f && !starsout)
+		if (Daytime && dot <= 0.3f && _ampm > 0f && !starsout)
 		{
 			var em = stars.emission;
 			em.enabled = true;
@@ -301,7 +306,7 @@ public class Cosmos : MonoBehaviour {
 			starsout = true;
 		}
 
-		if (daytime && dot <= 0.3f && _ampm > 0f && moonrenderer.transform.localScale.y < fullSizeMoon)
+		if (Daytime && dot <= 0.3f && _ampm > 0f && moonrenderer.transform.localScale.y < fullSizeMoon)
 		{
 			StartCoroutine(GrowMoon());
 		}
@@ -437,5 +442,8 @@ public class Cosmos : MonoBehaviour {
 		nightDayFogColor.SetKeys(gck, gak);
 
 		moonlight.nightDayColor = nightDayFogColor;
+
+		zodiac.transform.localScale = Vector3.one;
+		zodiac.transform.localScale *= 2f + (Config.WorldSize - 6f) * 0.25f;
 	}
 }

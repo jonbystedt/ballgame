@@ -335,8 +335,13 @@ public class Config : MonoBehaviour
 
 	public static int CoroutineTiming
 	{
-		get { return _instance.coroutineTiming; }
-		set { _instance.coroutineTiming = value; }
+		get { return Settings.coroutineTiming; }
+		set { Settings.coroutineTiming = value; }
+	}
+
+	public static bool Multithreaded
+	{
+		get { return Settings.multithreaded; }
 	}
 
 	public static string Resolution

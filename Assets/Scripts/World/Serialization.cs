@@ -9,8 +9,8 @@ using YamlDotNet.Serialization;
 
 public static class Serialization 
 {
-	public static string SaveFolderName = "worlds";
-	public static string SettingsFileName = "ballgame_settings.config";
+	public static string SaveFolderName = "ballgame_Worlds";
+	public static string SettingsFileName = "ballgame_Settings.config";
 
 	static DirectoryInfo saveDirectory;
 	static string saveLocation;
@@ -136,6 +136,7 @@ public static class Serialization
 
 		if (files.Length == 0)
 		{
+			Directory.Delete(SaveLocation, true);
 			return;
 		}
 

@@ -16,14 +16,17 @@ public class Moonlight : MonoBehaviour {
 	public GameObject innerMoon;
 	public Cosmos cosmos;
 
-	Material moonMaterial;
-	Material innerMoonMat;
+	Material moonCheese;
+
+	Material innerMoonCheese;
 
 	void Start () 
 	{
 		moonlight = GetComponent<Light>();
-		moonMaterial = moon.GetComponent<Renderer>().material;
-		innerMoonMat = innerMoon.GetComponent<Renderer>().material;
+		moonCheese = moon.GetComponent<Renderer>().material;
+		moonCheese.EnableKeyword("_EMISSION");
+		innerMoonCheese = innerMoon.GetComponent<Renderer>().material;
+		innerMoonCheese.EnableKeyword("_EMISSION");
 	}
 
 	void Update () 
@@ -32,27 +35,33 @@ public class Moonlight : MonoBehaviour {
 		float dot = Mathf.Clamp01 ((Vector3.Dot (moonlight.transform.forward, Vector3.down) - minPoint) / tRange);
 		float i = ((maxIntensity - minIntensity) * dot) + minIntensity;
 
-		moonlight.intensity = Mathf.Lerp(i, i * 0.1f, cosmos.rain.RainIntensity);
-		moonSpotlight.intensity = Mathf.Lerp(i * 0.3f, (i * 0.3f) / 3, cosmos.rain.RainIntensity);
-
-		//Debug.Log ("Moon Intensity: " + i.ToString());
-		//Game.Log(dot.ToString("N2"));
+		moonlight.intensity = Mathf.Lerp(i, i * 0.5f, cosmos.rain.RainIntensity);
+		moonSpotlight.intensity = Mathf.Lerp(i * 0.25f, i * 0.1f, cosmos.rain.RainIntensity);
 
 		Color color = nightDayColor.Evaluate(dot);
 		moonlight.color = Color.Lerp(color, Color.black, Mathf.Clamp01(cosmos.rain.RainIntensity + 0.2f));
 		moonSpotlight.color = Color.Lerp(color, Color.black, Mathf.Clamp01(cosmos.rain.RainIntensity + 0.2f));
-		RenderSettings.ambientLight = color;
 
-		color = Tile.Lighten(color, moonlight.intensity * 2f);
-		color.a = Mathf.Lerp(0.1f, 0.0025f, cosmos.rain.RainIntensity);
-		//moonMaterial.SetColor("_EmissionColor", Tile.Darken(color, cosmos.rain.RainIntensity));
-		moonMaterial.SetColor("_Color", color);
+		if (!Cosmos.Daytime)
+		{
+			RenderSettings.ambientLight = color;
+		}
 
-		color = nightDayColor.Evaluate(dot - 0.05f);
-		color = Color.Lerp(color,Color.black,Mathf.Clamp01(cosmos.rain.RainIntensity + 0.5f));
-		color.a = Mathf.Lerp(0.1f, 0.0025f, cosmos.rain.RainIntensity);
-		//innerMoonMat.SetColor("_EmissionColor", Tile.Darken(color, cosmos.rain.RainIntensity));
-		innerMoonMat.SetColor("_Color", Tile.Brighten(color, 0.5f));
+		color = Tile.Lighten(color, 1f - dot);
+		color = Color.Lerp(color, Color.black, cosmos.rain.RainIntensity);
+		color.a = Mathf.Lerp(0.3f, 0f, Mathf.Clamp01(dot - 0.2f));
+
+		moonCheese.SetColor("_Color", color);		
+		moonCheese.SetColor("_EmissionColor", 
+			Tile.Darken(color, Mathf.Clamp01(cosmos.rain.RainIntensity + 0.2f)) * Mathf.Lerp(Mathf.Clamp01(dot - 0.25f), 0, Mathf.Clamp01(cosmos.rain.RainIntensity + 0.5f)));
+
+		color = Tile.Lighten(nightDayColor.Evaluate(dot - 0.05f), dot);
+		color = Color.Lerp(color, Color.black, cosmos.rain.RainIntensity);
+		color.a = Mathf.Lerp(0f, 1f, Mathf.Clamp01(dot - 0.2f));
+
+		innerMoonCheese.SetColor("_Color", color);		
+		innerMoonCheese.SetColor("_EmissionColor", 
+			Tile.Darken(color, Mathf.Clamp01(cosmos.rain.RainIntensity + 0.5f)) * Mathf.Lerp(Mathf.Clamp01(dot - 0.25f), 0, Mathf.Clamp01(cosmos.rain.RainIntensity + 0.5f)));
 
 		moon.transform.Rotate(moonSpinDir * Time.deltaTime * moonSpinSpeed);
 		innerMoon.transform.Rotate(-moonSpinDir * 2 * Time.deltaTime * moonSpinSpeed);

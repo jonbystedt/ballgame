@@ -132,7 +132,7 @@ public class Game : MonoBehaviour
 
 		player.GetComponent<Rigidbody>().isKinematic = true;
 		PlayerActive = false;
-		player.transform.position = new Vector3(-0.5f, 256f, -0.5f);
+		player.transform.position = new Vector3(-0.5f, 512f, -0.5f);
 
 		menuGlow.color = Tile.Brighten(RenderSettings.fogColor, 0.5f);
 		RenderSettings.fogColor = Tile.Brighten(Color.Lerp(RenderSettings.fogColor, Color.black, 0.9f), 0.05f);
@@ -176,6 +176,7 @@ public class Game : MonoBehaviour
 
 		camOp = mainCamera.GetComponentInParent<CameraOperator>();
 
+		player.transform.position = new Vector3(-0.5f, 512f, -0.5f);
 		player.GetComponent<Rigidbody>().isKinematic = true;
 		playerActive = false;
 
@@ -247,7 +248,7 @@ public class Game : MonoBehaviour
 
 	public void _begin()
 	{
-		SetTime(6,0);
+		SetTime(18,0);
 
 		if (ShowStats)
 		{
@@ -265,7 +266,7 @@ public class Game : MonoBehaviour
 			PlayerActive = true;
 			CameraOp.FirstPerson = true;
 			PlaySong();
-			
+
 		}));
 	}
 

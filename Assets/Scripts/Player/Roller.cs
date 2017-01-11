@@ -194,7 +194,7 @@ public class Roller : MonoBehaviour
 	{
 		if (!grounded)
 		{
-			moveDirection *= boostPower * 1.2f;
+			moveDirection *= boostPower;
 		}
 		else
 		{
@@ -306,15 +306,17 @@ public class Roller : MonoBehaviour
 		// when boosting, releasing jump should slowly descend, pressing jump should ascend
 		else
 		{
-			if (jumping)
+			if (Game.Player.transform.position.y < 64f)
 			{
-				_rigidbody.AddForce(moveDirection * movePower * airResistance + Vector3.up * gravityAssist * lift, ForceMode.Impulse);
+				if (jumping)
+				{
+					_rigidbody.AddForce(moveDirection * movePower * airResistance + Vector3.up * gravityAssist * lift, ForceMode.Impulse);
+				}
+				else
+				{
+					_rigidbody.AddForce(moveDirection * movePower * airResistance + Vector3.down * gravityAssist * stall, ForceMode.Impulse);
+				}
 			}
-			else
-			{
-				_rigidbody.AddForce(moveDirection * movePower * airResistance + Vector3.down * gravityAssist * stall, ForceMode.Impulse);
-			}
-
 		}	
 	}
 

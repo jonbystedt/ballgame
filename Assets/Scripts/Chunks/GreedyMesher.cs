@@ -2,35 +2,50 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using CielaSpike;
 
 public class GreedyMesher : MonoBehaviour 
 {
 	List<int[,]> MaskPool = new List<int[,]>();
 	List<int[]> Int3Pool = new List<int[]>();
 
-	public void Create(MeshData meshData, ushort[] blocks, WorldPosition pos, bool transparent, bool fastMesh)
+	public void Create(MeshData meshData, ushort[] blocks, WorldPosition pos, bool transparent)
 	{
-		StartCoroutine(CreateMeshData(meshData, blocks, pos, transparent, fastMesh));
+		if (Config.Multithreaded)
+		{
+			this.StartCoroutineAsync(CreateMeshData(meshData, blocks, pos, transparent));
+		}
+		else
+		{
+			StartCoroutine(CreateMeshData(meshData, blocks, pos, transparent));
+		}
 	}
 
-	public void CreateCollider(MeshData meshData, ushort[] blocks, WorldPosition pos, bool fastMesh)
+	public void CreateCollider(MeshData meshData, ushort[] blocks, WorldPosition pos)
 	{
-		StartCoroutine(CreateCollisionMeshData(meshData, blocks, pos, fastMesh));
+		if (Config.Multithreaded)
+		{
+			this.StartCoroutineAsync(CreateCollisionMeshData(meshData, blocks, pos));
+		}
+		else
+		{
+			StartCoroutine(CreateCollisionMeshData(meshData, blocks, pos));
+		}
+		
 	}
 
-	IEnumerator CreateMeshData(MeshData meshData, ushort[] blocks, WorldPosition pos,  bool transparent, bool fastMesh)
+	IEnumerator CreateMeshData(MeshData meshData, ushort[] blocks, WorldPosition pos,  bool transparent)
 	{
-		// Experimental
-		fastMesh = true;
-
-		Stopwatch stopwatch = new Stopwatch();
-		stopwatch.Start();
-
-		int[,] mask = GetMask();
-		int[] x = GetInt3();
-		int[] q = GetInt3();
-		int[] du = GetInt3();
-		int[] dv = GetInt3();
+		// int[,] mask = GetMask();
+		// int[] x = GetInt3();
+		// int[] q = GetInt3();
+		// int[] du = GetInt3();
+		// int[] dv = GetInt3();
+		int[,] mask = new int[Chunk.Size,Chunk.Size];
+		int[] x = new int[3];
+		int[] q = new int[3];
+		int[] du = new int[3];
+		int[] dv = new int[3];
 
 		// Sweep over 3 axes, 0..2
 		for (int axis = 0; axis < 3; axis++)
@@ -78,21 +93,17 @@ public class GreedyMesher : MonoBehaviour
 						}
 
 						// Check visibility within chunk
-						// if (!transparent)
-						// {
-							if (0 <= x[axis]
-								&& Blocks.GetType(blocks[Chunk.BlockIndex(x[0], x[1], x[2])]) == Block.Type.rock)
-							{
-								front_block = blocks[Chunk.BlockIndex(x[0], x[1], x[2])];
-							}
-							if (x[axis] < Chunk.Size - 1 
-								&& Blocks.GetType(blocks[Chunk.BlockIndex(x[0] + q[0], x[1] + q[1], x[2] + q[2])]) == Block.Type.rock)
-							{
-								back_block = blocks[Chunk.BlockIndex(x[0] + q[0], x[1] + q[1], x[2] + q[2])];
-							}
-						// }
-						// else
-						// {
+						if (0 <= x[axis]
+							&& Blocks.GetType(blocks[Chunk.BlockIndex(x[0], x[1], x[2])]) == Block.Type.rock)
+						{
+							front_block = blocks[Chunk.BlockIndex(x[0], x[1], x[2])];
+						}
+						if (x[axis] < Chunk.Size - 1 
+							&& Blocks.GetType(blocks[Chunk.BlockIndex(x[0] + q[0], x[1] + q[1], x[2] + q[2])]) == Block.Type.rock)
+						{
+							back_block = blocks[Chunk.BlockIndex(x[0] + q[0], x[1] + q[1], x[2] + q[2])];
+						}
+	
 						bool maskAssigned = false;
 						if (transparent)
 						{
@@ -106,9 +117,10 @@ public class GreedyMesher : MonoBehaviour
 							{
 								back_block = blocks[Chunk.BlockIndex(x[0] + q[0], x[1] + q[1], x[2] + q[2])];
 							}
-						// }
+
 							Block.Type frontType = Blocks.GetType(front_block);
 							Block.Type backType = Blocks.GetType(back_block);
+
 							// if this is transparent and one block is rock and one is glass, this cannot be seen.
 							if (frontType == Block.Type.glass && backType == Block.Type.rock || frontType == Block.Type.rock && backType == Block.Type.glass)
 							{
@@ -138,7 +150,7 @@ public class GreedyMesher : MonoBehaviour
 							// the front block only is nothing
 							else if (front_block != Block.Null)
 							{
-								// We don't include the frontside mesh if x[axis] = -1 as this lies outside the chunk
+								// don't include the frontside mesh if x[axis] = -1 as this lies outside the chunk
 								if (x[axis] >= 0)
 								{
 									mask[x[u], x[v]] = (int)(front_block + 1);
@@ -150,7 +162,7 @@ public class GreedyMesher : MonoBehaviour
 							}
 							else
 							{
-								// We don't include the backside mesh if x[axis] = Chunk.Size - 1 as this lies outside the chunk
+								// don't include the backside mesh if x[axis] = Chunk.Size - 1 as this lies outside the chunk
 								if (x[axis] < Chunk.Size - 1)
 								{
 									// The sign indicates the side the mesh is on
@@ -162,14 +174,6 @@ public class GreedyMesher : MonoBehaviour
 								}
 							}
 						}
-					}
-
-					if (!fastMesh && stopwatch.ElapsedTicks > Config.CoroutineTiming / 2f)
-					{
-						yield return null;
-
-						stopwatch.Reset();
-						stopwatch.Start();
 					}
 				}
 
@@ -261,14 +265,6 @@ public class GreedyMesher : MonoBehaviour
 							i++;
 						}
 					}
-
-					if (!fastMesh && stopwatch.ElapsedTicks > Config.CoroutineTiming / 2f)
-					{
-						yield return null;
-
-						stopwatch.Reset();
-						stopwatch.Start();
-					}
 				}
 			}
 
@@ -279,30 +275,29 @@ public class GreedyMesher : MonoBehaviour
 			}	
 		}
 
-		ReturnInt3(x);
-		ReturnInt3(q);
-		ReturnInt3(du);
-		ReturnInt3(dv);
-		ReturnMask(mask);
+		// ReturnInt3(x);
+		// ReturnInt3(q);
+		// ReturnInt3(du);
+		// ReturnInt3(dv);
+		// ReturnMask(mask);
 
 		meshData.complete = true;
 		yield return null;
 	}
 
 	// This is basically the same as above, but doesn't track block types to create an optimized collision mesh
-	IEnumerator CreateCollisionMeshData(MeshData meshData, ushort[] blocks, WorldPosition pos, bool fastMesh)
+	IEnumerator CreateCollisionMeshData(MeshData meshData, ushort[] blocks, WorldPosition pos)
 	{
-		// Experimental
-		fastMesh = true;
-
-		Stopwatch stopwatch = new Stopwatch();
-		stopwatch.Start();
-
-		int[,] mask = GetMask();
-		int[] x = GetInt3();
-		int[] q = GetInt3();
-		int[] du = GetInt3();
-		int[] dv = GetInt3();
+		// int[,] mask = GetMask();
+		// int[] x = GetInt3();
+		// int[] q = GetInt3();
+		// int[] du = GetInt3();
+		// int[] dv = GetInt3();
+		int[,] mask = new int[Chunk.Size,Chunk.Size];
+		int[] x = new int[3];
+		int[] q = new int[3];
+		int[] du = new int[3];
+		int[] dv = new int[3];
 
 		// Sweep over 3 axes, 0..2
 		for (int axis = 0; axis < 3; axis++)
@@ -396,14 +391,6 @@ public class GreedyMesher : MonoBehaviour
 							}
 						}
 					}
-
-					if (!fastMesh && stopwatch.ElapsedTicks > Config.CoroutineTiming / 2f)
-					{
-						yield return null;
-
-						stopwatch.Reset();
-						stopwatch.Start();
-					}
 				}
 
 				// Increment x[axis]
@@ -487,14 +474,6 @@ public class GreedyMesher : MonoBehaviour
 							i++;
 						}
 					}
-
-					if (!fastMesh && stopwatch.ElapsedTicks > Config.CoroutineTiming / 2f)
-					{
-						yield return null;
-
-						stopwatch.Reset();
-						stopwatch.Start();
-					}
 				}
 			}
 
@@ -505,11 +484,11 @@ public class GreedyMesher : MonoBehaviour
 			}	
 		}
 
-		ReturnInt3(x);
-		ReturnInt3(q);
-		ReturnInt3(du);
-		ReturnInt3(dv);
-		ReturnMask(mask);
+		// ReturnInt3(x);
+		// ReturnInt3(q);
+		// ReturnInt3(du);
+		// ReturnInt3(dv);
+		// ReturnMask(mask);
 
 		meshData.complete = true;
 		yield return null;

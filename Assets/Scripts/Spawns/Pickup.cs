@@ -140,7 +140,8 @@ public class Pickup : SpawnedObject
 			col.color = gradient;
 
 			ParticleSystem.EmitParams p = new ParticleSystem.EmitParams();
-			p.startLifetime = Mathf.Lerp(1f, 16f, impactForce);
+			p.startLifetime = Mathf.Lerp(2f, 12f, impactForce);
+			p.startColor = gradient.Evaluate(0f);
 
 			if (type == PickupType.Silver)
 			{

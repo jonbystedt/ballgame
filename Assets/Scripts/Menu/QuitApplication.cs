@@ -4,9 +4,6 @@ public class QuitApplication : MonoBehaviour {
 
 	public void Quit()
 	{
-		World.DestroyChunks();
-		Serialization.Compress();
-		Serialization.WriteConfig();
 
 	#if UNITY_STANDALONE
 		Application.Quit();
@@ -16,5 +13,13 @@ public class QuitApplication : MonoBehaviour {
 	#if UNITY_EDITOR
 		UnityEditor.EditorApplication.isPlaying = false;
 	#endif
+
+	}
+
+	void OnApplicationQuit()
+	{
+		World.DestroyChunks();
+		Serialization.Compress();
+		Serialization.WriteConfig();
 	}
 }

@@ -21,7 +21,6 @@ public class Chunk : PooledObject {
 
 	public bool surrounded = false;
 	public bool outofrange = false;
-	public bool playerHit = false;
 
 	private WorldPosition _pos;
 	public WorldPosition pos 
@@ -105,14 +104,9 @@ public class Chunk : PooledObject {
 			MeshData transparentMeshData = GetMeshData();
 			MeshData colliderMeshData = GetMeshData();
 
-			World.Mesher.Create(meshData, _blocks, _pos, false, playerHit);
-			World.Mesher.Create(transparentMeshData, _blocks, _pos, true, playerHit);
-			World.Mesher.CreateCollider(colliderMeshData, _blocks, _pos, playerHit);
-
-			if (playerHit)
-			{
-				playerHit = false;
-			}
+			World.Mesher.Create(meshData, _blocks, _pos, false);
+			World.Mesher.Create(transparentMeshData, _blocks, _pos, true);
+			World.Mesher.CreateCollider(colliderMeshData, _blocks, _pos);
 
 			StartCoroutine(AwaitMeshData(meshData,transparentMeshData, colliderMeshData));
 		}

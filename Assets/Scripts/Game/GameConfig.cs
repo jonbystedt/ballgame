@@ -10,4 +10,6 @@ public struct GameConfig
 	public int spawnIntensity { get; set; }
 	public bool swapInputs { get; set; }
 	public string resolution { get; set; }
+	public bool multithreaded { get; set; }
+	public int coroutineTiming { get; set; }
 }

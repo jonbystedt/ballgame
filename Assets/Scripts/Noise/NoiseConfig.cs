@@ -51,7 +51,7 @@ public static class NoiseConfig {
 		lightningBreakValue = lightningBreakValue + Mathf.FloorToInt(seed * seed * 250);
 
 		terrain = new NoiseOptions(
-			Mathf.Lerp(0.00001f, 0.025f, Mathf.Pow(GameUtils.Seed, 1.2f)),
+			Mathf.Lerp(0.0001f, 0.025f, Mathf.Pow(GameUtils.Seed, 1.2f)),
 			Mathf.FloorToInt(Mathf.Lerp(1,3,GameUtils.Seed)),
 			Mathf.Lerp(0f, 4f, GameUtils.Seed), 
 			Mathf.Lerp(0f, 0.5f, GameUtils.Seed), 
@@ -60,16 +60,16 @@ public static class NoiseConfig {
 			); 
 
 		mountain = new NoiseOptions(
-			Mathf.Lerp(0.00005f, 0.025f, Mathf.Pow(GameUtils.Seed, 1.2f)),
+			Mathf.Lerp(0.0005f, 0.025f, Mathf.Pow(GameUtils.Seed, 1.2f)),
 			Mathf.FloorToInt(Mathf.Lerp(1,3,GameUtils.Seed)),
 			Mathf.Lerp(0f, 4f, GameUtils.Seed), 
 			Mathf.Lerp(0f, 1f, GameUtils.Seed), 
-			64 - Mathf.FloorToInt(Mathf.Lerp(0, 32, Mathf.Pow(GameUtils.Seed, 2))),
+			64 - Mathf.FloorToInt(Mathf.Lerp(0, 16, Mathf.Pow(GameUtils.Seed, 2))),
 			Mathf.Pow(GameUtils.Seed - 0.5f, 8 + Mathf.FloorToInt(GameUtils.Seed * 8) % 8)
 			); 
 
 		cave = new NoiseOptions(
-			Mathf.Lerp(0.006f, 0.02f, Mathf.Pow(GameUtils.Seed,2)), 
+			Mathf.Lerp(0.008f, 0.02f, Mathf.Pow(GameUtils.Seed,2)), 
 			1,
 			Mathf.Lerp(0f, 2f, GameUtils.Seed), 
 			Mathf.Lerp(0f, 1f, GameUtils.Seed), 
@@ -78,7 +78,7 @@ public static class NoiseConfig {
 			);
 
 		pattern = new NoiseOptions(
-			Mathf.Lerp(0.006f, 0.01f, Mathf.Pow(GameUtils.Seed,3)), 
+			Mathf.Lerp(0.01f, 0.04f, Mathf.Pow(GameUtils.Seed,3)), 
 			Mathf.FloorToInt(Mathf.Lerp(1, 4, GameUtils.Seed)),
 			Mathf.Lerp(0f, 4f, GameUtils.Seed), 
 			Mathf.Lerp(0f, 1f, GameUtils.Seed), 
@@ -87,6 +87,7 @@ public static class NoiseConfig {
 			);
 		
 		//Game.Log(pattern.frequency.ToString() + " : " + pattern.octaves.ToString() + " : " + pattern.lacunarity.ToString() + " : " + pattern.persistance.ToString());
+		//Game.Log(cave.frequency.ToString() + " : " + cave.octaves.ToString() + " : " + cave.lacunarity.ToString() + " : " + cave.persistance.ToString());
 
 		stripe = new NoiseOptions(
 			Mathf.Lerp(0.00001f, 0.1f, GameUtils.Seed),  
