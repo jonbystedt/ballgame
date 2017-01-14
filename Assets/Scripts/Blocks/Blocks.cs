@@ -90,7 +90,10 @@ public static class Blocks {
 		if (block != null)
 		{
 			uvs = BlockLookup[blockId].FaceUVs(direction, width, height);
-			UVLookup.Add(hash, uvs);
+			if (!UVLookup.ContainsKey(hash))
+			{
+				UVLookup.Add(hash, uvs);
+			}
 		}
 		return uvs;
 	}

@@ -45,7 +45,6 @@ public class Roller : MonoBehaviour
 
 	int gravityAttenuation = 0;
 
-	private const float groundRayLength = 0.5f; // The length of the ray to check if the ball is grounded.
 	private Rigidbody _rigidbody;
 	private Collider _collider;
 
@@ -84,7 +83,7 @@ public class Roller : MonoBehaviour
 		boosting = boost;
 
 		// check if player is on the ground
-		ushort ground = World.GetBlock(World.GetBlockPosition(transform.position - Vector3.up * 0.5f));
+		ushort ground = World.GetBlock(World.GetBlockPosition(transform.position - Vector3.up * 0.75f));
 		if (ground != Block.Null && ground != Block.Air && !jumpStarted)
 		{
 			grounded = true;
@@ -351,10 +350,11 @@ public class Roller : MonoBehaviour
 		}
 	}
 
-	public void BashBlocks(Vector3 forward, float speed, bool boosting)
+	public bool BashBlocks(Vector3 forward, float speed, bool boosting)
 	{
 		//Game.Log("Speed: " + speed.ToString("N2") + " Contacts: " + collision.contacts.Length);
 		bool groundPounded = false;
+		bool hit = false;
 		List<Vector3> normals = new List<Vector3>();
 
 		if (groundPoundEnabled && groundPound)
@@ -447,6 +447,7 @@ public class Roller : MonoBehaviour
 				if (bashBlock != Block.Null && bashBlock != Block.Air)
 				{
 					VoxelEditor.SetBlock(b_pos, Block.Air, true);
+					hit = true;
 
 					if (b_pos.y < Mathf.RoundToInt(pos.y))
 					{
@@ -471,6 +472,8 @@ public class Roller : MonoBehaviour
 				Invoke("DisableGroundPound", 0.05f);
 			}
 		}
+
+		return hit;
 	}
 
 	void SpawnPickupsFromBlock(WorldPosition bashBlock, Color color)

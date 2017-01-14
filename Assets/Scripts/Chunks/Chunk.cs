@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -158,6 +159,15 @@ public class Chunk : PooledObject {
 
 		chunkDistance = Mathf.FloorToInt(Vector3.Distance(chunkCenter, playerHPos));
 
+		// initial load
+		if (Game.ChunksLoaded < Config.StartChunksToLoad)
+		{
+			_renderer.enabled = false;
+			_glassrenderer.enabled = false;
+			outofrange = false;
+			StartCoroutine(AwaitPlayer(() => { update = true; }));
+		}
+
 		// distance based occlusion
 		if (chunkDistance > Config.MaxRenderDistance)
 		{
@@ -208,6 +218,20 @@ public class Chunk : PooledObject {
 					World.DestroyChunkAt(column.chunks[i]);
 				}
 			}
+		}
+	}
+
+	IEnumerator AwaitPlayer(Action callback)
+	{
+		for (;;)
+		{
+			if (Game.PlayerActive)
+			{
+				callback();
+				break;
+			}
+
+			yield return null;
 		}
 	}
 

@@ -86,6 +86,7 @@ public class StartGame : MonoBehaviour {
 			{
 				if (!Serialization.ReadConfig())
 				{
+					Config.Settings.startTime = "6:00";
 					Config.Settings.graphicsQuality = 1;
 					Config.Settings.worldSize = 12;
 					Config.Settings.spawnIntensity = 50;

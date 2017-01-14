@@ -266,12 +266,7 @@ public class BouncyBall : SpawnedObject
 					else
 					{
 						pickup.isLive = false;
-						StartCoroutine(Wait(0.3f, () => {
-							if (pickup.isActive)
-							{
-								pickup.ReturnToPool();
-							}	
-						}));
+						pickup.RemoveIn(0.3f);
 					}
 				}
 			}

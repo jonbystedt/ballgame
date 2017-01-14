@@ -24,6 +24,9 @@ public class RollerController : MonoBehaviour
 	Rigidbody _rigidbody;
 	Collider _collider;
 	Vector3 lastPosition;
+	float nextBashFrame = 0f;
+	float bashInterval = 3f;
+
 
 	private void Awake()
 	{
@@ -59,7 +62,7 @@ public class RollerController : MonoBehaviour
 
 		if (create)
 		{
-    			roller.CreateBlocks();
+    		roller.CreateBlocks();
 		}
 
 		// TODO: Centralize all input handling
@@ -94,6 +97,17 @@ public class RollerController : MonoBehaviour
 			}
 		}
 
+		// bash blocks
+		if (!create && (boosting || pound))
+		{
+			Vector3 planePos = new Vector3(transform.position.x, 0, transform.position.z);
+			Vector3 planeLastPos = new Vector3(lastPosition.x, 0, lastPosition.z);
+			Vector3 forwardNormal = Vector3.Normalize(planePos - planeLastPos);
+			float speed = Mathf.Abs(Vector3.Distance(transform.position, lastPosition));
+
+			roller.BashBlocks(forwardNormal, speed, boosting);
+		}
+
 	}
 
 
@@ -106,27 +120,11 @@ public class RollerController : MonoBehaviour
 
 		// move ball
 		roller.Move(move, jumping, boosting, pound);
-
-		// bash blocks
-		if (!create && (boosting || pound))
-		{
-			ExecuteBashBlocks();
-		}
 	}
 
 	void LateUpdate()
 	{
 		lastPosition = transform.position;
-	}
-
-	void ExecuteBashBlocks()
-	{
-		Vector3 planePos = new Vector3(transform.position.x, 0, transform.position.z);
-		Vector3 planeLastPos = new Vector3(lastPosition.x, 0, lastPosition.z);
-		Vector3 forwardNormal = Vector3.Normalize(planePos - planeLastPos);
-		float speed = Mathf.Abs(Vector3.Distance(transform.position, lastPosition));
-
-		roller.BashBlocks(forwardNormal, speed, boosting);	
 	}
 
 	IEnumerator CheckOutOfBounds()

@@ -323,58 +323,55 @@ public class TileFactory : MonoBehaviour {
 			if (hue < 0) hue += 1;
 
 			coin = Random.value;
+			dark = Mathf.Lerp(0, darkest, Random.value);
+			light = Mathf.Lerp(0, lightest, Random.value);
 
 			if (type == GradientType.WarmCool)
 			{
-				if (coin < 0.5)
-				{
-					dark = Mathf.Lerp(0, darkest, Random.value);
-					// Run from saturation to value
-					color = Tile.Darken(Color.Lerp(Color.HSVToRGB(hue, Mathf.Lerp(valueEnd, valueStart, i / (float)(size - 1)), v),
-						Color.HSVToRGB(hue, s,  Mathf.Lerp(saturationStart, saturationEnd, i / (float)(size - 1))), 0.5f), dark);
-				} 
-				else if (coin < 0.75)
-				{
-					light = Mathf.Lerp(0, lightest, Random.value);
-					// Run from saturation to value
-					color = Tile.Lighten(Color.Lerp(Color.HSVToRGB(hue, Mathf.Lerp(valueEnd, valueStart, i / (float)(size - 1)), v),
-						Color.HSVToRGB(hue, s,  Mathf.Lerp(saturationStart, saturationEnd, i / (float)(size - 1))), 0.5f), light);
-				}
-				else
-				{
-					color = Color.Lerp(Color.HSVToRGB(hue, Mathf.Lerp(valueEnd, valueStart, i / (float)(size - 1)), v),
+				color = Color.Lerp(Color.HSVToRGB(hue, Mathf.Lerp(valueEnd, valueStart, i / (float)(size - 1)), v),
 						Color.HSVToRGB(hue, s,  Mathf.Lerp(saturationStart, saturationEnd, i / (float)(size - 1))), 0.5f);
-				}
 
-				// desaturate world
-				if (Random.value < 0.75f)
+				if (coin < 0.5f)
 				{
-					desat = Mathf.Lerp(0, desaturateMax, Random.value);
-					color = Tile.Desaturate(color, desat);
+					color = Tile.Darken(color, dark);
+				}
+				else if (coin < 0.75f)
+				{
+					color = Tile.Lighten(color, light);
 				}
 			}
 			else if (type == GradientType.SingleColor)
 			{
-				if (coin < 0.25)
-				{
-					dark = Mathf.Lerp(0, darkest, Random.value * Random.value);
-					color = Tile.Darken(Color.HSVToRGB(hue, s, Mathf.Lerp(valueStart, valueEnd, i / (float)(size - 1))), dark);
-				}
-				else if (coin < 0.5)
-				{
-					light = Mathf.Lerp(0, lightest, Random.value * Random.value);
-					color = Tile.Lighten(Color.HSVToRGB(hue, s, Mathf.Lerp(valueStart, valueEnd, i / (float)(size - 1))), light);
+				color = Color.HSVToRGB(hue, s, Mathf.Lerp(valueStart, valueEnd, i / (float)(size - 1)));
 
-				}
-				else
+				if (coin < 0.5f)
 				{
-					color = Color.HSVToRGB(hue, s, Mathf.Lerp(valueStart, valueEnd, i / (float)(size - 1)));
+					color = Tile.Darken(color, dark);
 				}
-				
+				else if (coin < 0.75f)
+				{
+					color = Tile.Lighten(color, light);
+				}			
 			}
 			else if (type == GradientType.DarkLight || type == GradientType.ValueColor)
 			{
 				color = Color.HSVToRGB(hue, Mathf.Lerp(saturationEnd, saturationStart, i / (float)(size - 1f)), v);
+
+				if (coin < 0.5f)
+				{
+					color = Tile.Darken(color, dark);
+				}
+				else if (coin < 0.75f)
+				{
+					color = Tile.Lighten(color, light);
+				}
+			}
+
+			// desaturate world
+			if (Random.value < 0.75f)
+			{
+				desat = Mathf.Lerp(0, desaturateMax, Random.value);
+				color = Tile.Desaturate(color, desat);
 			}
 
 			color.a = Mathf.Lerp(alphaStart, alphaEnd, i / (float)(size - 1f));

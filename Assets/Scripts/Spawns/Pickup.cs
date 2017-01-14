@@ -99,7 +99,8 @@ public class Pickup : SpawnedObject
 						transform.position.y - (transform.localScale.y * 0.5f) + ((1 / (size * 2)) * transform.localScale.y) + ((x / size) * transform.localScale.x),
 						transform.position.z - (transform.localScale.z * 0.5f) + ((1 / (size * 2)) * transform.localScale.z) + ((x / size) * transform.localScale.x)
 					);
-					spawnColor = Tile.Colors[(x + y + z) % 64];
+					//spawnColor = Tile.Colors[(x + y + z) % 64];
+					spawnColor = Color.Lerp(baseColor, Tile.Inverse(Tile.Brighten(baseColor, 0.5f)), (x * y * z) / (size * size * size));
 					PooledObject obj = World.Spawn.Object(spawn, spawnColor, mass, pos);
 					if (obj != null)
 					{
@@ -114,7 +115,7 @@ public class Pickup : SpawnedObject
 			}
 		}
 		_renderer.enabled = true;
-		transform.localScale = new Vector3(1f,1f,1f);
+		transform.localScale = new Vector3(1f, 1f, 1f);
 		ReturnToPool();
 	}
 
@@ -131,7 +132,7 @@ public class Pickup : SpawnedObject
 		var ma = explosion.main;
 		if (type == PickupType.Silver || type == PickupType.Black)
 		{
-			ma.simulationSpeed = Mathf.Lerp(1f, 5f, impactForce);
+			ma.simulationSpeed = Mathf.Lerp(1f, 10f, Mathf.Pow(impactForce, 2));
 
 			var col = explosion.colorOverLifetime;
 			col.enabled = true;
@@ -145,14 +146,14 @@ public class Pickup : SpawnedObject
 
 			if (type == PickupType.Silver)
 			{
-				p.startSize = 0.5f;
-				explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(10f, 50f, impactForce * impactForce)));
+				p.startSize = 0.45f;
+				explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(10f, 100f, impactForce * impactForce)));
 				World.Spawn.Objects(Spawns.Pickup, Tile.Inverse(baseColor), transform.position, 4, Config.SpawnDelay);
 			}
 			else
 			{
 				p.startSize = 0.5f;
-				explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(8f, 40f, impactForce * impactForce)));
+				explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(8f, 80f, impactForce * impactForce)));
 				World.Spawn.Objects(Spawns.Pickup, Tile.Inverse(baseColor), transform.position, 4, Config.SpawnDelay);
 			}
 
@@ -195,11 +196,11 @@ public class Pickup : SpawnedObject
 		Color startColor;
 		if (type == PickupType.Black)
 		{
-			startColor = Tile.Brighten(Tile.Lighten(baseColor, 0.5f), 1f);
+			startColor = Tile.Brighten(Tile.Lighten(baseColor, 0.25f), 1f);
 		}
 		else
 		{
-			startColor = Tile.Lighten(baseColor, 0.5f);
+			startColor = Tile.Lighten(baseColor, 0.75f);
 		}
 		grad.SetKeys(
 			new GradientColorKey[] { new GradientColorKey(startColor, 0.0f), new GradientColorKey(Tile.Lighten(baseColor, 0.3f), 0.2f), new GradientColorKey(Tile.Brighten(baseColor, 1f), 1.0f)},

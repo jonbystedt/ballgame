@@ -72,10 +72,10 @@ public class Config : MonoBehaviour
 				Config.FogScale = baseFog - (value * 0.0333f);
 
 				// Load chunks out in a radius of 3 world sizes
-				_instance.chunkLoadRadius = value + Mathf.FloorToInt(value / 2f);
+				_instance.chunkLoadRadius = value;//value + Mathf.FloorToInt(value / 2f);
 
 				// Delete the chunks that fall outside this
-				_instance.chunkDeleteRadius = value * 10;
+				_instance.chunkDeleteRadius = value * 2;
 
 				// Despawn radius is 2/3 the world size. Spawn radius is always 1.
 				_instance.despawnRadius = value - Mathf.CeilToInt(value / 3f);
@@ -109,11 +109,11 @@ public class Config : MonoBehaviour
 					BlockSpawnChance = 0.05f;
 					ContactShadows = false;
 					GlobalFogEnabled = false;
-					FogScale = 1.2f;
 					AtmosphericScattering = false;
 					ShadowsEnabled = false;
 					Outlines = false;
 					ColoredOutlines = false;
+					World.ChunkShadows = false;
 					if (QualitySettings.GetQualityLevel() != 0)
 					{
 						QualitySettings.SetQualityLevel(0);
@@ -124,13 +124,13 @@ public class Config : MonoBehaviour
 				{
 					MaxItemSpawns = 100;
 					BlockSpawnChance = 0.05f;
-					FogScale = 0.8f;
 					ContactShadows = false;
 					GlobalFogEnabled = true;
 					AtmosphericScattering = false;
 					ShadowsEnabled = false;
 					Outlines = false;
 					ColoredOutlines = false;
+					World.ChunkShadows = false;
 					if (QualitySettings.GetQualityLevel() != 1)
 					{
 						QualitySettings.SetQualityLevel(1);
@@ -141,13 +141,13 @@ public class Config : MonoBehaviour
 				{
 					MaxItemSpawns = 100;
 					BlockSpawnChance = 0.05f;
-					FogScale = 0.7f;
-					ContactShadows = false;
+					ContactShadows = true;
 					GlobalFogEnabled = true;
 					AtmosphericScattering = true;
 					ShadowsEnabled = true;
 					Outlines = false;
 					ColoredOutlines = false;
+					World.ChunkShadows = false;
 					if (QualitySettings.GetQualityLevel() != 2)
 					{
 						QualitySettings.SetQualityLevel(2);
@@ -158,13 +158,13 @@ public class Config : MonoBehaviour
 				{
 					MaxItemSpawns = 100;
 					BlockSpawnChance = 0.05f;
-					FogScale = 0.6f;
 					ContactShadows = true;
 					GlobalFogEnabled = true;
 					AtmosphericScattering = true;
 					ShadowsEnabled = true;
 					Outlines = false;
 					ColoredOutlines = false;
+					World.ChunkShadows = true;
 					if (QualitySettings.GetQualityLevel() != 3)
 					{
 						QualitySettings.SetQualityLevel(3);
@@ -348,6 +348,11 @@ public class Config : MonoBehaviour
 	{
 		get { return Settings.resolution; }
 		set { Settings.resolution = value; }
+	}
+
+	public static string StartTime
+	{
+		get { return Settings.startTime; }
 	}
 
 	public static Config _instance;

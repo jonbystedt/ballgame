@@ -18,6 +18,10 @@ public class QuitApplication : MonoBehaviour {
 
 	void OnApplicationQuit()
 	{
+		if (Config.CoroutineTiming == 100000)
+		{
+			Config.CoroutineTiming = 20000;
+		}
 		World.DestroyChunks();
 		Serialization.Compress();
 		Serialization.WriteConfig();

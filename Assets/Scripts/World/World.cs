@@ -43,6 +43,23 @@ public class World : MonoBehaviour {
 		get { return _instance.mesher; }
 	}
 
+	public static bool ChunkShadows
+	{
+		set
+		{
+			if (value)
+			{
+				_instance.chunkPrefab.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.TwoSided;
+				_instance.transparentChunkPrefab.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.TwoSided;
+			}
+			else
+			{
+				_instance.chunkPrefab.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+				_instance.transparentChunkPrefab.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+			}
+		}
+	}
+
 	static World _instance;
 
 	void Start() 
@@ -55,6 +72,10 @@ public class World : MonoBehaviour {
 		}
         _instance.chunkPrefab.SetPoolSize(-1);
         _instance.transparentChunkPrefab.SetPoolSize(-1);
+
+
+		_instance.chunkPrefab.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+		_instance.transparentChunkPrefab.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 	}
 
 	void Update()

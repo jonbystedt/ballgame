@@ -121,6 +121,16 @@ public class SpawnedObject : PooledObject {
 		isLive = true;
 	}
 
+	public void RemoveIn(float seconds)
+	{
+		StartCoroutine(Wait(0.3f, () => {
+			if (isActive)
+			{
+				ReturnToPool();
+			}	
+		}));
+	}
+
 	protected IEnumerator UpdateAfterDelay(float delay)
 	{
 		for(;;) 

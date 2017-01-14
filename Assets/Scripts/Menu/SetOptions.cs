@@ -77,12 +77,12 @@ public class SetOptions : MonoBehaviour {
 		graphicsModeText.text = Config.GraphicsMode.ToString();
 
 		// TODO: This would be a problem if it were possible to use the UI with a controller
-		if (Input.GetMouseButton(0))
-		{
-			Config.WorldSize = 8 + ((int)value * 4);
-			worldSizeSlider.value = Mathf.Floor((Config.WorldSize / 2f) - 3f);
-			worldSizeText.text = Config.WorldSize.ToString();
-		}
+		// if (Input.GetMouseButton(0))
+		// {
+		// 	Config.WorldSize = 8 + ((int)value * 4);
+		// 	worldSizeSlider.value = Mathf.Floor((Config.WorldSize / 2f) - 3f);
+		// 	worldSizeText.text = Config.WorldSize.ToString();
+		// }
 	}
 
 	public void SetWorldSize(float worldSize)

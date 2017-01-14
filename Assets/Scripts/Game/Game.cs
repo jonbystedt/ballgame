@@ -132,7 +132,7 @@ public class Game : MonoBehaviour
 
 		player.GetComponent<Rigidbody>().isKinematic = true;
 		PlayerActive = false;
-		player.transform.position = new Vector3(-0.5f, 512f, -0.5f);
+		//player.transform.position = new Vector3(-0.5f, 1024f, -0.5f);
 
 		menuGlow.color = Tile.Brighten(RenderSettings.fogColor, 0.5f);
 		RenderSettings.fogColor = Tile.Brighten(Color.Lerp(RenderSettings.fogColor, Color.black, 0.9f), 0.05f);
@@ -176,7 +176,7 @@ public class Game : MonoBehaviour
 
 		camOp = mainCamera.GetComponentInParent<CameraOperator>();
 
-		player.transform.position = new Vector3(-0.5f, 512f, -0.5f);
+		//player.transform.position = new Vector3(-0.5f, 1024f, -0.5f);
 		player.GetComponent<Rigidbody>().isKinematic = true;
 		playerActive = false;
 
@@ -248,7 +248,7 @@ public class Game : MonoBehaviour
 
 	public void _begin()
 	{
-		SetTime(18,0);
+		SetTime(Config.StartTime);
 
 		if (ShowStats)
 		{
@@ -347,8 +347,8 @@ public class Game : MonoBehaviour
 			}
 			else
 			{
-				sun.shadows = LightShadows.Hard;
-				moon.shadows = LightShadows.Hard;
+				sun.shadows = LightShadows.Soft;
+				moon.shadows = LightShadows.Soft;
 			}
 		}
 		else
@@ -427,10 +427,19 @@ public class Game : MonoBehaviour
 		}		
 	}
 
-	public static void SetTime(int hours, int minutes)
+	public static void SetTime(string time)
 	{
+		string[] t = time.Split(':');
+		if (t.Length != 2)
+		{
+			return;
+		}
+
+		int hours = Int32.Parse(t[0]);
+		int minutes = Int32.Parse(t[1]);
+
 		Vector3 rotation = Vector3.zero;
-		rotation.x = (hours % 24) * (360 / 24f) + (minutes % 60) * (360 / (24f * 60f));
+		rotation.x = ((hours <= 12 ? Mathf.Abs(hours - 12) : 24 - (hours - 12)) % 24)  * (360 / 24f) + (minutes % 60) * (360 / (24f * 60f));
 
 		_instance.cosmos.orbit.transform.rotation = Quaternion.identity;
 		_instance.cosmos.orbit.transform.Rotate(rotation);
