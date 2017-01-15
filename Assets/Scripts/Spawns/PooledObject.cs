@@ -8,8 +8,7 @@ public class PooledObject : MonoBehaviour {
 	ObjectPool poolInstanceForPrefab;
 
 	public bool isActive { get; set; }
-	public int id { get; set; }
-	public static int NextId = 0;
+	public float slowUpdateTime = 1f;
 
 	protected virtual void SlowUpdate() {}
 
@@ -53,6 +52,11 @@ public class PooledObject : MonoBehaviour {
 
 	public virtual void Reset() {}
 
+	public void StartSlowUpdate()
+	{
+		StartCoroutine(UpdateAfterDelay(slowUpdateTime));
+	}
+
 	public IEnumerator Wait(float time, Action callback)
 	{	
 		yield return new WaitForSeconds(time);
@@ -64,6 +68,15 @@ public class PooledObject : MonoBehaviour {
 		for (int i = 0; i < count; i++)
 		{
 			callback();
+			yield return new WaitForSeconds(delay);
+		}
+	}
+
+	protected IEnumerator UpdateAfterDelay(float delay)
+	{
+		for(;;) 
+		{
+			SlowUpdate();		
 			yield return new WaitForSeconds(delay);
 		}
 	}

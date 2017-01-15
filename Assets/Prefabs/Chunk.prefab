@@ -95,6 +95,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca1f688b7b44b42f3b48cbc91cba0a67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  slowUpdateTime: 1
   update: 0
   updating: 0
   built: 0

@@ -26,23 +26,18 @@ public class Pickup : SpawnedObject
 	{
 		base.SlowUpdate();
 
-		if (inRange && !_renderer.enabled)
-		{
-			_renderer.enabled = true;
-		}
-
 		if (drift && inRange) 
 		{
 			Drift();
 		}
 	}
 
-	protected override void Sleep()
+	protected override void AddToSleepList()
 	{
 		SpawnManager.SleptPickups.Add(this);
 	}
 
-	protected override void Wake()
+	protected override void RemoveFromSleepList()
 	{
 		SpawnManager.SleptPickups.Remove(this);
 	}

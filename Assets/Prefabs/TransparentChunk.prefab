@@ -95,6 +95,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d370a238f4004f89a6b5cca4ae27c93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  slowUpdateTime: 1
   filter: {fileID: 0}
 --- !u!1001 &100100000
 Prefab:

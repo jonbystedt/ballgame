@@ -86,7 +86,7 @@ public class Chunk : PooledObject {
 			_blocks[i] = Block.Null;
 		}
 
-		StartCoroutine(SlowUpdate());
+		StartSlowUpdate();
 	}
 		
 	public void CheckUpdate()
@@ -113,39 +113,12 @@ public class Chunk : PooledObject {
 		}
 	}
 
-	public void ApplyOcclusion()
+	protected override void SlowUpdate()
 	{
-		if (rendered && Time.time > slowUpdateTimer && Time.frameCount % 100 == chunkOrder % 100)
+		if (rendered)
 		{
-			slowUpdateTimer = Time.time + 60f;
 			ApplyDistanceOcclusion();
 		}
-	}
-
-	IEnumerator SlowUpdate()
-	{
-		for (;;)
-		{
-			if (!isActive)
-			{
-				break;
-			}
-			
-			// Space out updates evenly
-			if (Time.frameCount % 100 == chunkOrder % 100)
-			{
-				if (rendered)
-				{
-					ApplyDistanceOcclusion();
-				}
-
-				yield return new WaitForSeconds(0.1f);
-			}
-
-			yield return null;	
-			
-		}
-
 	}
 
 	void ApplyDistanceOcclusion()

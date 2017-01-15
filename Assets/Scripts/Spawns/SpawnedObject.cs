@@ -6,10 +6,16 @@ public class SpawnedObject : PooledObject {
 	public ParticleSystem explosion;
 	public Color _color = Color.gray;
 	public Color _emission = Color.black;
+
 	public bool isLive = true;
 	public bool inRange = true;
+	public bool sleeping = false;
 
 	protected MeshRenderer _renderer;
+	protected GameObject player;
+	protected Material material;
+	protected Rigidbody _rigidbody;
+
 	protected Vector3 saveVelocity;
 	protected Vector3 saveAngularVelocity;
 
@@ -90,10 +96,6 @@ public class SpawnedObject : PooledObject {
 		}
 	}
 
-	protected GameObject player;
-	protected Material material;
-	protected Rigidbody _rigidbody;
-
 	void Awake()
 	{
 		material = transform.GetComponent<Renderer>().material;
@@ -111,13 +113,15 @@ public class SpawnedObject : PooledObject {
 		_rigidbody.mass = mass;
 	}
 
-	public void StartSlowUpdate()
-	{
-		StartCoroutine(UpdateAfterDelay(1f));
-	}
-
 	protected override void SlowUpdate() 
 	{
+		// Check for out of bounds
+		if (gameObject.transform.position.y < -65)
+		{
+			ReturnToPool();
+			return;
+		}
+
 		float distance = Vector2.Distance(
 			new Vector2(gameObject.transform.position.x, gameObject.transform.position.z), 
 			new Vector2(Game.Player.transform.position.x, Game.Player.transform.position.z)
@@ -125,31 +129,50 @@ public class SpawnedObject : PooledObject {
 
 		if (distance > Config.DespawnRadius * Chunk.Size && inRange)
 		{
-			saveVelocity = _rigidbody.velocity;
-			saveAngularVelocity = _rigidbody.angularVelocity;
-			_rigidbody.isKinematic = true;
-			_rigidbody.Sleep();
-			_renderer.enabled = false;
-
 			Sleep();
-			inRange = false;
 		}
+
 		if (distance < Config.DespawnRadius * Chunk.Size && !inRange)
 		{
-			_rigidbody.isKinematic = false;
-			_rigidbody.velocity = saveVelocity;
-			_rigidbody.angularVelocity = saveAngularVelocity;
-			_rigidbody.WakeUp();
+			WakeUp();
+		}
 
-			_renderer.enabled = true;
-			Wake();
-			inRange = true;
+		// objects pooled while asleep are still sleeping
+		if (inRange && sleeping)
+		{
+			WakeUp();
 		}
 	}
 
-	protected virtual void Sleep() {}
+	protected void Sleep()
+	{
+		saveVelocity = _rigidbody.velocity;
+		saveAngularVelocity = _rigidbody.angularVelocity;
+		_rigidbody.isKinematic = true;
+		_rigidbody.Sleep();
+		_renderer.enabled = false;
 
-	protected virtual void Wake() {}
+		AddToSleepList();
+		inRange = false;
+		sleeping = true;
+	}
+
+	protected void WakeUp()
+	{
+		_rigidbody.isKinematic = false;
+		_rigidbody.velocity = saveVelocity;
+		_rigidbody.angularVelocity = saveAngularVelocity;
+		_rigidbody.WakeUp();
+		_renderer.enabled = true;
+
+		RemoveFromSleepList();
+		inRange = true;
+		sleeping = false;
+	}
+
+	protected virtual void AddToSleepList() {}
+
+	protected virtual void RemoveFromSleepList() {}
 
 	public override void Reset() 
 	{
@@ -157,6 +180,8 @@ public class SpawnedObject : PooledObject {
 		transform.rotation = Quaternion.Euler(Vector3.zero);
 		_rigidbody.velocity = Vector3.zero;
 		_rigidbody.angularVelocity = Vector3.zero;
+		saveVelocity = Vector3.zero;
+		saveAngularVelocity = Vector3.zero;
 
 		isLive = true;
 		inRange = true;
@@ -170,21 +195,5 @@ public class SpawnedObject : PooledObject {
 				ReturnToPool();
 			}	
 		}));
-	}
-
-	protected IEnumerator UpdateAfterDelay(float delay)
-	{
-		for(;;) 
-		{
-			// Check for out of bounds
-			if (gameObject.transform.position.y < -65)
-			{
-				ReturnToPool();
-			}
-
-			SlowUpdate();
-			
-			yield return new WaitForSeconds(delay);
-		}
 	}
 }

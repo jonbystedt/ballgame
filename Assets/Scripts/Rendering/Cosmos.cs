@@ -1,6 +1,9 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityStandardAssets.ImageEffects;
+using ProceduralToolkit;
+using ProceduralToolkit.Examples;
 using Random = UnityEngine.Random;
 
 public class Cosmos : MonoBehaviour {
@@ -73,6 +76,7 @@ public class Cosmos : MonoBehaviour {
 		mainLight = GetComponent<Light>();
 		moonrenderer = moon.GetComponent<MeshRenderer>();
 		fullSizeMoon = moonrenderer.transform.localScale.y;
+
 		lightningController = lightning.GetComponent<DigitalRuby.ThunderAndLightning.ThunderAndLightningScript>();
 
 		stars.Clear();
@@ -109,6 +113,7 @@ public class Cosmos : MonoBehaviour {
 			Game.Player.transform.position.z
 			);
 	}
+
 
 	void HandleWeather()
 	{

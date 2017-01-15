@@ -50,12 +50,12 @@ public class BouncyBall : SpawnedObject
 		}
 	}
 
-	protected override void Sleep()
+	protected override void AddToSleepList()
 	{
 		SpawnManager.SleptBalls.Add(this);
 	}
 
-	protected override void Wake()
+	protected override void RemoveFromSleepList()
 	{
 		SpawnManager.SleptBalls.Remove(this);
 	}
