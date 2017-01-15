@@ -7,8 +7,11 @@ public class SpawnedObject : PooledObject {
 	public Color _color = Color.gray;
 	public Color _emission = Color.black;
 	public bool isLive = true;
+	public bool inRange = true;
 
 	protected MeshRenderer _renderer;
+	protected Vector3 saveVelocity;
+	protected Vector3 saveAngularVelocity;
 
 	public Color color
 	{
@@ -101,7 +104,6 @@ public class SpawnedObject : PooledObject {
 	void Start() 
 	{
 		player = GameObject.FindWithTag("Player");
-		StartCoroutine(UpdateAfterDelay(1f));
 	}
 
 	void SetMass()
@@ -109,7 +111,45 @@ public class SpawnedObject : PooledObject {
 		_rigidbody.mass = mass;
 	}
 
-	protected virtual void SlowUpdate() {}
+	public void StartSlowUpdate()
+	{
+		StartCoroutine(UpdateAfterDelay(1f));
+	}
+
+	protected override void SlowUpdate() 
+	{
+		float distance = Vector2.Distance(
+			new Vector2(gameObject.transform.position.x, gameObject.transform.position.z), 
+			new Vector2(Game.Player.transform.position.x, Game.Player.transform.position.z)
+			);
+
+		if (distance > Config.DespawnRadius * Chunk.Size && inRange)
+		{
+			saveVelocity = _rigidbody.velocity;
+			saveAngularVelocity = _rigidbody.angularVelocity;
+			_rigidbody.isKinematic = true;
+			_rigidbody.Sleep();
+			_renderer.enabled = false;
+
+			Sleep();
+			inRange = false;
+		}
+		if (distance < Config.DespawnRadius * Chunk.Size && !inRange)
+		{
+			_rigidbody.isKinematic = false;
+			_rigidbody.velocity = saveVelocity;
+			_rigidbody.angularVelocity = saveAngularVelocity;
+			_rigidbody.WakeUp();
+
+			_renderer.enabled = true;
+			Wake();
+			inRange = true;
+		}
+	}
+
+	protected virtual void Sleep() {}
+
+	protected virtual void Wake() {}
 
 	public override void Reset() 
 	{
@@ -119,6 +159,7 @@ public class SpawnedObject : PooledObject {
 		_rigidbody.angularVelocity = Vector3.zero;
 
 		isLive = true;
+		inRange = true;
 	}
 
 	public void RemoveIn(float seconds)

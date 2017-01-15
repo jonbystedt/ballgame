@@ -8,6 +8,10 @@ public class PooledObject : MonoBehaviour {
 	ObjectPool poolInstanceForPrefab;
 
 	public bool isActive { get; set; }
+	public int id { get; set; }
+	public static int NextId = 0;
+
+	protected virtual void SlowUpdate() {}
 
 	public T GetPooledInstance<T>() where T : PooledObject
 	{

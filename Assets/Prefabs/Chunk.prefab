@@ -39,7 +39,7 @@ MeshRenderer:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 159346}
   m_Enabled: 1
-  m_CastShadows: 2
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
@@ -101,7 +101,6 @@ MonoBehaviour:
   rendered: 0
   surrounded: 0
   outofrange: 0
-  playerHit: 0
   transparentChunk: {fileID: 0}
   _blocks: 
   _changes: 

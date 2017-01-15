@@ -75,10 +75,10 @@ public class Config : MonoBehaviour
 				_instance.chunkLoadRadius = value;//value + Mathf.FloorToInt(value / 2f);
 
 				// Delete the chunks that fall outside this
-				_instance.chunkDeleteRadius = value * 2;
+				_instance.chunkDeleteRadius = value * 3;
 
 				// Despawn radius is 2/3 the world size. Spawn radius is always 1.
-				_instance.despawnRadius = value - Mathf.CeilToInt(value / 3f);
+				_instance.despawnRadius = value;//value - Mathf.CeilToInt(value / 3f);
 				_instance.spawnRadius = 1;
 
 				// The maximum render distance is the world size * chunk size

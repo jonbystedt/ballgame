@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 
 public enum Spawns 
 {
@@ -49,6 +50,9 @@ public class SpawnManager : MonoBehaviour {
 	private Dictionary<Spawns,PooledObject> objects = new Dictionary<Spawns,PooledObject>();
 
 	public List<Pickup> Pickups = new List<Pickup>();
+
+	public static List<Pickup> SleptPickups = new List<Pickup>();
+	public static List<BouncyBall> SleptBalls = new List<BouncyBall>();
 
 	Vector3 rotation = new Vector3 (15, 30, 45);
 
@@ -119,6 +123,16 @@ public class SpawnManager : MonoBehaviour {
 	SpawnedObject SpawnPickup(PooledObject prefab, Color color)
 	{
 		Pickup pickup = prefab.GetPooledInstance<Pickup>();
+		if (pickup == null && SleptPickups.Count > 0)
+		{
+			Pickup sleeper = SleptPickups[0];
+			SleptPickups.RemoveAt(0);
+			if (sleeper != null)
+			{
+				sleeper.ReturnToPool();
+				pickup = prefab.GetPooledInstance<Pickup>();
+			}
+		}
 		if (pickup == null)
 		{
 			return null;
@@ -126,6 +140,7 @@ public class SpawnManager : MonoBehaviour {
 
 		pickup.type = ((Pickup)prefab).type;
 		pickup.isLive = true;
+		pickup.inRange = true;
 		Pickups.Add(pickup);
 
 		if (pickup.type == PickupType.Basic)
@@ -165,12 +180,23 @@ public class SpawnManager : MonoBehaviour {
 	SpawnedObject SpawnBall(PooledObject prefab, Color color)
 	{
 		BouncyBall ball = prefab.GetPooledInstance<BouncyBall>();
+		if (ball == null && SleptBalls.Count > 0)
+		{
+			BouncyBall sleeper = SleptBalls[0];
+			SleptBalls.RemoveAt(0);
+			if (sleeper != null)
+			{
+				sleeper.ReturnToPool();
+				ball = prefab.GetPooledInstance<BouncyBall>();
+			}
+		}
 		if (ball == null)
 		{
 			return null;
 		}
 
 		ball.exploding = false;
+		ball.inRange = true;
 		ball.type = ((BouncyBall)prefab).type;
 		ball.color = color;
 
@@ -280,6 +306,7 @@ public class SpawnManager : MonoBehaviour {
 
 			spawnedObject.transform.position = pos;
 			spawnedObject.mass = mass;
+			spawnedObject.StartSlowUpdate();
 		}
 
 		return spawnedObject.GetComponent<PooledObject>();
@@ -491,6 +518,12 @@ public class SpawnManager : MonoBehaviour {
 		for(int i = Pickups.Count - 1; i >= 0; i--)
 		{
 			Pickup pickup = Pickups[i];
+
+			if (!pickup.inRange)
+			{
+				continue;
+			}
+
 			if (pickup != null && pickup.isActive)
 			{
 				pickup.Rotate(rotation);

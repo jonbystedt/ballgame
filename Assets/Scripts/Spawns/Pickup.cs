@@ -24,10 +24,27 @@ public class Pickup : SpawnedObject
 
 	protected override void SlowUpdate() 
 	{
-		if (drift) 
+		base.SlowUpdate();
+
+		if (inRange && !_renderer.enabled)
+		{
+			_renderer.enabled = true;
+		}
+
+		if (drift && inRange) 
 		{
 			Drift();
 		}
+	}
+
+	protected override void Sleep()
+	{
+		SpawnManager.SleptPickups.Add(this);
+	}
+
+	protected override void Wake()
+	{
+		SpawnManager.SleptPickups.Remove(this);
 	}
 
 	public void Rotate(Vector3 direction) 

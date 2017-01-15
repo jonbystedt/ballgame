@@ -1,16 +1,16 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Collections.Concurrent;
 using UnityEngine;
 
 public static class Blocks {
 
 	private static Dictionary<ushort, Block> BlockLookup = new Dictionary<ushort, Block>();
-	private static Dictionary<int, Vector2[]> UVLookup = new Dictionary<int, Vector2[]>();
+	private static ConcurrentDictionary<int, Vector2[]> UVLookup = new ConcurrentDictionary<int, Vector2[]>();
 
 	public static void Initialize()
 	{
 		BlockLookup = new Dictionary<ushort, Block>();
-		UVLookup = new Dictionary<int, Vector2[]>();
+		UVLookup = new ConcurrentDictionary<int, Vector2[]>();
 
 		ushort blockId = 0;
 		for (int i = 0; i < Tile.Colors.Length; i++, blockId++ )
@@ -90,10 +90,7 @@ public static class Blocks {
 		if (block != null)
 		{
 			uvs = BlockLookup[blockId].FaceUVs(direction, width, height);
-			if (!UVLookup.ContainsKey(hash))
-			{
-				UVLookup.Add(hash, uvs);
-			}
+			UVLookup.TryAdd(hash, uvs);
 		}
 		return uvs;
 	}

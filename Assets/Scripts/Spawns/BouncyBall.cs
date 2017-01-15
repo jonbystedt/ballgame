@@ -40,6 +40,26 @@ public class BouncyBall : SpawnedObject
 		exploding = false;
 	}
 
+	protected override void SlowUpdate() 
+	{
+		base.SlowUpdate();
+
+		if (inRange && !_renderer.enabled)
+		{
+			_renderer.enabled = true;
+		}
+	}
+
+	protected override void Sleep()
+	{
+		SpawnManager.SleptBalls.Add(this);
+	}
+
+	protected override void Wake()
+	{
+		SpawnManager.SleptBalls.Remove(this);
+	}
+
 	public void Grow(float velocity)
 	{
 		if (transform.localScale.x < maxSize)
@@ -288,7 +308,6 @@ public class BouncyBall : SpawnedObject
 					ball.SpawnValue = ball.SpawnValue + SpawnValue;
 
 					// Return to pool
-					//isActive = false;
 					exploding = true;
 					StartCoroutine(Wait(0.1f, () => {
 						if (isActive)

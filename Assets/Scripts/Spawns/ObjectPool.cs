@@ -53,6 +53,7 @@ public class ObjectPool : MonoBehaviour {
 			obj = Instantiate<PooledObject>(prefab);
 			obj.transform.SetParent(transform, false);
 			obj.Pool = this;
+			obj.id = PooledObject.NextId++;
 			obj.isActive = true;
 		}
 		objCount++;

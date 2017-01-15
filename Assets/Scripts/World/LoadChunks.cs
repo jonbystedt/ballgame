@@ -19,7 +19,7 @@ public class LoadChunks : MonoBehaviour
 	List<WorldPosition> buildList = new List<WorldPosition>();
 	List<WorldPosition> deleteList = new List<WorldPosition>();
 
-	List<WorldPosition> despawnList = new List<WorldPosition>();
+	//List<WorldPosition> despawnList = new List<WorldPosition>();
 	List<WorldPosition> currentBuilds = new List<WorldPosition>();
 
 	WorldPosition playerChunkPos = new WorldPosition();
@@ -28,7 +28,6 @@ public class LoadChunks : MonoBehaviour
 	WorldPosition pos;
 	Chunk testChunk;
 	float spawnTime;
-	float despawnTime;
 
 	void Update() 
 	{
@@ -44,19 +43,12 @@ public class LoadChunks : MonoBehaviour
 			spawnTime = Time.time + Config.SpawnTiming;
 			ExecuteSpawn();
 		}
-
-		if (loading && spawning && despawnTime <= Time.time) 
-		{
-			despawnTime = Time.time + Config.SpawnTiming * 0.6f;
-			ExecuteDespawn();
-		}
 	}
 
 	public void _start()
 	{
 		pipelineActive = true;
 		spawnTime = Time.time + Config.SpawnTiming;
-		despawnTime = Time.time + Config.SpawnTiming * 0.6f;
 	}
 
 	public void Reset()
@@ -72,7 +64,7 @@ public class LoadChunks : MonoBehaviour
 		updateList = new List<WorldPosition>();
 		buildList = new List<WorldPosition>();
 		deleteList = new List<WorldPosition>();
-		despawnList = new List<WorldPosition>();
+		//despawnList = new List<WorldPosition>();
 
 		noise.Clear();
 	}
@@ -392,52 +384,52 @@ public class LoadChunks : MonoBehaviour
 		}
 	}
 
-	void ExecuteDespawn()
-	{
-		if (despawnList.Count == 0)
-		{
-			foreach(Column column in World.Columns.Values)
-			{
-				despawnList.Add(new WorldPosition(column.chunks[0].x, 0, column.chunks[0].z));
-			}
-		}
-		else
-		{
-			Column column;
-			if (World.Columns.TryGetValue(despawnList[0].GetHashCode(), out column))
-			{
-				for (int i = column.spawns.Count - 1; i >= 0; i--)
-				{
-					PooledObject obj = column.spawns[i];
+	// void ExecuteDespawn()
+	// {
+	// 	if (despawnList.Count == 0)
+	// 	{
+	// 		foreach(Column column in World.Columns.Values)
+	// 		{
+	// 			despawnList.Add(new WorldPosition(column.chunks[0].x, 0, column.chunks[0].z));
+	// 		}
+	// 	}
+	// 	else
+	// 	{
+	// 		Column column;
+	// 		if (World.Columns.TryGetValue(despawnList[0].GetHashCode(), out column))
+	// 		{
+	// 			for (int i = column.spawns.Count - 1; i >= 0; i--)
+	// 			{
+	// 				PooledObject obj = column.spawns[i];
 					
-					if (obj != null && obj.isActive)
-					{
-						int distance = Mathf.FloorToInt(Vector2.Distance(
-							new Vector2(transform.position.x, transform.position.z),
-							new Vector2(obj.transform.position.x, obj.transform.position.z)
-							));
+	// 				if (obj != null && obj.isActive)
+	// 				{
+	// 					int distance = Mathf.FloorToInt(Vector2.Distance(
+	// 						new Vector2(transform.position.x, transform.position.z),
+	// 						new Vector2(obj.transform.position.x, obj.transform.position.z)
+	// 						));
 						
-						if (distance > Config.DespawnRadius * Chunk.Size)
-						{
-							obj.ReturnToPool();
-							column.spawns.RemoveAt(i);
-						}
-					}
-					else
-					{
-						column.spawns.RemoveAt(i);
-					}
-				}
+	// 					if (distance > Config.DespawnRadius * Chunk.Size)
+	// 					{
+	// 						obj.ReturnToPool();
+	// 						column.spawns.RemoveAt(i);
+	// 					}
+	// 				}
+	// 				else
+	// 				{
+	// 					column.spawns.RemoveAt(i);
+	// 				}
+	// 			}
 
-				if (column.spawns.Count == 0)
-				{
-					column.spawned = false;
-				}
-			}
+	// 			if (column.spawns.Count == 0)
+	// 			{
+	// 				column.spawned = false;
+	// 			}
+	// 		}
 
-			despawnList.RemoveAt(0);
-		}
-	}
+	// 		despawnList.RemoveAt(0);
+	// 	}
+	// }
 
 	IEnumerator Wait(float time, Action callback)
 	{
