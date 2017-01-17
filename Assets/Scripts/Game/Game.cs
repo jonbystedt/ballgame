@@ -30,6 +30,7 @@ public class Game : MonoBehaviour
 	public Light moon;
 	public Image menuGlow;
 	public GameObject afterburner;
+	public Boids boids;
 
 	private Vector3 lastGoodPosition;
 	private Vector3 cameraPosition;
@@ -132,7 +133,9 @@ public class Game : MonoBehaviour
 
 		player.GetComponent<Rigidbody>().isKinematic = true;
 		PlayerActive = false;
-		//player.transform.position = new Vector3(-0.5f, 1024f, -0.5f);
+		player.transform.position = new Vector3(-0.5f, 128f, -0.5f);
+		boids.StopBoids();
+		boids.StartBoids();
 
 		menuGlow.color = Tile.Brighten(RenderSettings.fogColor, 0.5f);
 		RenderSettings.fogColor = Tile.Brighten(Color.Lerp(RenderSettings.fogColor, Color.black, 0.9f), 0.05f);
@@ -176,7 +179,7 @@ public class Game : MonoBehaviour
 
 		camOp = mainCamera.GetComponentInParent<CameraOperator>();
 
-		//player.transform.position = new Vector3(-0.5f, 1024f, -0.5f);
+		player.transform.position = new Vector3(-0.5f, 128f, -0.5f);
 		player.GetComponent<Rigidbody>().isKinematic = true;
 		playerActive = false;
 
@@ -249,6 +252,7 @@ public class Game : MonoBehaviour
 	public void _begin()
 	{
 		SetTime(Config.StartTime);
+		boids.StartBoids();
 
 		if (ShowStats)
 		{

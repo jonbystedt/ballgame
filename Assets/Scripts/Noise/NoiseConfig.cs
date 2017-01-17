@@ -33,6 +33,15 @@ public static class NoiseConfig {
 	public static NoiseOptions rainIntensity;
 	public static NoiseOptions lightningIntensity;
 
+	public static NoiseOptions boidInteraction;
+	public static NoiseOptions boidCohesion;
+	public static NoiseOptions boidSeparation;
+	public static NoiseOptions sepDistance;
+	public static NoiseOptions sepCoefficient;
+	public static NoiseOptions boidAlignment;
+	public static NoiseOptions boidInner;
+	public static NoiseOptions boidOuter;
+
 	// Intensity will never be below this number.
 	public static int spawnIntensityBase = -20;
 	public static int rainBreakValue = 650;
@@ -144,6 +153,69 @@ public static class NoiseConfig {
 			rainIntensity.lacunarity + Mathf.Lerp(0.01f, 0.0025f, GameUtils.Seed),
 			rainIntensity.persistance + Mathf.Lerp(0.01f, 0.0025f, GameUtils.Seed),
 			1000,
+			0f
+			);
+		
+		boidCohesion = new NoiseOptions(
+			Mathf.Lerp(0.00002f, 0.001f, GameUtils.Seed),
+			1,
+			Mathf.Lerp(0f, 2f, GameUtils.Seed),
+			Mathf.Lerp(0f, 2f, GameUtils.Seed),
+			30,
+			0f
+			);
+		
+		boidInteraction = new NoiseOptions(
+			Mathf.Lerp(0.00002f, 0.001f, GameUtils.Seed),
+			1,
+			Mathf.Lerp(0f, 2f, GameUtils.Seed),
+			Mathf.Lerp(0f, 2f, GameUtils.Seed),
+			30,
+			0f
+			);
+		
+		sepDistance = new NoiseOptions(
+			Mathf.Lerp(0.00002f, 0.001f, GameUtils.Seed),
+			1,
+			Mathf.Lerp(0f, 2f, GameUtils.Seed),
+			Mathf.Lerp(0f, 2f, GameUtils.Seed),
+			30,
+			0f
+			);
+		
+		sepCoefficient = new NoiseOptions(
+			Mathf.Lerp(0.00002f, 0.001f, GameUtils.Seed),
+			1,
+			Mathf.Lerp(0f, 2f, GameUtils.Seed),
+			Mathf.Lerp(0f, 2f, GameUtils.Seed),
+			30,
+			0f
+			);
+		
+		boidAlignment = new NoiseOptions(
+			Mathf.Lerp(0.00002f, 0.001f, GameUtils.Seed),
+			1,
+			Mathf.Lerp(0f, 2f, GameUtils.Seed),
+			Mathf.Lerp(0f, 2f, GameUtils.Seed),
+			30,
+			0f
+			);
+
+		boidInner = new NoiseOptions(
+			Mathf.Lerp(0.0002f, 0.001f, GameUtils.Seed),
+			1,
+			Mathf.Lerp(0f, 2f, GameUtils.Seed),
+			Mathf.Lerp(0f, 2f, GameUtils.Seed),
+			30,
+			0f
+			);
+
+		boidOuter = new NoiseOptions(
+			Mathf.Lerp(0.0002f, 0.001f, GameUtils.Seed),
+			1,
+			Mathf.Lerp(0f, 2f, GameUtils.Seed),
+			Mathf.Lerp(0f, 2f, GameUtils.Seed),
+			30,
 			0f
 			);
 

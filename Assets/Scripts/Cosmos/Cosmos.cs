@@ -8,6 +8,7 @@ using Random = UnityEngine.Random;
 
 public class Cosmos : MonoBehaviour {
 
+	public static float CurrentTime {get; set;}
 	public Gradient nightDayColor;
 	public Gradient nightDayFogColor;
 	public AnimationCurve fogDensityCurve;
@@ -57,7 +58,7 @@ public class Cosmos : MonoBehaviour {
 	public string ampm = "";
 	public Color skyColor;
 	public Moonlight moonlight;
-
+	public GameObject boids;
 	private Color greySkyColor = new Color(0.25f,0.25f,0.25f);
 
 	float dot;
@@ -94,6 +95,7 @@ public class Cosmos : MonoBehaviour {
 		}
 
 		HandleWeather();
+		FlyBoids();
 		SetCosmos();
 		HandleRotation();
 		HandleCosmosControls();
@@ -114,12 +116,21 @@ public class Cosmos : MonoBehaviour {
 			);
 	}
 
+	void FlyBoids()
+	{
+		//boids.transform.position = Game.Player.transform.position;
+		boids.transform.position = new Vector3(
+			Mathf.Lerp(boids.transform.position.x, Game.Player.transform.position.x, skyDelta),
+			boids.transform.position.y,
+			Mathf.Lerp(boids.transform.position.z, Game.Player.transform.position.z, skyDelta)
+			);
+	} 
 
 	void HandleWeather()
 	{
-		float currentTime = (days * (24 * 60)) + (hours24 * 60) + minutes;
-		float rainChance = TerrainGenerator.GetNoise1D(new Vector3(currentTime,0,0), NoiseConfig.rainIntensity, NoiseType.Simplex);
-		float lightningChance = TerrainGenerator.GetNoise1D(new Vector3(currentTime,0,0), NoiseConfig.lightningIntensity, NoiseType.Simplex);
+		CurrentTime = (days * (24 * 60)) + (hours24 * 60) + minutes;
+		float rainChance = TerrainGenerator.GetNoise1D(new Vector3(CurrentTime,0,0), NoiseConfig.rainIntensity, NoiseType.Simplex);
+		float lightningChance = TerrainGenerator.GetNoise1D(new Vector3(CurrentTime,0,0), NoiseConfig.lightningIntensity, NoiseType.Simplex);
 		float percentChance;
 
 		if (rainChance > NoiseConfig.rainBreakValue)
