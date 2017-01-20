@@ -250,6 +250,10 @@ public class Game : MonoBehaviour
 
 	public void _begin()
 	{
+		if (String.IsNullOrEmpty(Config.StartTime))
+		{
+			Config.StartTime = "6:00";
+		}
 		SetTime(Config.StartTime);
 		boids.StartBoids();
 

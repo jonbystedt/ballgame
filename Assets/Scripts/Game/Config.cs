@@ -353,6 +353,7 @@ public class Config : MonoBehaviour
 	public static string StartTime
 	{
 		get { return Settings.startTime; }
+		set { Settings.startTime = value; }
 	}
 
 	public static Config _instance;

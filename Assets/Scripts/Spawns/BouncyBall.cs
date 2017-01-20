@@ -19,6 +19,8 @@ public class BouncyBall : SpawnedObject
 	public float massDecrease = 0f;
 	public float maxSize = 10f;
 	public float minSize = 1f;
+	public float corruption = 0.0f;
+	public float maxBallSpeed = 1000f;
 
 	public bool explodeAtMax = false;
 	public bool explodeAtMin = false;
@@ -64,6 +66,21 @@ public class BouncyBall : SpawnedObject
 
 	protected override void DoAction()
 	{
+		if (closest == null || !closest.inRange || !closest.isActive)
+		{
+			return;
+		}
+
+		Vector3 d = closest.transform.position - transform.position;
+		float difference = hsvColor.h - closest.hsvColor.h;
+		if (difference > 0.5f)
+		{
+			difference = 1f - difference;
+		}
+		Vector3 force = Vector3.ClampMagnitude(Vector3.RotateTowards(-d, d, Mathf.Lerp(0f, 6.28319f, difference * 2f), 0f)*10f, maxBallSpeed);
+		_rigidbody.AddForce(force, ForceMode.Impulse);
+
+		//Game.Log("Force: " + force.ToString());
 
 	}
 
@@ -128,16 +145,16 @@ public class BouncyBall : SpawnedObject
 		Color color = Tile.Colors[SpawnCount % 64];
 		if (type == BallType.Moon)
 		{
-			color = Tile.Lighten(color, 0.3f);
+			color = Tile.Lighten(color, 0.2f);
 		}
 		if (type == BallType.DarkStar)
 		{
-			color = Tile.Darken(color, 0.3f);
+			color = Tile.Darken(color, 0.2f);
 		}
 
 		if (SpawnCount > 0)
 		{
-			World.Spawn.Objects(SpawnObject, Tile.Colors[SpawnCount % 64], transform.position, SpawnCount, 0f, column.spawns);
+			World.Spawn.Objects(SpawnObject, Tile.Colors[SpawnCount % 64], transform.position, SpawnCount, 0f, column.spawns, corruption);
 		}
 
 		StartCoroutine(Wait(1f, () => {
@@ -268,6 +285,8 @@ public class BouncyBall : SpawnedObject
 
 		if (other.gameObject.CompareTag("Pickup")) 
 		{
+			corruption += 0.01f;
+
 			Pickup pickup = other.gameObject.GetComponent<Pickup>();
 			if (pickup.isActive && pickup.isLive)
 			{
@@ -303,6 +322,8 @@ public class BouncyBall : SpawnedObject
 
 		if (other.gameObject.CompareTag("Ball"))
 		{
+			corruption += 0.01f;
+
 			BouncyBall ball = other.gameObject.GetComponent<BouncyBall>();
 			if (!ball.exploding && transform.localScale.x <= 2f)
 			{

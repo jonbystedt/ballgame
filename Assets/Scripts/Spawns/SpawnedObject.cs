@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
-using System.Collections;
+using ProceduralToolkit;
 
 public class SpawnedObject : PooledObject {
 
 	public ParticleSystem explosion;
 	public Color _color = Color.gray;
 	public Color _emission = Color.black;
+	public ColorHSV hsvColor;
 
 	public bool isLive = true;
 	public bool inRange = true;

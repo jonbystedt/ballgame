@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using ProceduralToolkit;
 
 public enum PickupType
 {
@@ -15,7 +14,6 @@ public class Pickup : SpawnedObject
 	public float rotationSpeed = 2f;
 	public float driftIntensity = 250f;
 	public PickupType type = PickupType.Basic;
-	public ColorHSV hsvColor;
 
 	public override void Reset()
 	{
@@ -159,13 +157,13 @@ public class Pickup : SpawnedObject
 			{
 				p.startSize = 0.45f;
 				explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(10f, 100f, impactForce * impactForce)));
-				World.Spawn.Objects(Spawns.Pickup, Tile.Inverse(color), transform.position, 4, Config.SpawnDelay);
+				World.Spawn.Objects(Spawns.Pickup, Tile.Inverse(color), transform.position, 4, Config.SpawnDelay, 0f);
 			}
 			else
 			{
 				p.startSize = 0.5f;
 				explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(8f, 80f, impactForce * impactForce)));
-				World.Spawn.Objects(Spawns.Pickup, Tile.Inverse(color), transform.position, 4, Config.SpawnDelay);
+				World.Spawn.Objects(Spawns.Pickup, Tile.Inverse(color), transform.position, 4, Config.SpawnDelay, 0f);
 			}
 
 		}

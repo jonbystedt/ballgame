@@ -58,7 +58,7 @@ public static class NoiseConfig {
 		lightningBreakValue = lightningBreakValue + Mathf.FloorToInt(seed * seed * 250);
 
 		terrain = new NoiseOptions(
-			Mathf.Lerp(0.0001f, 0.025f, Mathf.Pow(GameUtils.Seed, 1.2f)),
+			Mathf.Lerp(0.00005f, 0.025f, Mathf.Pow(GameUtils.Seed, 1.2f)),
 			Mathf.FloorToInt(Mathf.Lerp(1,3,GameUtils.Seed)),
 			Mathf.Lerp(0f, 4f, GameUtils.Seed), 
 			Mathf.Lerp(0f, 0.5f, GameUtils.Seed), 
@@ -67,7 +67,7 @@ public static class NoiseConfig {
 			); 
 
 		mountain = new NoiseOptions(
-			Mathf.Lerp(0.0005f, 0.025f, Mathf.Pow(GameUtils.Seed, 1.2f)),
+			Mathf.Lerp(0.0005f, 0.025f, Mathf.Pow(GameUtils.Seed, 2f)),
 			Mathf.FloorToInt(Mathf.Lerp(1,3,GameUtils.Seed)),
 			Mathf.Lerp(0f, 4f, GameUtils.Seed), 
 			Mathf.Lerp(0f, 1f, GameUtils.Seed), 

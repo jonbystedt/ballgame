@@ -104,6 +104,11 @@ public class SetOptions : MonoBehaviour {
 
 	public void SetResolution(string resolution)
 	{
+		if (String.IsNullOrEmpty(resolution))
+		{
+			return;
+		}
+		
 		string[] axes = resolution.Split('x');
 		int width = Int32.Parse(axes[0]);
 		int height = Int32.Parse(axes[1]);

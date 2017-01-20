@@ -56,6 +56,7 @@ public class SpawnManager : MonoBehaviour {
 	public static List<BouncyBall> SleptBalls = new List<BouncyBall>();
 
 	Vector3 rotation = new Vector3 (15, 30, 45);
+	int bix = 0;
 
 	void Awake()
 	{
@@ -199,8 +200,10 @@ public class SpawnManager : MonoBehaviour {
 
 		ball.exploding = false;
 		ball.inRange = true;
+		ball.hasAction = true;
 		ball.type = ((BouncyBall)prefab).type;
 		ball.color = color;
+		ball.hsvColor = new ColorHSV(color);
 		Balls.Add(ball);
 
 		if (ball.type == BallType.Basic)
@@ -219,7 +222,7 @@ public class SpawnManager : MonoBehaviour {
 		if (ball.type == BallType.Imploding)
 		{
 			ball.size = 1.8f;
-			ball.scoreModifier = 3;
+			ball.scoreModifier = 10;
 			ball.growthRate = 1.1f;
 			ball.shrinkRate = 0.8f;
 			ball.massIncrease = 1.075f;
@@ -251,7 +254,7 @@ public class SpawnManager : MonoBehaviour {
 		if (ball.type == BallType.Moon)
 		{
 			ball.size = 7f;
-			ball.scoreModifier = 9;
+			ball.scoreModifier = 2;
 			ball.growthRate = 1.2f;
 			ball.shrinkRate = 0.9f;
 			ball.massIncrease = 1.01f;
@@ -269,7 +272,7 @@ public class SpawnManager : MonoBehaviour {
 		if (ball.type == BallType.DarkStar)
 		{
 			ball.size = 7f;
-			ball.scoreModifier = 7;
+			ball.scoreModifier = 4;
 			ball.growthRate = 1.1f;
 			ball.shrinkRate = 0.85f;
 			ball.massIncrease = 1.1f;
@@ -321,11 +324,14 @@ public class SpawnManager : MonoBehaviour {
 	}
 		
 	// Spawn with delay, add to list, set color, set mass
-	public void Objects(Spawns o, Color color, float mass, Vector3 pos, int count, float delay, List<PooledObject> spawns)
+	public void Objects(Spawns o, Color color, float mass, Vector3 pos, int count, float delay, List<PooledObject> spawns, float corruption)
 	{
-		StartCoroutine(Wait(delay, () => {
-			StartCoroutine(Repeat(count, Config.SpawnDelay, () => {
+		StartCoroutine(Wait(delay, () => 
+		{
+			StartCoroutine(Repeat(count, Config.SpawnDelay, () => 
+			{
 				PooledObject obj = Object(o, color, mass, pos);
+
 				if (obj != null)
 				{
 					spawns.Add(obj);
@@ -335,27 +341,27 @@ public class SpawnManager : MonoBehaviour {
 	}
 
 	// Spawn with delay, add to list, set color
-	public void Objects(Spawns o, Color color, Vector3 pos, int count, float delay)
+	public void Objects(Spawns o, Color color, Vector3 pos, int count, float delay, float corruption)
 	{
 		Column column = World.GetColumn(new WorldPosition(pos));
 		if (column != null && column.spawns != null)
 		{
-			Objects(o, color, 0f, pos, count, delay, column.spawns);
+			Objects(o, color, 0f, pos, count, delay, column.spawns, corruption);
 		}	
 	}
-	public void Objects(Spawns o, Color color, Vector3 pos, int count, float delay, List<PooledObject> spawns)
+	public void Objects(Spawns o, Color color, Vector3 pos, int count, float delay, List<PooledObject> spawns, float corruption)
 	{
-		Objects(o, color, 0f, pos, count, delay, spawns);
+		Objects(o, color, 0f, pos, count, delay, spawns, corruption);
 	}
 
-	public void Objects(Spawns o, Color color, WorldPosition pos, float height, int count, float delay, List<PooledObject> spawns)
+	public void Objects(Spawns o, Color color, WorldPosition pos, float height, int count, float delay, List<PooledObject> spawns, float corruption)
 	{
-		Objects(o, color, new Vector3(pos.x, pos.y + height, pos.z), count, delay, spawns);
+		Objects(o, color, new Vector3(pos.x, pos.y + height, pos.z), count, delay, spawns, corruption);
 	}
 
-	public void Objects(Spawns o, Color color, float mass, WorldPosition pos, float height, int count, float delay, List<PooledObject> spawns)
+	public void Objects(Spawns o, Color color, float mass, WorldPosition pos, float height, int count, float delay, List<PooledObject> spawns, float corruption)
 	{
-		Objects(o, color, mass, new Vector3(pos.x, pos.y + height, pos.z), count, delay, spawns);
+		Objects(o, color, mass, new Vector3(pos.x, pos.y + height, pos.z), count, delay, spawns, corruption);
 	}
 
 	public void SpawnColumn(WorldPosition pos, Region region, List<PooledObject> spawns)
@@ -405,7 +411,8 @@ public class SpawnManager : MonoBehaviour {
 							0.5f, 
 							sampleSet.spawnMap.frequency[x, z] * 3,
 							1f,
-							spawns
+							spawns,
+							0f
 						);
 
 						continue;
@@ -426,7 +433,8 @@ public class SpawnManager : MonoBehaviour {
 							1.5f,
 							sampleSet.spawnMap.frequency[x, z] * 3,
 							1f,
-							spawns
+							spawns,
+							0f
 						);
 
 						continue;
@@ -448,7 +456,8 @@ public class SpawnManager : MonoBehaviour {
 							5f,
 							sampleSet.spawnMap.frequency[x, z],
 							1f,
-							spawns
+							spawns,
+							0f
 						);
 
 						continue;
@@ -470,7 +479,8 @@ public class SpawnManager : MonoBehaviour {
 							10f,
 							sampleSet.spawnMap.frequency[x, z],
 							1f,
-							spawns
+							spawns,
+							0f
 						);
 
 						continue;
@@ -488,7 +498,8 @@ public class SpawnManager : MonoBehaviour {
 							10f,
 							sampleSet.spawnMap.frequency[x, z],
 							1f,
-							spawns
+							spawns,
+							0f
 						);
 
 						continue;
@@ -504,7 +515,8 @@ public class SpawnManager : MonoBehaviour {
 							10f,
 							sampleSet.spawnMap.frequency[x, z],
 							1f,
-							spawns
+							spawns,
+							0f
 						);
 
 						continue;
@@ -540,14 +552,23 @@ public class SpawnManager : MonoBehaviour {
 
 	void HandleBalls()
 	{
+		if (SpawnManager.Balls.Count == 0)
+		{
+			return;
+		}
+
 		// find a ball
 		Vector3 d = Vector3.zero;
 		float distance = Mathf.Infinity;
-		int i;
 		BouncyBall ball = null;
-		for (i = SpawnManager.Balls.Count - 1; i >= 0 ; i--)
+
+		if (bix <= 0)
 		{
-			ball = SpawnManager.Balls[i];
+			bix = SpawnManager.Balls.Count - 1;
+		}
+		for (; bix >= 0 ; bix--)
+		{
+			ball = SpawnManager.Balls[bix];
 
 			if (!ball.inRange)
 			{
@@ -570,8 +591,13 @@ public class SpawnManager : MonoBehaviour {
 		}
 
 		// find closest ball to this ball
-		for (i -= 1; i >= 0 ; i--)
+		for (int i = SpawnManager.Balls.Count - 1; i >= 0; i--)
 		{
+			if (i == bix)
+			{
+				continue;
+			}
+
 			BouncyBall b = SpawnManager.Balls[i];
 
 			if (!b.inRange)
@@ -595,6 +621,8 @@ public class SpawnManager : MonoBehaviour {
 				}
 			}
 		}
+
+		bix--;
 	}
 
 	IEnumerator Repeat(int count, float delay, Action callback)
