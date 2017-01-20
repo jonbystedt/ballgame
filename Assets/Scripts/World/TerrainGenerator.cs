@@ -846,8 +846,8 @@ public class TerrainGenerator : MonoBehaviour
 
 		caveBreakPoint = Mathf.FloorToInt(Mathf.Lerp(256, 768, GameUtils.Seed));
 
-		glassRockBreakPoint = Mathf.FloorToInt(Mathf.Lerp(0, 256, GameUtils.Seed));
-		stripeColorBreakPoint = Mathf.FloorToInt(Mathf.Lerp(0, 1024, GameUtils.Seed));
+		glassRockBreakPoint = Mathf.FloorToInt(Mathf.Lerp(128, 768, GameUtils.Seed));
+		stripeColorBreakPoint = Mathf.FloorToInt(Mathf.Lerp(64, 940, GameUtils.Seed));
 		glassStripeColorBreakPoint = Mathf.FloorToInt(Mathf.Lerp(0, 1024, GameUtils.Seed));
 
 		cloudBreakPoint = Mathf.FloorToInt(Mathf.Lerp(512, 768, GameUtils.Seed));

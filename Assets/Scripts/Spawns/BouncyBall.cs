@@ -34,6 +34,8 @@ public class BouncyBall : SpawnedObject
 
 	public bool exploding = false;
 
+	public BouncyBall closest;
+
 	public override void Reset()
 	{
 		base.Reset();
@@ -58,6 +60,11 @@ public class BouncyBall : SpawnedObject
 	protected override void RemoveFromSleepList()
 	{
 		SpawnManager.SleptBalls.Remove(this);
+	}
+
+	protected override void DoAction()
+	{
+
 	}
 
 	public void Grow(float velocity)

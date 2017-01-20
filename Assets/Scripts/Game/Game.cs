@@ -133,7 +133,6 @@ public class Game : MonoBehaviour
 
 		player.GetComponent<Rigidbody>().isKinematic = true;
 		PlayerActive = false;
-		player.transform.position = new Vector3(-0.5f, 128f, -0.5f);
 		boids.StopBoids();
 		boids.StartBoids();
 
@@ -179,7 +178,7 @@ public class Game : MonoBehaviour
 
 		camOp = mainCamera.GetComponentInParent<CameraOperator>();
 
-		player.transform.position = new Vector3(-0.5f, 128f, -0.5f);
+		player.transform.position = new Vector3(0f, -3f, 10f);
 		player.GetComponent<Rigidbody>().isKinematic = true;
 		playerActive = false;
 

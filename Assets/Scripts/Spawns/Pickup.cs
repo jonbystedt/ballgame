@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using ProceduralToolkit;
 
 public enum PickupType
 {
@@ -13,9 +14,8 @@ public class Pickup : SpawnedObject
 	public int baseScore = 10;
 	public float rotationSpeed = 2f;
 	public float driftIntensity = 250f;
-	public bool drift = false;
 	public PickupType type = PickupType.Basic;
-	public Color baseColor;
+	public ColorHSV hsvColor;
 
 	public override void Reset()
 	{
@@ -25,11 +25,6 @@ public class Pickup : SpawnedObject
 	protected override void SlowUpdate() 
 	{
 		base.SlowUpdate();
-
-		if (drift && inRange) 
-		{
-			Drift();
-		}
 	}
 
 	protected override void AddToSleepList()
@@ -58,8 +53,9 @@ public class Pickup : SpawnedObject
 		isLive = true;
 	}
 
-	void Drift()
+	protected override void DoAction()
 	{
+		// Drift by noise deriviative
 		Vector3 force = NoiseGenerator.SumWithDerivative(
 			NoiseGenerator.Value3D, 
 			World.GetBlockPosition(transform.position).ToVector3(), 
@@ -68,6 +64,9 @@ public class Pickup : SpawnedObject
 			NoiseConfig.terrain.lacunarity, 
 			NoiseConfig.terrain.persistance
 		);
+
+		// Rotate force by hue
+		force = Vector3.RotateTowards(force, -force, Mathf.Lerp(0f, 6.28319f, hsvColor.h), 0f);
 
 		transform.GetComponent<Rigidbody>().AddForce(force * driftIntensity * 10);
 	}
@@ -112,14 +111,14 @@ public class Pickup : SpawnedObject
 						transform.position.z - (transform.localScale.z * 0.5f) + ((1 / (size * 2)) * transform.localScale.z) + ((x / size) * transform.localScale.x)
 					);
 					//spawnColor = Tile.Colors[(x + y + z) % 64];
-					spawnColor = Color.Lerp(baseColor, Tile.Inverse(Tile.Brighten(baseColor, 0.5f)), (x * y * z) / (size * size * size));
+					spawnColor = Color.Lerp(color, Tile.Inverse(Tile.Brighten(color, 0.5f)), (x * y * z) / (size * size * size));
 					PooledObject obj = World.Spawn.Object(spawn, spawnColor, mass, pos);
 					if (obj != null)
 					{
-						column.spawns.Add(obj);
+						column.spawns.Add(obj); 
 						Pickup pickup = obj.GetComponent<Pickup>();
 						pickup.Activate(0.4f);
-						World.Spawn.Pickups.Add(pickup);
+						//SpawnManager.Pickups.Add(pickup);
 					}
 					_renderer.enabled = !_renderer.enabled;
 					yield return new WaitForSeconds(Config.SpawnTiming);
@@ -160,13 +159,13 @@ public class Pickup : SpawnedObject
 			{
 				p.startSize = 0.45f;
 				explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(10f, 100f, impactForce * impactForce)));
-				World.Spawn.Objects(Spawns.Pickup, Tile.Inverse(baseColor), transform.position, 4, Config.SpawnDelay);
+				World.Spawn.Objects(Spawns.Pickup, Tile.Inverse(color), transform.position, 4, Config.SpawnDelay);
 			}
 			else
 			{
 				p.startSize = 0.5f;
 				explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(8f, 80f, impactForce * impactForce)));
-				World.Spawn.Objects(Spawns.Pickup, Tile.Inverse(baseColor), transform.position, 4, Config.SpawnDelay);
+				World.Spawn.Objects(Spawns.Pickup, Tile.Inverse(color), transform.position, 4, Config.SpawnDelay);
 			}
 
 		}
@@ -208,14 +207,14 @@ public class Pickup : SpawnedObject
 		Color startColor;
 		if (type == PickupType.Black)
 		{
-			startColor = Tile.Brighten(Tile.Lighten(baseColor, 0.25f), 1f);
+			startColor = Tile.Brighten(Tile.Lighten(color, 0.25f), 1f);
 		}
 		else
 		{
-			startColor = Tile.Lighten(baseColor, 0.75f);
+			startColor = Tile.Lighten(color, 0.75f);
 		}
 		grad.SetKeys(
-			new GradientColorKey[] { new GradientColorKey(startColor, 0.0f), new GradientColorKey(Tile.Lighten(baseColor, 0.3f), 0.2f), new GradientColorKey(Tile.Brighten(baseColor, 1f), 1.0f)},
+			new GradientColorKey[] { new GradientColorKey(startColor, 0.0f), new GradientColorKey(Tile.Lighten(color, 0.3f), 0.2f), new GradientColorKey(Tile.Brighten(color, 1f), 1.0f)},
 			new GradientAlphaKey[] { new GradientAlphaKey(1.0f, 0.0f), new GradientAlphaKey(1.0f, 1.0f)}
 		);
 

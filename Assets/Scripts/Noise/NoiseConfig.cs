@@ -34,10 +34,8 @@ public static class NoiseConfig {
 	public static NoiseOptions lightningIntensity;
 
 	public static NoiseOptions boidInteraction;
-	public static NoiseOptions boidCohesion;
 	public static NoiseOptions boidSeparation;
-	public static NoiseOptions sepDistance;
-	public static NoiseOptions sepCoefficient;
+	public static NoiseOptions boidDistance;
 	public static NoiseOptions boidAlignment;
 	public static NoiseOptions boidInner;
 	public static NoiseOptions boidOuter;
@@ -156,39 +154,21 @@ public static class NoiseConfig {
 			0f
 			);
 		
-		boidCohesion = new NoiseOptions(
-			Mathf.Lerp(0.00002f, 0.001f, GameUtils.Seed),
-			1,
-			Mathf.Lerp(0f, 2f, GameUtils.Seed),
-			Mathf.Lerp(0f, 2f, GameUtils.Seed),
-			30,
-			0f
-			);
-		
 		boidInteraction = new NoiseOptions(
 			Mathf.Lerp(0.00002f, 0.001f, GameUtils.Seed),
 			1,
 			Mathf.Lerp(0f, 2f, GameUtils.Seed),
 			Mathf.Lerp(0f, 2f, GameUtils.Seed),
-			30,
+			20,
 			0f
 			);
 		
-		sepDistance = new NoiseOptions(
+		boidDistance = new NoiseOptions(
 			Mathf.Lerp(0.00002f, 0.001f, GameUtils.Seed),
 			1,
 			Mathf.Lerp(0f, 2f, GameUtils.Seed),
 			Mathf.Lerp(0f, 2f, GameUtils.Seed),
-			30,
-			0f
-			);
-		
-		sepCoefficient = new NoiseOptions(
-			Mathf.Lerp(0.00002f, 0.001f, GameUtils.Seed),
-			1,
-			Mathf.Lerp(0f, 2f, GameUtils.Seed),
-			Mathf.Lerp(0f, 2f, GameUtils.Seed),
-			30,
+			20,
 			0f
 			);
 		
@@ -197,7 +177,7 @@ public static class NoiseConfig {
 			1,
 			Mathf.Lerp(0f, 2f, GameUtils.Seed),
 			Mathf.Lerp(0f, 2f, GameUtils.Seed),
-			30,
+			20,
 			0f
 			);
 

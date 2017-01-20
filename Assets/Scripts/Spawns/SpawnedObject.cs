@@ -10,6 +10,7 @@ public class SpawnedObject : PooledObject {
 	public bool isLive = true;
 	public bool inRange = true;
 	public bool sleeping = false;
+	public bool hasAction = false;
 
 	protected MeshRenderer _renderer;
 	protected GameObject player;
@@ -142,6 +143,12 @@ public class SpawnedObject : PooledObject {
 		{
 			WakeUp();
 		}
+		
+		// Actions
+		if (hasAction && inRange) 
+		{
+			DoAction();
+		}
 	}
 
 	protected void Sleep()
@@ -173,6 +180,8 @@ public class SpawnedObject : PooledObject {
 	protected virtual void AddToSleepList() {}
 
 	protected virtual void RemoveFromSleepList() {}
+
+	protected virtual void DoAction() {}
 
 	public override void Reset() 
 	{

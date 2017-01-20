@@ -443,7 +443,7 @@ public class Cosmos : MonoBehaviour {
 
 		nightDayFogColor = new Gradient();
 		gck = new GradientColorKey[6];
-		gck[0].color = Tile.Brighten(Color.Lerp(Tile.Colors[53], Color.black, 0.8f), 0.05f);
+		gck[0].color = Tile.Brighten(Color.Lerp(Tile.Colors[53], Color.black, 0.65f), 0.05f);
 		gck[0].time = 0.19f;
 		gck[1].color = Tile.Brighten(Color.Lerp(Tile.Colors[52], Color.black, 0.5f), 0.05f);
 		gck[1].time = 0.235f;

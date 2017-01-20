@@ -117,7 +117,7 @@ Material:
       second: 0
     - first:
         name: _AmbientLightMultiplier
-      second: 0.1
+      second: 0.29
     - first:
         name: _Brightness
       second: 1
@@ -132,7 +132,7 @@ Material:
       second: 0
     - first:
         name: _DirectionalLightMultiplier
-      second: 1
+      second: 1.65
     - first:
         name: _DstBlend
       second: 10
@@ -165,7 +165,7 @@ Material:
       second: 0.02
     - first:
         name: _PointSpotLightMultiplier
-      second: 2
+      second: 4.35
     - first:
         name: _ReflDistort
       second: 0.44

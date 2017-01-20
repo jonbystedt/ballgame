@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
-using System.Linq;
+using ProceduralToolkit;
 
 public enum Spawns 
 {
@@ -49,7 +49,8 @@ public class SpawnManager : MonoBehaviour {
 
 	private Dictionary<Spawns,PooledObject> objects = new Dictionary<Spawns,PooledObject>();
 
-	public List<Pickup> Pickups = new List<Pickup>();
+	public static List<Pickup> Pickups = new List<Pickup>();
+	public static List<BouncyBall> Balls = new List<BouncyBall>();
 
 	public static List<Pickup> SleptPickups = new List<Pickup>();
 	public static List<BouncyBall> SleptBalls = new List<BouncyBall>();
@@ -117,7 +118,8 @@ public class SpawnManager : MonoBehaviour {
 
 	void Update()
 	{
-		RotatePickups();
+		HandlePickups();
+		HandleBalls();
 	}
 
 	SpawnedObject SpawnPickup(PooledObject prefab, Color color)
@@ -150,8 +152,8 @@ public class SpawnManager : MonoBehaviour {
 			pickup.rotationSpeed = 2f;
 			pickup.baseScore = 10;
 			pickup.driftIntensity = 1000f;
-			pickup.drift = true;
-			pickup.baseColor = color;
+			pickup.hasAction = true;
+			pickup.hsvColor = new ColorHSV(color);
 		}
 		if (pickup.type == PickupType.Silver)
 		{
@@ -159,9 +161,9 @@ public class SpawnManager : MonoBehaviour {
 			pickup.size = 1f;
 			pickup.baseScore = 50;
 			pickup.driftIntensity = 20000f;
-			pickup.drift = true;
+			pickup.hasAction = true;
 			pickup.rotationSpeed = 8f;
-			pickup.baseColor = color;
+			pickup.hsvColor = new ColorHSV(color);
 		}
 		if (pickup.type == PickupType.Black)
 		{
@@ -169,9 +171,9 @@ public class SpawnManager : MonoBehaviour {
 			pickup.size = 1f;
 			pickup.baseScore = 25;
 			pickup.driftIntensity = 10000f;
-			pickup.drift = true;
+			pickup.hasAction = true;
 			pickup.rotationSpeed = 4f;
-			pickup.baseColor = color;
+			pickup.hsvColor = new ColorHSV(color);
 		}
 
 		return (SpawnedObject)pickup;
@@ -199,6 +201,7 @@ public class SpawnManager : MonoBehaviour {
 		ball.inRange = true;
 		ball.type = ((BouncyBall)prefab).type;
 		ball.color = color;
+		Balls.Add(ball);
 
 		if (ball.type == BallType.Basic)
 		{
@@ -513,9 +516,9 @@ public class SpawnManager : MonoBehaviour {
 		}
 	}
 
-	void RotatePickups()
+	void HandlePickups()
 	{
-		for(int i = Pickups.Count - 1; i >= 0; i--)
+		for (int i = Pickups.Count - 1; i >= 0; i--)
 		{
 			Pickup pickup = Pickups[i];
 
@@ -531,6 +534,65 @@ public class SpawnManager : MonoBehaviour {
 			else
 			{
 				Pickups.Remove(pickup);
+			}
+		}
+	}
+
+	void HandleBalls()
+	{
+		// find a ball
+		Vector3 d = Vector3.zero;
+		float distance = Mathf.Infinity;
+		int i;
+		BouncyBall ball = null;
+		for (i = SpawnManager.Balls.Count - 1; i >= 0 ; i--)
+		{
+			ball = SpawnManager.Balls[i];
+
+			if (!ball.inRange)
+			{
+				continue;
+			}
+
+			if (ball == null || !ball.isActive)
+			{
+				SpawnManager.Balls.Remove(ball);
+			}
+			else
+			{
+				break;
+			}
+		}
+
+		if (ball == null)
+		{
+			return;
+		}
+
+		// find closest ball to this ball
+		for (i -= 1; i >= 0 ; i--)
+		{
+			BouncyBall b = SpawnManager.Balls[i];
+
+			if (!b.inRange)
+			{
+				continue;
+			}
+
+			if (b == null || !b.isActive)
+			{
+				SpawnManager.Balls.Remove(b);
+			}
+
+			d = b.transform.position - ball.transform.position;
+			if (d.sqrMagnitude < distance)
+			{
+				ball.closest = b;
+				distance = d.sqrMagnitude;
+				if (distance <= 4f)
+				{
+					break;
+				}
 			}
 		}
 	}

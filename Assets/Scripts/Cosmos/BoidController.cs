@@ -12,7 +12,6 @@ namespace ProceduralToolkit.Examples
         public Vector3 cohesion;
         public Vector3 separation;
         public Vector3 alignment;
-        public Vector3 avoidance;
     }
 
     /// <summary>
@@ -25,7 +24,7 @@ namespace ProceduralToolkit.Examples
     {
         public Vector3 anchor = Vector3.zero;
         public float innerSphere = 30;
-        public float minInnerSphere = 15;
+        public float minInnerSphere = 5;
         public float worldSphere = 60;
         public float maxWorldSphere = 65f;
         public float terrainCheckSphere = 30;
@@ -94,11 +93,12 @@ namespace ProceduralToolkit.Examples
                 // Assign random starting values for each boid
                 var boid = new Boid
                 {
-                    position = Random.onUnitSphere*maxWorldSphere,
+                    position = Random.onUnitSphere*maxWorldSphere*0.8f,
                     rotation = Random.rotation,
                     velocity = Random.onUnitSphere*maxSpeed
                 };
                 boid.position.y = Mathf.Abs(boid.position.y);
+                boid.velocity.y = Mathf.Abs(boid.velocity.y);
                 boids.Add(boid);
 
                 draft.Add(template);
@@ -159,7 +159,6 @@ namespace ProceduralToolkit.Examples
                 boid.cohesion = Vector3.zero;
                 boid.separation = Vector3.zero;
                 boid.alignment = Vector3.zero;
-                boid.avoidance = Vector3.zero;
 
                 // Calculate boid parameters
                 int separationCount = 0;
@@ -191,19 +190,12 @@ namespace ProceduralToolkit.Examples
                     boid.separation *= separationCoefficient;
                 }
 
-                // if (blockCount > 0)
-                // {
-                //     boid.avoidance /= blockCount;
-                //     boid.avoidance = Vector3.ClampMagnitude(boid.avoidance, maxSpeed);
-                //     boid.avoidance *= separationCoefficient*2f;
-                // }
-
                 boid.alignment /= Mathf.Min(neighbours.Count, maxBoids);
                 boid.alignment = Vector3.ClampMagnitude(boid.alignment, maxSpeed);
                 boid.alignment *= alignmentCoefficient;
 
                 // Calculate resulting velocity
-                Vector3 velocity = boid.cohesion + boid.separation + boid.avoidance + boid.alignment;
+                Vector3 velocity = boid.cohesion + boid.separation + boid.alignment;
                 boid.velocity = Vector3.ClampMagnitude(velocity, maxSpeed);
 
                 if (boid.velocity == Vector3.zero)
@@ -278,7 +270,6 @@ namespace ProceduralToolkit.Examples
             else
             {
                 boid.rotation = Quaternion.FromToRotation(Vector3.up, Vector3.RotateTowards(boid.velocity, -boid.velocity, Time.deltaTime *  hits, 0f));
-                //boid.rotation = Quaternion.FromToRotation(Vector3.up, -boid.velocity);
             }
             if (directHit)
             {
@@ -304,17 +295,15 @@ namespace ProceduralToolkit.Examples
                 return;
             }
 
-            interactionRadius = (float)TerrainGenerator.GetNoise1D(new Vector3(Cosmos.CurrentTime,0,0), NoiseConfig.boidInteraction, NoiseType.Value);
-            //cohesionCoefficient = (float)TerrainGenerator.GetNoise1D(new Vector3(Cosmos.CurrentTime,0,0), NoiseConfig.boidCohesion, NoiseType.Value);
-            alignmentCoefficient = (float)TerrainGenerator.GetNoise1D(new Vector3(Cosmos.CurrentTime,0,0), NoiseConfig.boidAlignment, NoiseType.Value);
-            separationDistance  = (float)TerrainGenerator.GetNoise1D(new Vector3(Cosmos.CurrentTime,0,0), NoiseConfig.sepDistance, NoiseType.Value);
-            //separationCoefficient = (float)TerrainGenerator.GetNoise1D(new Vector3(Cosmos.CurrentTime,0,0), NoiseConfig.sepCoefficient, NoiseType.Value);
+            interactionRadius = (float)TerrainGenerator.GetNoise1D(new Vector3(Cosmos.CurrentTime,0,0), NoiseConfig.boidInteraction, NoiseType.Value) + 10f;
+            alignmentCoefficient = (float)TerrainGenerator.GetNoise1D(new Vector3(Cosmos.CurrentTime,0,0), NoiseConfig.boidAlignment, NoiseType.Value) + 10f;
+            separationDistance  = (float)TerrainGenerator.GetNoise1D(new Vector3(Cosmos.CurrentTime,0,0), NoiseConfig.boidDistance, NoiseType.Value) + 10f;
 
             float inner = (float)TerrainGenerator.GetNoise1D(new Vector3(Cosmos.CurrentTime,0,0), NoiseConfig.boidInner, NoiseType.Value);
             float outer = (float)TerrainGenerator.GetNoise1D(new Vector3(Cosmos.CurrentTime,0,0), NoiseConfig.boidOuter, NoiseType.Value);
 
-            worldSphere = Mathf.Lerp(maxWorldSphere - 10f, maxWorldSphere, 1f - outer*outer*outer);
-            innerSphere = Mathf.Lerp(minInnerSphere, worldSphere, 1f - inner*inner*inner);
+            worldSphere = Mathf.Lerp(maxWorldSphere - 20f, maxWorldSphere, 1f - Mathf.Pow(outer,3));
+            innerSphere = Mathf.Lerp(minInnerSphere, worldSphere, 1f - Mathf.Pow(inner,10));
 
             for (int i = 0; i < boids.Count; i++)
             {
@@ -337,11 +326,6 @@ namespace ProceduralToolkit.Examples
                 {
                     AvoidTerrain(boid);
                 }
-
-                // if (boid.position.y < 0f)
-                // {
-                //     boid.velocity += Vector3.up;
-                // }
 
                 boid.position += boid.velocity * Time.deltaTime;
                         
