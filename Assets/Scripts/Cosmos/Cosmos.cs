@@ -460,6 +460,6 @@ public class Cosmos : MonoBehaviour {
 		moonlight.nightDayColor = nightDayFogColor;
 
 		zodiac.transform.localScale = Vector3.one;
-		zodiac.transform.localScale *= 2f + (Config.WorldSize - 6f) * 0.25f;
+		zodiac.transform.localScale *= 3f + (Config.WorldSize - 6f) * 0.25f;
 	}
 }

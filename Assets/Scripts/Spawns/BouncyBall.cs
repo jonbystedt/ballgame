@@ -20,7 +20,7 @@ public class BouncyBall : SpawnedObject
 	public float maxSize = 10f;
 	public float minSize = 1f;
 	public float corruption = 0.0f;
-	public float maxBallSpeed = 1000f;
+	public float maxBallSpeed = 25f;
 
 	public bool explodeAtMax = false;
 	public bool explodeAtMin = false;
@@ -35,13 +35,21 @@ public class BouncyBall : SpawnedObject
 	public BallType type = BallType.Basic;
 
 	public bool exploding = false;
+	public bool actionEnabled = false;
 
 	public BouncyBall closest;
+
+	public WorldPosition lastBlockPosition;
 
 	public override void Reset()
 	{
 		base.Reset();
 		exploding = false;
+	}
+
+	public override void Wipe()
+	{
+		closest = null;
 	}
 
 	protected override void SlowUpdate() 
@@ -66,22 +74,30 @@ public class BouncyBall : SpawnedObject
 
 	protected override void DoAction()
 	{
-		if (closest == null || !closest.inRange || !closest.isActive)
+		if (!actionEnabled || closest == null || !closest.inRange || !closest.isActive)
 		{
 			return;
 		}
 
+		WorldPosition blockPosition = World.GetBlockPosition(transform.position);
 		Vector3 d = closest.transform.position - transform.position;
 		float difference = hsvColor.h - closest.hsvColor.h;
 		if (difference > 0.5f)
 		{
 			difference = 1f - difference;
 		}
-		Vector3 force = Vector3.ClampMagnitude(Vector3.RotateTowards(-d, d, Mathf.Lerp(0f, 6.28319f, difference * 2f), 0f)*10f, maxBallSpeed);
+
+		Vector3 force = Vector3.RotateTowards(-d, d, Mathf.Lerp(0f, 6.28319f, difference * 2f), 0f) * 10f;
+		force = Vector3.ClampMagnitude(force, maxBallSpeed * _rigidbody.mass * 0.1f);
+
+		if (blockPosition == lastBlockPosition)
+		{
+			force += Vector3.up * maxBallSpeed * _rigidbody.mass * 0.25f;
+		}
+		
 		_rigidbody.AddForce(force, ForceMode.Impulse);
 
-		//Game.Log("Force: " + force.ToString());
-
+		lastBlockPosition = blockPosition;
 	}
 
 	public void Grow(float velocity)
@@ -99,7 +115,6 @@ public class BouncyBall : SpawnedObject
 
 		if (transform.localScale.x > maxSize && explodeAtMax && !exploding)
 		{
-			//Game.Log(velocity.ToString("f2"));
 			if (velocity < 10f)
 			{
 				Explode();
@@ -285,13 +300,13 @@ public class BouncyBall : SpawnedObject
 
 		if (other.gameObject.CompareTag("Pickup")) 
 		{
-			corruption += 0.01f;
-
 			Pickup pickup = other.gameObject.GetComponent<Pickup>();
 			if (pickup.isActive && pickup.isLive)
 			{
 				// Score points!
 				Game.UpdateScore(pickup.baseScore * scoreModifier);
+				actionEnabled = true;
+				corruption += 0.01f;
 
 				if ((type == BallType.DarkStar && pickup.type == PickupType.Black) || (type == BallType.Moon && pickup.type == PickupType.Silver))
 				{
@@ -322,11 +337,12 @@ public class BouncyBall : SpawnedObject
 
 		if (other.gameObject.CompareTag("Ball"))
 		{
-			corruption += 0.01f;
-
 			BouncyBall ball = other.gameObject.GetComponent<BouncyBall>();
 			if (!ball.exploding && transform.localScale.x <= 2f)
 			{
+				corruption += 0.01f;
+				actionEnabled = true;
+
 				float velocity = Mathf.Abs(other.attachedRigidbody.velocity.x + other.attachedRigidbody.velocity.y + other.attachedRigidbody.velocity.z);
 				float scaleRatio = ball.transform.localScale.x - transform.localScale.x;
 

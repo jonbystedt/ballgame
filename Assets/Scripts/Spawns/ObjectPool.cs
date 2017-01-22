@@ -78,4 +78,29 @@ public class ObjectPool : MonoBehaviour {
 		availableObjects = new List<PooledObject>();
 		objCount = 0;
 	}
+
+	public void ResizePool(int size)
+	{
+		PoolSize = size;
+
+		if (size > 0)
+		{
+			if (size < availableObjects.Count)
+			{
+				availableObjects.RemoveRange(size, availableObjects.Count - size);
+			}
+			else if (size > availableObjects.Capacity && size > availableObjects.Count)
+			{
+				availableObjects.Capacity = size;
+			}
+		}
+	}
+
+	public void Wipe()
+	{
+		foreach(PooledObject obj in availableObjects)
+		{
+			obj.Wipe();
+		}
+	}
 }

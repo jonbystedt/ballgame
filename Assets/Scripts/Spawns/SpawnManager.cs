@@ -75,45 +75,64 @@ public class SpawnManager : MonoBehaviour {
 		objects.Add (Spawns.DarkStar, darkStar);
 	}
 
-	public void Initialize()
+	public void Initialize(bool create)
 	{
-		PooledObject obj;
-		for (int i = 0; i < Config.MaxSmallObjectCount; i++)
+		Pickups = new List<Pickup>();
+		Balls = new List<BouncyBall>();
+		SleptPickups = new List<Pickup>();
+		SleptBalls = new List<BouncyBall>();
+
+		pickup.SetPoolSize(Config.MaxSmallObjectCount);
+		silverPickup.SetPoolSize(Config.MaxSmallObjectCount);
+		blackPickup.SetPoolSize(Config.MaxSmallObjectCount);
+		bouncyBall.SetPoolSize(Config.MaxSmallObjectCount);
+
+		superBouncyBall.SetPoolSize(Config.MaxLargeObjectCount);
+		mysteryEgg.SetPoolSize(Config.MaxLargeObjectCount);		
+		moon.SetPoolSize(Config.MaxLargeObjectCount);
+		darkStar.SetPoolSize(Config.MaxLargeObjectCount);
+		
+
+		if (create)
 		{
-            pickup.SetPoolSize(Config.MaxSmallObjectCount);
-			obj = pickup.GetPooledInstance<PooledObject>();
-			obj.ReturnToPool();
+			PooledObject obj;
+			for (int i = 0; i < Config.MaxSmallObjectCount; i++)
+			{
+				obj = pickup.GetPooledInstance<PooledObject>();
+				obj.ReturnToPool();
 
-            silverPickup.SetPoolSize(Config.MaxSmallObjectCount);
-			obj = silverPickup.GetPooledInstance<PooledObject>();
-			obj.ReturnToPool();
+				obj = silverPickup.GetPooledInstance<PooledObject>();
+				obj.ReturnToPool();
 
-            blackPickup.SetPoolSize(Config.MaxSmallObjectCount);
-			obj = blackPickup.GetPooledInstance<PooledObject>();
-			obj.ReturnToPool();
+				obj = blackPickup.GetPooledInstance<PooledObject>();
+				obj.ReturnToPool();
 
-            bouncyBall.SetPoolSize(Config.MaxSmallObjectCount);
-			obj = bouncyBall.GetPooledInstance<PooledObject>();
-			obj.ReturnToPool();
+				obj = bouncyBall.GetPooledInstance<PooledObject>();
+				obj.ReturnToPool();
+			}
+
+			for (int i = 0; i < Config.MaxLargeObjectCount; i++)
+			{
+				obj = superBouncyBall.GetPooledInstance<PooledObject>();
+				obj.ReturnToPool();
+				
+				obj = mysteryEgg.GetPooledInstance<PooledObject>();
+				obj.ReturnToPool();
+
+				obj = moon.GetPooledInstance<PooledObject>();
+				obj.ReturnToPool();
+				
+				obj = darkStar.GetPooledInstance<PooledObject>();
+				obj.ReturnToPool();
+			}
 		}
-
-		for (int i = 0; i < Config.MaxLargeObjectCount; i++)
+		else
 		{
-            superBouncyBall.SetPoolSize(Config.MaxLargeObjectCount);
-			obj = superBouncyBall.GetPooledInstance<PooledObject>();
-			obj.ReturnToPool();
-
-            mysteryEgg.SetPoolSize(Config.MaxLargeObjectCount);
-			obj = mysteryEgg.GetPooledInstance<PooledObject>();
-			obj.ReturnToPool();
-
-            moon.SetPoolSize(Config.MaxLargeObjectCount);
-			obj = moon.GetPooledInstance<PooledObject>();
-			obj.ReturnToPool();
-
-            darkStar.SetPoolSize(Config.MaxLargeObjectCount);
-			obj = darkStar.GetPooledInstance<PooledObject>();
-			obj.ReturnToPool();
+			ObjectPool.GetPool(bouncyBall).Wipe();
+			ObjectPool.GetPool(superBouncyBall).Wipe();
+			ObjectPool.GetPool(mysteryEgg).Wipe();
+			ObjectPool.GetPool(moon).Wipe();
+			ObjectPool.GetPool(darkStar).Wipe();
 		}
 	}
 
@@ -129,6 +148,7 @@ public class SpawnManager : MonoBehaviour {
 		if (pickup == null && SleptPickups.Count > 0)
 		{
 			Pickup sleeper = SleptPickups[0];
+			Pickups.Remove(sleeper);
 			SleptPickups.RemoveAt(0);
 			if (sleeper != null)
 			{
@@ -190,6 +210,7 @@ public class SpawnManager : MonoBehaviour {
 			if (sleeper != null)
 			{
 				sleeper.ReturnToPool();
+				Balls.Remove(sleeper);
 				ball = prefab.GetPooledInstance<BouncyBall>();
 			}
 		}
@@ -610,14 +631,13 @@ public class SpawnManager : MonoBehaviour {
 				SpawnManager.Balls.Remove(b);
 			}
 
-			d = b.transform.position - ball.transform.position;
-			if (d.sqrMagnitude < distance)
+			if (distance > 4f)
 			{
-				ball.closest = b;
-				distance = d.sqrMagnitude;
-				if (distance <= 4f)
+				d = b.transform.position - ball.transform.position;
+				if (d.sqrMagnitude < distance)
 				{
-					break;
+					ball.closest = b;
+					distance = d.sqrMagnitude;
 				}
 			}
 		}

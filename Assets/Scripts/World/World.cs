@@ -85,7 +85,6 @@ public class World : MonoBehaviour {
 			if (ChunkList[i].isActive)
 			{
 				ChunkList[i].CheckUpdate();
-				//ChunkList[i].ApplyOcclusion();
 			}
 		}
 	}

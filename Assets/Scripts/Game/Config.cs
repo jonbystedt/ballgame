@@ -75,7 +75,8 @@ public class Config : MonoBehaviour
 				_instance.chunkLoadRadius = value;//value + Mathf.FloorToInt(value / 2f);
 
 				// Delete the chunks that fall outside this
-				_instance.chunkDeleteRadius = value * 3;
+				// TODO: detect memory usage to trigger deletion
+				_instance.chunkDeleteRadius = value * 5;
 
 				// Despawn radius is 2/3 the world size. Spawn radius is always 1.
 				_instance.despawnRadius = value;//value - Mathf.CeilToInt(value / 3f);
@@ -105,7 +106,9 @@ public class Config : MonoBehaviour
 
 				if (value == GraphicsMode.Low)
 				{
-					MaxItemSpawns = 100;
+					MaxItemSpawns = 25;
+					MaxLargeObjectCount = 12;
+					MaxSmallObjectCount = 60;
 					BlockSpawnChance = 0.05f;
 					ContactShadows = false;
 					GlobalFogEnabled = false;
@@ -122,7 +125,9 @@ public class Config : MonoBehaviour
 
 				if (value == GraphicsMode.Medium)
 				{
-					MaxItemSpawns = 100;
+					MaxItemSpawns = 50;
+					MaxLargeObjectCount = 25;
+					MaxSmallObjectCount = 125;
 					BlockSpawnChance = 0.05f;
 					ContactShadows = false;
 					GlobalFogEnabled = true;
@@ -140,6 +145,8 @@ public class Config : MonoBehaviour
 				if (value == GraphicsMode.High)
 				{
 					MaxItemSpawns = 100;
+					MaxLargeObjectCount = 50;
+					MaxSmallObjectCount = 250;
 					BlockSpawnChance = 0.05f;
 					ContactShadows = true;
 					GlobalFogEnabled = true;
@@ -156,7 +163,9 @@ public class Config : MonoBehaviour
 
 				if (value == GraphicsMode.Ultra)
 				{
-					MaxItemSpawns = 100;
+					MaxItemSpawns = 125;
+					MaxLargeObjectCount = 100;
+					MaxSmallObjectCount = 500;
 					BlockSpawnChance = 0.05f;
 					ContactShadows = true;
 					GlobalFogEnabled = true;

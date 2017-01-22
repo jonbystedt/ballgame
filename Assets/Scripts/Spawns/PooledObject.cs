@@ -33,7 +33,8 @@ public class PooledObject : MonoBehaviour {
 		{
 			poolInstanceForPrefab = ObjectPool.GetPool(this);
 		}
-		poolInstanceForPrefab.PoolSize = poolSize;
+
+		poolInstanceForPrefab.ResizePool(poolSize);
 	}
 
 	public ObjectPool Pool { get; set; }
@@ -51,6 +52,8 @@ public class PooledObject : MonoBehaviour {
 	}
 
 	public virtual void Reset() {}
+
+	public virtual void Wipe() {}
 
 	public void StartSlowUpdate()
 	{

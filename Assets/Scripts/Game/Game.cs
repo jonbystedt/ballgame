@@ -21,8 +21,6 @@ public class Game : MonoBehaviour
 	HBAO hbao;
 	GlobalFog fog;
 	GlobalFog distanceFog;
-	//GlobalFogExtended scatterFog;
-	SunShafts godRays;
 
 	public Camera mainCamera;
 	public Camera cosmosCamera;
@@ -321,11 +319,8 @@ public class Game : MonoBehaviour
 
 		// These populate the object pools
 		ChunkData.SetLoadOrder();
-		if (firstRun)
-		{
-			World.Spawn.Initialize();
-		}
 
+		World.Spawn.Initialize(firstRun);
 		NoiseConfig.Initialize();
 
 		// Initialize graphics
@@ -335,15 +330,13 @@ public class Game : MonoBehaviour
 		hbao = mainCamera.GetComponent<HBAO>();
 		hbao.enabled = Config.ContactShadows;
 
-		RenderSettings.fog = true;//Config.GlobalFogEnabled;
+		RenderSettings.fog = true;
 		fog = mainCamera.GetComponent<GlobalFog>();
-		fog.enabled = Config.GlobalFogEnabled;// && !Config.AtmosphericScattering;
-		distanceFog = cosmosCamera.GetComponent<GlobalFog>();
-		distanceFog.enabled = Config.GlobalFogEnabled;
+		fog.enabled = Config.GlobalFogEnabled;
 
-		// scatterFog = mainCamera.GetComponent<GlobalFogExtended>();
-		// scatterFog.Advanced.UseScattering = Config.AtmosphericScattering;
-		// scatterFog.enabled = Config.GlobalFogEnabled && Config.AtmosphericScattering;
+		//distanceFog = cosmosCamera.GetComponent<GlobalFog>();
+		//distanceFog.enabled = Config.GlobalFogEnabled;
+		//distanceFog.Advanced.UseScattering = Config.AtmosphericScattering;
 
 		if (Config.ShadowsEnabled)
 		{
