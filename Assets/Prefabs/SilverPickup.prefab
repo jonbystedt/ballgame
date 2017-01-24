@@ -124,18 +124,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5c1a6ed2c64f4edf83e8b048f5abe79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  slowUpdateTime: 1
   explosion: {fileID: 19827592}
   _color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _emission: {r: 0, g: 0, b: 0, a: 1}
   isLive: 1
+  inRange: 1
+  sleeping: 0
+  hasAction: 0
   _mass: 1
   _size: 1
   baseScore: 1000
   rotationSpeed: 12
   driftIntensity: 10000
-  drift: 1
   type: 2
-  baseColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!198 &19827592
 ParticleSystem:
   m_ObjectHideFlags: 1
@@ -2799,7 +2801,7 @@ ParticleSystemRenderer:
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
-  m_SelectedEditorRenderState: 3
+  m_SelectedEditorRenderState: 0
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89

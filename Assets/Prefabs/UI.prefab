@@ -939,7 +939,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
   reverbZoneMixCustomCurve:
     serializedVersion: 2
     m_Curve:
@@ -1469,6 +1469,10 @@ MonoBehaviour:
   pausePanel: {fileID: 198696}
   pauseTint: {fileID: 0}
   menuBackground: {fileID: 0}
+  pauseMusicSlider: {fileID: 0}
+  pauseSfxSlider: {fileID: 0}
+  optionsMusicSlider: {fileID: 0}
+  optionsSfxSlider: {fileID: 0}
   launcher: {fileID: 0}
 --- !u!114 &11433024
 MonoBehaviour:
@@ -2144,6 +2148,8 @@ MonoBehaviour:
   graphicsModeText: {fileID: 0}
   worldSizeText: {fileID: 0}
   graphicsModeSlider: {fileID: 0}
+  worldSizeSlider: {fileID: 0}
+  resolutionDropdown: {fileID: 0}
 --- !u!114 &11467432
 MonoBehaviour:
   m_ObjectHideFlags: 1
