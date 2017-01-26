@@ -1,5 +1,6 @@
 ﻿
 using UnityEngine;
+using System;
 using System.Collections.Generic;
 
 public class PlayHitSound : MonoBehaviour
@@ -11,7 +12,8 @@ public class PlayHitSound : MonoBehaviour
 	public float maxVol = 1f;
 	public AudioClip hitSound;
 	public AudioClip selfHitSound;
-	public static Dictionary<int,float> clipTimers = new Dictionary<int,float>();
+	public AudioClip scoreSound;
+	public static Dictionary<string,float> clipTimers = new Dictionary<string,float>();
 	AudioSource audioSource;
 
 	public float sqrMinImpactVelocity
@@ -34,9 +36,9 @@ public class PlayHitSound : MonoBehaviour
 	private float _lastMinImpactVelocity = 0.0f;
 
 	private float clipTiming = 0.1f;
-	private int clipHash;
-	private int selfClipHash;
 
+	private string hitKey;
+	private string selfKey;
 
 	public float sqrMaxImpactVelocity
 	{
@@ -69,11 +71,48 @@ public class PlayHitSound : MonoBehaviour
 		_sqrDistanceFromPlayer = (transform.position - Game.Player.transform.position).sqrMagnitude;
 	}
 
+	public void Score()
+	{
+		if (scoreSound != null)
+		{
+			audioSource.clip = scoreSound;
+			audioSource.volume = 0.4f;
+			audioSource.pitch = 1f;
+			audioSource.Play();
+		}
+	}
+
 	void OnCollisionEnter(Collision collision)
 	{
 		if (_sqrDistanceFromPlayer > _maxSqrDistance)
 		{
 			return;
+		}
+
+		if (String.IsNullOrEmpty(hitKey))
+		{
+			if (hitSound != null)
+			{
+				hitKey = hitSound.name + "_" + name;
+				//Game.Log(hitKey);
+			}
+			else
+			{
+				return;
+			}
+		}
+
+		if (String.IsNullOrEmpty(selfKey))
+		{
+			if (selfHitSound != null)
+			{
+				selfKey = selfHitSound.name + "_self_" + name;
+				//Game.Log(selfKey);
+			}
+			else
+			{
+				return;
+			}
 		}
 
 		float sqrImpactVelocity = collision.relativeVelocity.sqrMagnitude;
@@ -82,19 +121,17 @@ public class PlayHitSound : MonoBehaviour
 		{
 			if (collision.gameObject.CompareTag("Pickup") || collision.gameObject.CompareTag("Ball") || collision.gameObject.CompareTag("Player"))
 			{
-				if (!clipTimers.ContainsKey(clipHash))
+				if (!clipTimers.ContainsKey(selfKey))
 				{
-					selfClipHash = selfHitSound.GetHashCode();
-					clipTimers.Add(selfClipHash, Time.time + clipTiming);
+					clipTimers.Add(selfKey, Time.time + clipTiming);
 				}
-
-				if (clipTimers[selfClipHash] > Time.time)
+				else if (clipTimers[selfKey] > Time.time)
 				{
 					return;
 				}
 				else
 				{
-					clipTimers[selfClipHash] = Time.time + clipTiming;
+					clipTimers[selfKey] = Time.time + clipTiming;
 				}
 
 				float impact = Mathf.Pow((sqrImpactVelocity - sqrMinImpactVelocity)/sqrMaxImpactVelocity, impactPow);
@@ -106,19 +143,18 @@ public class PlayHitSound : MonoBehaviour
 			}
 			else if (surfaceReduction > 0.0f)
 			{
-				if (!clipTimers.ContainsKey(clipHash))
+				if (!clipTimers.ContainsKey(hitKey))
 				{
-					clipHash = hitSound.GetHashCode();
-					clipTimers.Add(clipHash, Time.time + clipTiming);
+					clipTimers.Add(hitKey, Time.time + clipTiming);
 				}
 
-				if (clipTimers[clipHash] > Time.time)
+				if (clipTimers[hitKey] > Time.time || audioSource.isPlaying)
 				{
 					return;
 				}
 				else
 				{
-					clipTimers[clipHash] = Time.time + clipTiming;
+					clipTimers[hitKey] = Time.time + clipTiming;
 				}
 
 				float impact = Mathf.Pow((sqrImpactVelocity - sqrMinImpactVelocity)/sqrMaxImpactVelocity, impactPow);
@@ -127,6 +163,7 @@ public class PlayHitSound : MonoBehaviour
 				audioSource.volume = Mathf.Lerp(0.0f, surfaceReduction, impact);
 				audioSource.Play();
 			}
+		
 		}
 	}
 }

@@ -326,6 +326,7 @@ public class BouncyBall : SpawnedObject
 					}
 					else
 					{
+						pickup.GetComponent<PlayHitSound>().Score();
 						pickup.isLive = false;
 						pickup.RemoveIn(0.3f);
 					}

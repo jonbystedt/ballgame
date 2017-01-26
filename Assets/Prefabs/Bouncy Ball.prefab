@@ -297,7 +297,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 16
+  MaxDistance: 24
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
@@ -413,8 +413,8 @@ MonoBehaviour:
   minImpactVelocity: 0.1
   maxImpactVelocity: 1
   impactPow: 16
-  surfaceReduction: 0.02
-  maxVol: 0.04
+  surfaceReduction: 0.04
+  maxVol: 0.07
   hitSound: {fileID: 0}
   selfHitSound: {fileID: 0}
   minPitch: 0.5

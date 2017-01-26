@@ -16,6 +16,8 @@ GameObject:
   - component: {fileID: 19827592}
   - component: {fileID: 19953444}
   - component: {fileID: 11400292}
+  - component: {fileID: 82585640947584232}
+  - component: {fileID: 114833460994189632}
   m_Layer: 0
   m_Name: SilverPickup
   m_TagString: Pickup
@@ -2904,3 +2906,147 @@ Prefab:
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 173136}
   m_IsPrefabParent: 1
+--- !u!82 &82585640947584232
+AudioSource:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 173136}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 24301952, guid: 0ac7fb39e445048d89688f69c2a1839a,
+    type: 2}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 24
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0.014963452
+      value: 0.988959
+      inSlope: -150.05998
+      outSlope: -150.05998
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 0.015694609
+      value: 0.84006315
+      inSlope: -37.514996
+      outSlope: -37.514996
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 0.026666667
+      value: 0.67854893
+      inSlope: -9.378749
+      outSlope: -9.378749
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 0.053333335
+      value: 0.55354893
+      inSlope: -2.3446872
+      outSlope: -2.3446872
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 0.10666667
+      value: 0.49104893
+      inSlope: -0.5861718
+      outSlope: -0.5861718
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 0.21333334
+      value: 0.43030363
+      inSlope: -0.52147543
+      outSlope: -0.52147543
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 0.4278473
+      value: 0.32619283
+      inSlope: -0.42062274
+      outSlope: -0.42062274
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 0.82381743
+      value: 0.16396391
+      inSlope: -0.3752539
+      outSlope: -0.3752539
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 1
+      value: 0
+      inSlope: -0.006669329
+      outSlope: -0.006669329
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0.13685474
+      value: 0.9841346
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0.13685474
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0.13685474
+      value: 0.9876602
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+--- !u!114 &114833460994189632
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 173136}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f4ba47991f4340458bd95ba445118f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minImpactVelocity: 0.1
+  maxImpactVelocity: 1
+  impactPow: 16
+  surfaceReduction: 0.005
+  maxVol: 0.05
+  hitSound: {fileID: 0}
+  selfHitSound: {fileID: 0}
+  scoreSound: {fileID: 0}
+  minPitch: 0.5
+  maxPitch: 1.5
