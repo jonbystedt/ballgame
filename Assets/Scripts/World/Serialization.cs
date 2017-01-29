@@ -11,6 +11,7 @@ public static class Serialization
 {
 	public static string SaveFolderName = "ballgame_Worlds";
 	public static string SettingsFileName = "ballgame_Settings.config";
+	public static string NoiseSettingsFileName = "ballgame_Noise.config";
 
 	static DirectoryInfo saveDirectory;
 	static string saveLocation;
@@ -244,6 +245,32 @@ public static class Serialization
 		var sr = new StringReader(System.IO.File.ReadAllText(SettingsFileName));
         var deserializer = new Deserializer();
         Config.Settings = deserializer.Deserialize<GameConfig>(sr);
+
+		return true;
+	}
+
+	public static void WriteNoiseConfig()
+	{
+		var sb = new StringBuilder();
+        var stringWriter = new StringWriter(sb);
+        yaml.Serialize(stringWriter, Config.Noise);
+
+		using (StreamWriter sw = File.CreateText(NoiseSettingsFileName)) 
+		{
+			sw.WriteLine(sb.ToString());
+		} 
+	}
+
+	public static bool ReadNoiseConfig()
+	{
+		if (!File.Exists(NoiseSettingsFileName))
+		{
+			return false;
+		}
+
+		var sr = new StringReader(System.IO.File.ReadAllText(NoiseSettingsFileName));
+		var deserializer = new Deserializer();
+        Config.Noise = deserializer.Deserialize<NoiseSettings>(sr);
 
 		return true;
 	}

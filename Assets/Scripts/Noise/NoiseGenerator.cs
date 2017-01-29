@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System;
 
 public delegate NoiseSample NoiseMethod (Vector3 point, float frequency, bool derivative);
 
+[Serializable]
 public enum NoiseType 
 {
 	Value,

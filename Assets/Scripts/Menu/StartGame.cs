@@ -86,24 +86,20 @@ public class StartGame : MonoBehaviour {
 			{
 				if (!Serialization.ReadConfig())
 				{
-					Config.Settings.startTime = "6:00";
-					Config.Settings.graphicsQuality = 1;
-					Config.Settings.worldSize = 12;
-					Config.Settings.spawnIntensity = 50;
-					Config.Settings.musicVol = 80;
-					Config.Settings.sfxVol = 80;
-					Config.Settings.swapInputs = false;
-					Config.Settings.resolution = Screen.width.ToString() + "x" + Screen.height.ToString();
-					Config.Settings.multithreaded = true;
-				#if UNITY_STANDALONE_OSX
-					Config.Settings.multithreaded = false;
-				#endif
-					Config.Settings.coroutineTiming = defaultCoroutineTiming;
+					ApplyDefaultConfig();
 				}
 				else
 				{
 					defaultCoroutineTiming = Config.Settings.coroutineTiming;
 				}
+
+				if (!Serialization.ReadNoiseConfig())
+				{
+					ApplyDefaultNoiseConfig();
+				}
+
+				NoiseConfig.Initialize();
+
 				setOptions.SetResolution(Config.Settings.resolution);
 				Config.GraphicsMode = Config.GraphicsMode;
 				Config.WorldSize = Config.Settings.worldSize;
@@ -218,5 +214,86 @@ public class StartGame : MonoBehaviour {
 				yield return null;
 			}
 		}
+	}
+
+	void ApplyDefaultConfig()
+	{
+		Config.Settings.startTime = "6:00";
+		Config.Settings.graphicsQuality = 1;
+		Config.Settings.worldSize = 12;
+		Config.Settings.spawnIntensity = 50;
+		Config.Settings.musicVol = 80;
+		Config.Settings.sfxVol = 80;
+		Config.Settings.swapInputs = false;
+		Config.Settings.resolution = Screen.width.ToString() + "x" + Screen.height.ToString();
+		Config.Settings.multithreaded = true;
+	#if UNITY_STANDALONE_OSX
+		Config.Settings.multithreaded = false;
+	#endif
+		Config.Settings.coroutineTiming = defaultCoroutineTiming;
+	}
+
+	void ApplyDefaultNoiseConfig()
+	{
+		Config.Noise = new NoiseSettings();
+
+		Range frequency = new Range(0.00005f,0.025f);
+		Range octaves = new Range(1f, 3f);
+		Range lacunarity = new Range(0f, 4f);
+		Range persistance = new Range(0f, 0.5f);
+
+		Config.Noise.terrain = new NoiseSetting(frequency, octaves, lacunarity, persistance);
+
+		frequency = new Range(0.0005f, 0.025f);
+		octaves = new Range(1f, 3f);
+		lacunarity = new Range(0f, 4f);
+		persistance = new Range(0f, 1f);
+
+		Config.Noise.mountain = new NoiseSetting(frequency, octaves, lacunarity, persistance);
+
+		frequency = new Range(0.008f, 0.02f);
+		octaves = new Range(1f, 1f);
+		lacunarity = new Range(0f, 0f);
+		persistance = new Range(0f, 0f);
+
+		Config.Noise.cave = new NoiseSetting(frequency, octaves, lacunarity, persistance);
+
+		frequency = new Range(0.01f, 0.04f);
+		octaves = new Range(1f, 4f);
+		lacunarity = new Range(0f, 4f);
+		persistance = new Range(0f, 1f);
+
+		Config.Noise.pattern = new NoiseSetting(frequency, octaves, lacunarity, persistance);
+
+		frequency = new Range(0.00001f, 0.1f);
+		octaves = new Range(1f, 4f);
+		lacunarity = new Range(0f, 4f);
+		persistance = new Range(0f, 2f);
+
+		Config.Noise.stripe = new NoiseSetting(frequency, octaves, lacunarity, persistance);
+
+		Config.Noise.terrainTypes = new NoiseType[] {NoiseType.Perlin, NoiseType.Simplex, NoiseType.SimplexValue, NoiseType.Value};
+		Config.Noise.mountainTypes = new NoiseType[] {NoiseType.Perlin, NoiseType.Simplex, NoiseType.SimplexValue, NoiseType.Value};
+		Config.Noise.caveTypes = new NoiseType[] {NoiseType.Perlin, NoiseType.Simplex, NoiseType.SimplexValue, NoiseType.Value};
+		Config.Noise.stripeTypes = new NoiseType[] {NoiseType.Perlin, NoiseType.Simplex, NoiseType.SimplexValue, NoiseType.Value};
+
+		Config.Noise.beachHeight = new Range(4f, 32f);
+		Config.Noise.cloudEasing = new Range(16f, 32f);
+
+		Config.Noise.caveBreak = new Range(256f, 768f);
+		Config.Noise.patternBreak = new Range(128f, 768f);
+		Config.Noise.stripeBreak = new Range(64f, 940f);
+		Config.Noise.patternStripeBreak = new Range(0f, 1024f);
+
+		Config.Noise.cloudBreak = new Range(512f, 768f);
+		Config.Noise.islandBreak = new Range(0f, 256f);
+
+		Config.Noise.glass1 = new Range(0f, 512f);
+		Config.Noise.glass2 = new Range(0f, 512f);
+
+		Config.Noise.modScale = new Range(2f, 128f);
+
+		Config.Noise.stretch = new Range(0f, 1000f);
+		Config.Noise.squish = new Range(0f, 100f);
 	}
 }

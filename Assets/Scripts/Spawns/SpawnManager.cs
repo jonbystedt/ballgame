@@ -16,6 +16,22 @@ public enum Spawns
 	DarkStar
 }
 
+public enum Note
+{
+	C,
+	Cs,
+	D,
+	Eb,
+	E,
+	F,
+	Fs,
+	G,
+	Gs,
+	A,
+	Bb,
+	B
+}
+
 public struct SpawnMap
 {
 	public int[,] value;
@@ -64,6 +80,8 @@ public class SpawnManager : MonoBehaviour {
 	public AudioClip[] scoreOctave;
 	public AudioClip[] moonOctave;
 
+	Dictionary<string,Note[]> scales = new Dictionary<string,Note[]>();
+
 	Vector3 rotation = new Vector3 (15, 30, 45);
 	int bix = 0;
 
@@ -82,6 +100,8 @@ public class SpawnManager : MonoBehaviour {
 		objects.Add (Spawns.Moon, moon);
 		objects.Add (Spawns.BlackPickup, blackPickup);
 		objects.Add (Spawns.DarkStar, darkStar);
+
+		PopulateScales();
 	}
 
 	public void Initialize(bool create)
@@ -714,5 +734,100 @@ public class SpawnManager : MonoBehaviour {
 	{
 		yield return new WaitForSeconds(time);
 		callback();
+	}
+
+	void PopulateScales()
+	{
+		Note[] cmaj = new Note[] 
+		{
+			Note.C,
+			Note.D,
+			Note.E,
+			Note.F,
+			Note.G,
+			Note.A,
+			Note.B
+		};
+
+		scales.Add("C", cmaj);
+
+		Note[] gmaj = new Note[]
+		{
+			Note.C,
+			Note.D,
+			Note.E,
+			Note.Fs,
+			Note.G,
+			Note.A,
+			Note.B,
+		};
+
+		scales.Add("G", gmaj);
+
+		Note[] dmaj = new Note[]
+		{
+			Note.Cs,
+			Note.D,
+			Note.E,
+			Note.Fs,
+			Note.G,
+			Note.A,
+			Note.B		
+		};
+
+		scales.Add("D", dmaj);
+
+		Note[] amaj = new Note[]
+		{
+			Note.Cs,
+			Note.D,
+			Note.E,
+			Note.Fs,
+			Note.Gs,
+			Note.A,
+			Note.B,
+		};
+
+		scales.Add("A", amaj);
+
+		Note[] emaj = new Note[]
+		{
+			Note.Cs,
+			Note.Eb,
+			Note.E,
+			Note.Fs,
+			Note.Gs,
+			Note.A,
+			Note.B,
+		};
+
+		scales.Add("E", emaj);
+
+		Note[] bmaj = new Note[]
+		{
+			Note.Cs,
+			Note.Eb,
+			Note.E,
+			Note.Fs,
+			Note.Gs,
+			Note.Bb,
+			Note.B
+		};
+
+		scales.Add("B", bmaj);
+
+		Note[] fsmaj = new Note[]
+		{
+			Note.Cs,
+			Note.Eb,
+			Note.F,
+			Note.Fs,
+			Note.Gs,
+			Note.Bb,
+			Note.B
+		};
+
+		scales.Add("F#", fsmaj);
+		scales.Add("Gb", fsmaj);
 	}
 }

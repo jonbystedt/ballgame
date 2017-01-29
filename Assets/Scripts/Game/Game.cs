@@ -321,7 +321,6 @@ public class Game : MonoBehaviour
 		ChunkData.SetLoadOrder();
 
 		World.Spawn.Initialize(firstRun);
-		NoiseConfig.Initialize();
 
 		// Initialize graphics
 		edgeDetect.enabled = Config.Outlines;
