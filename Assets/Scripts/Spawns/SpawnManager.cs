@@ -80,7 +80,7 @@ public class SpawnManager : MonoBehaviour {
 	public AudioClip[] scoreOctave;
 	public AudioClip[] moonOctave;
 
-	Dictionary<string,Note[]> scales = new Dictionary<string,Note[]>();
+	Note[] scale;
 
 	Vector3 rotation = new Vector3 (15, 30, 45);
 	int bix = 0;
@@ -100,8 +100,6 @@ public class SpawnManager : MonoBehaviour {
 		objects.Add (Spawns.Moon, moon);
 		objects.Add (Spawns.BlackPickup, blackPickup);
 		objects.Add (Spawns.DarkStar, darkStar);
-
-		PopulateScales();
 	}
 
 	public void Initialize(bool create)
@@ -120,7 +118,8 @@ public class SpawnManager : MonoBehaviour {
 		mysteryEgg.SetPoolSize(Config.MaxLargeObjectCount);		
 		moon.SetPoolSize(Config.MaxLargeObjectCount);
 		darkStar.SetPoolSize(Config.MaxLargeObjectCount);
-		
+				
+		PopulateScale();
 
 		if (create)
 		{
@@ -205,11 +204,11 @@ public class SpawnManager : MonoBehaviour {
 			pickup.hasAction = true;
 			pickup.hsvColor = new ColorHSV(color);
 
-			int note = Mathf.FloorToInt(Mathf.Lerp(0, 12, pickup.hsvColor.h));
+			int note = Mathf.FloorToInt(Mathf.Lerp(0f, 6.999f, pickup.hsvColor.h));
 			var playSound = pickup.GetComponent<PlayHitSound>();
-			playSound.hitSound = pickupOctave[note];
-			playSound.selfHitSound = pickupOctave[note];
-			playSound.scoreSound = scoreOctave[note];
+			playSound.hitSound = pickupOctave[(int)scale[note]];
+			playSound.selfHitSound = pickupOctave[(int)scale[note]];
+			playSound.scoreSound = scoreOctave[(int)scale[note]];
 		}
 		if (pickup.type == PickupType.Silver)
 		{
@@ -221,11 +220,11 @@ public class SpawnManager : MonoBehaviour {
 			pickup.rotationSpeed = 8f;
 			pickup.hsvColor = new ColorHSV(color);
 
-			int note = Mathf.FloorToInt(Mathf.Lerp(0, 12, pickup.hsvColor.h));
+			int note = Mathf.FloorToInt(Mathf.Lerp(0f, 6.999f, pickup.hsvColor.h));
 			var playSound = pickup.GetComponent<PlayHitSound>();
-			playSound.hitSound = largePickupOctave[note];
-			playSound.selfHitSound = largePickupOctave[note];
-			playSound.scoreSound = scoreOctave[note];
+			playSound.hitSound = largePickupOctave[(int)scale[note]];
+			playSound.selfHitSound = largePickupOctave[(int)scale[note]];
+			playSound.scoreSound = scoreOctave[(int)scale[note]];
 		}
 		if (pickup.type == PickupType.Black)
 		{
@@ -237,11 +236,11 @@ public class SpawnManager : MonoBehaviour {
 			pickup.rotationSpeed = 4f;
 			pickup.hsvColor = new ColorHSV(color);
 
-			int note = Mathf.FloorToInt(Mathf.Lerp(0, 12, pickup.hsvColor.h));
+			int note = Mathf.FloorToInt(Mathf.Lerp(0f, 6.999f, pickup.hsvColor.h));
 			var playSound = pickup.GetComponent<PlayHitSound>();
-			playSound.hitSound = largePickupOctave[note];
-			playSound.selfHitSound = largePickupOctave[note];
-			playSound.scoreSound = scoreOctave[note];
+			playSound.hitSound = largePickupOctave[(int)scale[note]];
+			playSound.selfHitSound = largePickupOctave[(int)scale[note]];
+			playSound.scoreSound = scoreOctave[(int)scale[note]];
 		}
 
 		return (SpawnedObject)pickup;
@@ -287,10 +286,10 @@ public class SpawnManager : MonoBehaviour {
 			ball.explodeAtMax = false;
 			ball.explodeAtMin = false;
 
-			int note = Mathf.FloorToInt(Mathf.Lerp(0, 12, ball.hsvColor.h));
+			int note = Mathf.FloorToInt(Mathf.Lerp(0f, 6.999f, ball.hsvColor.h));
 			var playSound = ball.GetComponent<PlayHitSound>();
-			playSound.hitSound = ballOctave[note];
-			playSound.selfHitSound = selfBallOctave[note];
+			playSound.hitSound = ballOctave[(int)scale[note]];
+			playSound.selfHitSound = selfBallOctave[(int)scale[note]];
 		}
 		if (ball.type == BallType.Imploding)
 		{
@@ -309,10 +308,10 @@ public class SpawnManager : MonoBehaviour {
 			ball.SpawnIncrement = 4f;
 			ball.SpawnValue = 16f;
 
-			int note = Mathf.FloorToInt(Mathf.Lerp(0, 12, ball.hsvColor.h));
+			int note = Mathf.FloorToInt(Mathf.Lerp(0f, 6.999f, ball.hsvColor.h));
 			var playSound = ball.GetComponent<PlayHitSound>();
-			playSound.hitSound = largeBallOctave[note];
-			playSound.selfHitSound = largeBallOctave[note];
+			playSound.hitSound = largeBallOctave[(int)scale[note]];
+			playSound.selfHitSound = largeBallOctave[(int)scale[note]];
 		}
 		if (ball.type == BallType.Exploding)
 		{
@@ -331,10 +330,10 @@ public class SpawnManager : MonoBehaviour {
 			ball.SpawnIncrement = 4f;
 			ball.SpawnValue = 16f;
 
-			int note = Mathf.FloorToInt(Mathf.Lerp(0, 12, ball.hsvColor.h));
+			int note = Mathf.FloorToInt(Mathf.Lerp(0f, 6.999f, ball.hsvColor.h));
 			var playSound = ball.GetComponent<PlayHitSound>();
-			playSound.hitSound = largeBallOctave[note];
-			playSound.selfHitSound = largeBallOctave[note];
+			playSound.hitSound = largeBallOctave[(int)scale[note]];
+			playSound.selfHitSound = largeBallOctave[(int)scale[note]];
 		}
 		if (ball.type == BallType.Moon)
 		{
@@ -353,10 +352,10 @@ public class SpawnManager : MonoBehaviour {
 			ball.SpawnIncrement = 10f;
 			ball.SpawnValue = 30f;
 
-			int note = Mathf.FloorToInt(Mathf.Lerp(0, 12, ball.hsvColor.h));
+			int note = Mathf.FloorToInt(Mathf.Lerp(0f, 6.999f, ball.hsvColor.h));
 			var playSound = ball.GetComponent<PlayHitSound>();
-			playSound.hitSound = moonOctave[note];
-			playSound.selfHitSound = moonSelfOctave[note];
+			playSound.hitSound = moonOctave[(int)scale[note]];
+			playSound.selfHitSound = moonSelfOctave[(int)scale[note]];
 
 			ball.emission = Color.white;
 		}
@@ -377,10 +376,10 @@ public class SpawnManager : MonoBehaviour {
 			ball.SpawnIncrement = 10f;
 			ball.SpawnValue = 30f;
 
-			int note = Mathf.FloorToInt(Mathf.Lerp(0, 12, ball.hsvColor.h));
+			int note = Mathf.FloorToInt(Mathf.Lerp(0f, 6.999f, ball.hsvColor.h));
 			var playSound = ball.GetComponent<PlayHitSound>();
-			playSound.hitSound = largeBallOctave[note];
-			playSound.selfHitSound = largeBallOctave[note];
+			playSound.hitSound = largeBallOctave[(int)scale[note]];
+			playSound.selfHitSound = largeBallOctave[(int)scale[note]];
 
 			ball.emission = Color.black;
 		}
@@ -736,98 +735,172 @@ public class SpawnManager : MonoBehaviour {
 		callback();
 	}
 
-	void PopulateScales()
+	void PopulateScale()
 	{
-		Note[] cmaj = new Note[] 
+		Game.Log(World.Key);
+		switch (World.Key) 
 		{
-			Note.C,
-			Note.D,
-			Note.E,
-			Note.F,
-			Note.G,
-			Note.A,
-			Note.B
-		};
+			case "G":
+				scale = new Note[]
+				{
+					Note.C,
+					Note.D,
+					Note.E,
+					Note.Fs,
+					Note.G,
+					Note.A,
+					Note.B,
+				};
+				break;
 
-		scales.Add("C", cmaj);
+			case "D":
+				Note[] dmaj = new Note[]
+				{
+					Note.Cs,
+					Note.D,
+					Note.E,
+					Note.Fs,
+					Note.G,
+					Note.A,
+					Note.B		
+				};
+				break;
+			
+			case "A":
+				scale = new Note[]
+				{
+					Note.Cs,
+					Note.D,
+					Note.E,
+					Note.Fs,
+					Note.Gs,
+					Note.A,
+					Note.B,
+				};
+				break;
 
-		Note[] gmaj = new Note[]
-		{
-			Note.C,
-			Note.D,
-			Note.E,
-			Note.Fs,
-			Note.G,
-			Note.A,
-			Note.B,
-		};
+			case "E":
+				scale = new Note[]
+				{
+					Note.Cs,
+					Note.Eb,
+					Note.E,
+					Note.Fs,
+					Note.Gs,
+					Note.A,
+					Note.B,
+				};
+				break;
 
-		scales.Add("G", gmaj);
+			case "B":
+				scale = new Note[]
+				{
+					Note.Cs,
+					Note.Eb,
+					Note.E,
+					Note.Fs,
+					Note.Gs,
+					Note.Bb,
+					Note.B
+				};
+				break;
 
-		Note[] dmaj = new Note[]
-		{
-			Note.Cs,
-			Note.D,
-			Note.E,
-			Note.Fs,
-			Note.G,
-			Note.A,
-			Note.B		
-		};
+			case "F#":
+			case "Gb":
+				scale = new Note[]
+				{
+					Note.Cs,
+					Note.Eb,
+					Note.F,
+					Note.Fs,
+					Note.Gs,
+					Note.Bb,
+					Note.B
+				};
+				break;
+			
+			case "C#":
+			case "Db":
+				scale = new Note[]
+				{
+					Note.C,
+					Note.Cs,
+					Note.Eb,
+					Note.F,
+					Note.Fs,
+					Note.Gs,
+					Note.Bb
+				};
+				break;
 
-		scales.Add("D", dmaj);
+			case "G#":
+			case "Ab":
+				scale = new Note[]
+				{
+					Note.C,
+					Note.Cs,
+					Note.Eb,
+					Note.F,
+					Note.G,
+					Note.Gs,
+					Note.Bb
+				};
+				break;
 
-		Note[] amaj = new Note[]
-		{
-			Note.Cs,
-			Note.D,
-			Note.E,
-			Note.Fs,
-			Note.Gs,
-			Note.A,
-			Note.B,
-		};
+			case "Eb":
+			case "D#":
+				scale = new Note[]
+				{
+					Note.C,
+					Note.D,
+					Note.Eb,
+					Note.F,
+					Note.G,
+					Note.Gs,
+					Note.Bb
+				};
+				break;
 
-		scales.Add("A", amaj);
+			case "Bb":
+			case "A#":
+				scale = new Note[]
+				{
+					Note.C,
+					Note.D,
+					Note.Eb,
+					Note.F,
+					Note.G,
+					Note.A,
+					Note.Bb
+				};
+				break;
 
-		Note[] emaj = new Note[]
-		{
-			Note.Cs,
-			Note.Eb,
-			Note.E,
-			Note.Fs,
-			Note.Gs,
-			Note.A,
-			Note.B,
-		};
+			case "F":
+				scale = new Note[]
+				{
+					Note.C,
+					Note.D,
+					Note.E,
+					Note.F,
+					Note.G,
+					Note.A,
+					Note.Bb
+				};
+				break;
 
-		scales.Add("E", emaj);
-
-		Note[] bmaj = new Note[]
-		{
-			Note.Cs,
-			Note.Eb,
-			Note.E,
-			Note.Fs,
-			Note.Gs,
-			Note.Bb,
-			Note.B
-		};
-
-		scales.Add("B", bmaj);
-
-		Note[] fsmaj = new Note[]
-		{
-			Note.Cs,
-			Note.Eb,
-			Note.F,
-			Note.Fs,
-			Note.Gs,
-			Note.Bb,
-			Note.B
-		};
-
-		scales.Add("F#", fsmaj);
-		scales.Add("Gb", fsmaj);
+			case "C":
+			default:
+				scale = new Note[] 
+				{
+					Note.C,
+					Note.D,
+					Note.E,
+					Note.F,
+					Note.G,
+					Note.A,
+					Note.B
+				};
+				break;
+		}
 	}
 }

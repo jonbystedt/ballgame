@@ -11,6 +11,8 @@ public class Range
 		low = l;
 		high = h;
 	}
+
+	public Range() {}
 }
 
 [Serializable]
@@ -28,6 +30,8 @@ public class NoiseSetting
 		lacunarity = l;
 		persistance = p;
 	}
+
+	public NoiseSetting() {}
 }
 
 [Serializable]

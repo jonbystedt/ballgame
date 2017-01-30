@@ -54,6 +54,8 @@ public class Game : MonoBehaviour
 	private string randomWord;
 	private string randomWordUrl = "http://www.setgetgo.com/randomword/get.php";
 
+	private string[] scales = new string[] { "C", "G", "D", "A", "E", "B", "F#", "C#", "G#", "Eb", "Bb", "F" };
+
 	static Game _instance;
 
 	public static int ChunksLoaded
@@ -315,6 +317,8 @@ public class Game : MonoBehaviour
 		cosmos.CreateSky();
 
 		World.Seed = seed;
+		World.Key = scales[Mathf.FloorToInt(Mathf.Lerp(0, 11.999f, GameUtils.Seed))];
+
 		Serialization.Decompress();
 
 		// These populate the object pools

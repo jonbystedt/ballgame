@@ -28,6 +28,8 @@ public class World : MonoBehaviour {
 		}
 	}
 
+	public static string Key { get; set; }
+
 	public static SpawnManager Spawn
 	{
 		get { return _instance.spawn; }
