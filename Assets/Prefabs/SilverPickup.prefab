@@ -3043,8 +3043,8 @@ MonoBehaviour:
   minImpactVelocity: 0.1
   maxImpactVelocity: 1
   impactPow: 16
-  surfaceReduction: 0.001
-  maxVol: 0.01
+  surfaceReduction: 0.01
+  maxVol: 0.025
   hitSound: {fileID: 0}
   selfHitSound: {fileID: 0}
   scoreSound: {fileID: 0}

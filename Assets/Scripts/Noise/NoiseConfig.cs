@@ -273,96 +273,22 @@ public static class NoiseConfig {
 			0f
 			);
 
-		float noiseValue = GameUtils.Seed;
-		if (noiseValue > 0.75f)
-		{
-			caveMethod = NoiseGenerator.noiseMethods[(int)NoiseType.Value][2];
-		}
-		else if (noiseValue > 0.5f)
-		{
-			caveMethod = NoiseGenerator.noiseMethods[(int)NoiseType.SimplexValue][2];
-		}
-		else if (noiseValue > 0.25f)
-		{
-			caveMethod = NoiseGenerator.noiseMethods[(int)NoiseType.Simplex][2];
-		}
-		else
-		{
-			caveMethod = NoiseGenerator.noiseMethods[(int)NoiseType.Perlin][2];
-		}
+		// Noise Methods
+		int index = Mathf.FloorToInt(Mathf.Lerp(0, Config.Noise.caveTypes.Length - 0.001f, GameUtils.Seed));
+		caveMethod = NoiseGenerator.noiseMethods[(int)Config.Noise.caveTypes[index]][2];
 
-		noiseValue = GameUtils.Seed;
-		if (noiseValue > 0.75f)//0.95f)
-		{
-			patternMethod = NoiseGenerator.noiseMethods[(int)NoiseType.Value][2];
-		}
-		else if (noiseValue > 0.5f)//0.9f)
-		{
-			patternMethod = NoiseGenerator.noiseMethods[(int)NoiseType.Perlin][2];
-		}
-		else if (noiseValue > 0.25f)//0.7f)
-		{
-			patternMethod = NoiseGenerator.noiseMethods[(int)NoiseType.Simplex][2];
-		}
-		else
-		{
-			patternMethod = NoiseGenerator.noiseMethods[(int)NoiseType.SimplexValue][2];
-		}
+		index = Mathf.FloorToInt(Mathf.Lerp(0, Config.Noise.patternTypes.Length - 0.001f, GameUtils.Seed));
+		patternMethod = NoiseGenerator.noiseMethods[(int)Config.Noise.patternTypes[index]][2];
 
-		noiseValue = GameUtils.Seed;
-		if (noiseValue > 0.75f)//0.95f)
-		{
-			stripeMethod = NoiseGenerator.noiseMethods[(int)NoiseType.Value][2];
-		}
-		else if (noiseValue > 0.5f)//0.9f)
-		{
-			stripeMethod = NoiseGenerator.noiseMethods[(int)NoiseType.SimplexValue][2];
-		}
-		else if (noiseValue > 0.25f)//0.7f)
-		{
-			stripeMethod = NoiseGenerator.noiseMethods[(int)NoiseType.Perlin][2];
-		}
-		else
-		{
-			stripeMethod = NoiseGenerator.noiseMethods[(int)NoiseType.Simplex][2];
-		}
+		index = Mathf.FloorToInt(Mathf.Lerp(0, Config.Noise.stripeTypes.Length - 0.001f, GameUtils.Seed));
+		stripeMethod = NoiseGenerator.noiseMethods[(int)Config.Noise.stripeTypes[index]][2];
 
-		noiseValue = GameUtils.Seed;
-		if (noiseValue > 0.75f)//0.95f)
-		{
-			mountainType = NoiseType.Value;
-		}
-		else if (noiseValue > 0.5f)//0.9f)
-		{
-			mountainType = NoiseType.SimplexValue;
-		}
-		else if (noiseValue > 0.25f)//0.7f)
-		{
-			mountainType = NoiseType.Perlin;
-		}
-		else
-		{
-			mountainType = NoiseType.Simplex;
-		}
+		index = Mathf.FloorToInt(Mathf.Lerp(0, Config.Noise.terrainTypes.Length - 0.001f, GameUtils.Seed));
+		terrainType = Config.Noise.terrainTypes[index];
 
-		noiseValue = GameUtils.Seed;
-		if (noiseValue > 0.75f)//0.95f)
-		{
-			terrainType = NoiseType.Perlin;
-		}
-		else if (noiseValue > 0.5f)//0.9f)
-		{
-			terrainType = NoiseType.Value;
-		}
-		else if (noiseValue > 0.25f)//0.7f)
-		{
-			terrainType = NoiseType.Simplex;
-		}
-		else
-		{
-			terrainType = NoiseType.SimplexValue;
-		}
+		index = Mathf.FloorToInt(Mathf.Lerp(0, Config.Noise.mountainTypes.Length - 0.001f, GameUtils.Seed));
+		mountainType = Config.Noise.mountainTypes[index];
 
-		terrain.scale = Mathf.FloorToInt(Mathf.Lerp(1f, 33f, GameUtils.Seed));
+		terrain.scale = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.terrainScale.low, Config.Noise.terrainScale.high, GameUtils.Seed));
 	}
 }

@@ -45,7 +45,9 @@ public class NoiseSettings
 	public NoiseType[] terrainTypes { get; set; }
 	public NoiseType[] mountainTypes { get; set; }
 	public NoiseType[] caveTypes { get; set; }
+	public NoiseType[] patternTypes { get; set; }
 	public NoiseType[] stripeTypes { get; set; }
+	public Range terrainScale { get; set; }
 	public Range beachHeight { get; set; }
 	public Range cloudEasing { get; set; }
 	public Range caveBreak { get; set; }

@@ -98,8 +98,6 @@ public class StartGame : MonoBehaviour {
 					ApplyDefaultNoiseConfig();
 				}
 
-				NoiseConfig.Initialize();
-
 				setOptions.SetResolution(Config.Settings.resolution);
 				Config.GraphicsMode = Config.GraphicsMode;
 				Config.WorldSize = Config.Settings.worldSize;
@@ -275,8 +273,10 @@ public class StartGame : MonoBehaviour {
 		Config.Noise.terrainTypes = new NoiseType[] {NoiseType.Perlin, NoiseType.Simplex, NoiseType.SimplexValue, NoiseType.Value};
 		Config.Noise.mountainTypes = new NoiseType[] {NoiseType.Perlin, NoiseType.Simplex, NoiseType.SimplexValue, NoiseType.Value};
 		Config.Noise.caveTypes = new NoiseType[] {NoiseType.Perlin, NoiseType.Simplex, NoiseType.SimplexValue, NoiseType.Value};
+		Config.Noise.patternTypes = new NoiseType[] {NoiseType.Perlin, NoiseType.Simplex, NoiseType.SimplexValue, NoiseType.Value};
 		Config.Noise.stripeTypes = new NoiseType[] {NoiseType.Perlin, NoiseType.Simplex, NoiseType.SimplexValue, NoiseType.Value};
 
+		Config.Noise.terrainScale = new Range(1f, 33f);
 		Config.Noise.beachHeight = new Range(4f, 32f);
 		Config.Noise.cloudEasing = new Range(16f, 32f);
 

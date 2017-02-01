@@ -89,81 +89,72 @@ public class PlayHitSound : MonoBehaviour
 			return;
 		}
 
-		if (String.IsNullOrEmpty(hitKey))
-		{
-			if (hitSound != null)
-			{
-				hitKey = hitSound.name + "_" + name;
-				//Game.Log(hitKey);
-			}
-			else
-			{
-				return;
-			}
-		}
-
-		if (String.IsNullOrEmpty(selfKey))
-		{
-			if (selfHitSound != null)
-			{
-				selfKey = selfHitSound.name + "_self_" + name;
-				//Game.Log(selfKey);
-			}
-			else
-			{
-				return;
-			}
-		}
-
 		float sqrImpactVelocity = collision.relativeVelocity.sqrMagnitude;
 
 		if(sqrImpactVelocity > sqrMinImpactVelocity)
 		{
-			if (collision.gameObject.CompareTag("Pickup") || collision.gameObject.CompareTag("Ball") || collision.gameObject.CompareTag("Player"))
+			if (selfHitSound != null && (collision.gameObject.CompareTag("Pickup") || collision.gameObject.CompareTag("Ball") || collision.gameObject.CompareTag("Player")))
 			{
-				if (!clipTimers.ContainsKey(selfKey))
-				{
-					clipTimers.Add(selfKey, Time.time + clipTiming);
-				}
-				else if (clipTimers[selfKey] > Time.time)
-				{
-					return;
-				}
-				else
-				{
-					clipTimers[selfKey] = Time.time + clipTiming;
-				}
-
-				float impact = Mathf.Pow((sqrImpactVelocity - sqrMinImpactVelocity)/sqrMaxImpactVelocity, impactPow);
-
-				audioSource.clip = selfHitSound;
-				audioSource.volume = Mathf.Lerp(0.0f, maxVol, impact);
-				audioSource.pitch = Mathf.Lerp(minPitch, maxPitch, impact);
-				audioSource.Play();
+				SelfHitSound(sqrImpactVelocity);
 			}
-			else if (surfaceReduction > 0.0f)
+			else if (hitSound != null)
 			{
-				if (!clipTimers.ContainsKey(hitKey))
-				{
-					clipTimers.Add(hitKey, Time.time + clipTiming);
-				}
-
-				if (clipTimers[hitKey] > Time.time || audioSource.isPlaying)
-				{
-					return;
-				}
-				else
-				{
-					clipTimers[hitKey] = Time.time + clipTiming;
-				}
-
-				float impact = Mathf.Pow((sqrImpactVelocity - sqrMinImpactVelocity)/sqrMaxImpactVelocity, impactPow);
-
-				audioSource.clip = hitSound;
-				audioSource.volume = Mathf.Lerp(0.0f, surfaceReduction, impact);
-				audioSource.Play();
+				HitSound(sqrImpactVelocity);
 			}
-		
 		}
+	}
+
+	void HitSound(float sqrImpactVelocity)
+	{
+		if (String.IsNullOrEmpty(hitKey))
+		{
+			hitKey = hitSound.name + "_" + name;
+		}
+		if (!clipTimers.ContainsKey(hitKey))
+		{
+			clipTimers.Add(hitKey, Time.time + clipTiming);
+		}
+
+		if (clipTimers[hitKey] > Time.time || audioSource.isPlaying)
+		{
+			return;
+		}
+		else
+		{
+			clipTimers[hitKey] = Time.time + clipTiming;
+		}
+
+		float impact = Mathf.Pow((sqrImpactVelocity - sqrMinImpactVelocity)/sqrMaxImpactVelocity, impactPow);
+
+		audioSource.clip = hitSound;
+		audioSource.volume = Mathf.Lerp(0.0f, surfaceReduction, impact);
+		audioSource.Play();
+	}
+
+	void SelfHitSound(float sqrImpactVelocity)
+	{
+		if (String.IsNullOrEmpty(selfKey))
+		{
+			selfKey = selfHitSound.name + "_self_" + name;
+		}
+		if (!clipTimers.ContainsKey(selfKey))
+		{
+			clipTimers.Add(selfKey, Time.time + clipTiming);
+		}
+		else if (clipTimers[selfKey] > Time.time)
+		{
+			return;
+		}
+		else
+		{
+			clipTimers[selfKey] = Time.time + clipTiming;
+		}
+
+		float impact = Mathf.Pow((sqrImpactVelocity - sqrMinImpactVelocity)/sqrMaxImpactVelocity, impactPow);
+
+		audioSource.clip = selfHitSound;
+		audioSource.volume = Mathf.Lerp(0.0f, maxVol, impact);
+		audioSource.pitch = Mathf.Lerp(minPitch, maxPitch, impact);
+		audioSource.Play();
 	}
 }

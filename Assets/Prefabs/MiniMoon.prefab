@@ -409,11 +409,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f4ba47991f4340458bd95ba445118f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minImpactVelocity: 0.1
+  minImpactVelocity: 0.25
   maxImpactVelocity: 1
   impactPow: 10
-  surfaceReduction: 0.1
-  maxVol: 0.1
+  surfaceReduction: 0.15
+  maxVol: 0.25
   hitSound: {fileID: 0}
   selfHitSound: {fileID: 0}
   scoreSound: {fileID: 0}

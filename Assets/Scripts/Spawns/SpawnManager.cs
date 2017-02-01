@@ -72,7 +72,6 @@ public class SpawnManager : MonoBehaviour {
 	public static List<BouncyBall> SleptBalls = new List<BouncyBall>();
 
 	public AudioClip[] pickupOctave;
-	public AudioClip[] largePickupOctave;
 	public AudioClip[] ballOctave;
 	public AudioClip[] largeBallOctave;
 	public AudioClip[] selfBallOctave;
@@ -222,8 +221,8 @@ public class SpawnManager : MonoBehaviour {
 
 			int note = Mathf.FloorToInt(Mathf.Lerp(0f, 6.999f, pickup.hsvColor.h));
 			var playSound = pickup.GetComponent<PlayHitSound>();
-			playSound.hitSound = largePickupOctave[(int)scale[note]];
-			playSound.selfHitSound = largePickupOctave[(int)scale[note]];
+			playSound.hitSound = pickupOctave[(int)scale[note]];
+			playSound.selfHitSound = pickupOctave[(int)scale[note]];
 			playSound.scoreSound = scoreOctave[(int)scale[note]];
 		}
 		if (pickup.type == PickupType.Black)
@@ -238,8 +237,8 @@ public class SpawnManager : MonoBehaviour {
 
 			int note = Mathf.FloorToInt(Mathf.Lerp(0f, 6.999f, pickup.hsvColor.h));
 			var playSound = pickup.GetComponent<PlayHitSound>();
-			playSound.hitSound = largePickupOctave[(int)scale[note]];
-			playSound.selfHitSound = largePickupOctave[(int)scale[note]];
+			playSound.hitSound = pickupOctave[(int)scale[note]];
+			playSound.selfHitSound = pickupOctave[(int)scale[note]];
 			playSound.scoreSound = scoreOctave[(int)scale[note]];
 		}
 
@@ -288,7 +287,6 @@ public class SpawnManager : MonoBehaviour {
 
 			int note = Mathf.FloorToInt(Mathf.Lerp(0f, 6.999f, ball.hsvColor.h));
 			var playSound = ball.GetComponent<PlayHitSound>();
-			playSound.hitSound = ballOctave[(int)scale[note]];
 			playSound.selfHitSound = selfBallOctave[(int)scale[note]];
 		}
 		if (ball.type == BallType.Imploding)
@@ -310,7 +308,6 @@ public class SpawnManager : MonoBehaviour {
 
 			int note = Mathf.FloorToInt(Mathf.Lerp(0f, 6.999f, ball.hsvColor.h));
 			var playSound = ball.GetComponent<PlayHitSound>();
-			playSound.hitSound = largeBallOctave[(int)scale[note]];
 			playSound.selfHitSound = largeBallOctave[(int)scale[note]];
 		}
 		if (ball.type == BallType.Exploding)
@@ -332,7 +329,6 @@ public class SpawnManager : MonoBehaviour {
 
 			int note = Mathf.FloorToInt(Mathf.Lerp(0f, 6.999f, ball.hsvColor.h));
 			var playSound = ball.GetComponent<PlayHitSound>();
-			playSound.hitSound = largeBallOctave[(int)scale[note]];
 			playSound.selfHitSound = largeBallOctave[(int)scale[note]];
 		}
 		if (ball.type == BallType.Moon)
@@ -354,7 +350,6 @@ public class SpawnManager : MonoBehaviour {
 
 			int note = Mathf.FloorToInt(Mathf.Lerp(0f, 6.999f, ball.hsvColor.h));
 			var playSound = ball.GetComponent<PlayHitSound>();
-			playSound.hitSound = moonOctave[(int)scale[note]];
 			playSound.selfHitSound = moonSelfOctave[(int)scale[note]];
 
 			ball.emission = Color.white;
@@ -378,7 +373,6 @@ public class SpawnManager : MonoBehaviour {
 
 			int note = Mathf.FloorToInt(Mathf.Lerp(0f, 6.999f, ball.hsvColor.h));
 			var playSound = ball.GetComponent<PlayHitSound>();
-			playSound.hitSound = largeBallOctave[(int)scale[note]];
 			playSound.selfHitSound = largeBallOctave[(int)scale[note]];
 
 			ball.emission = Color.black;

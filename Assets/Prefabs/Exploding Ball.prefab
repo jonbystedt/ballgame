@@ -431,7 +431,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f4ba47991f4340458bd95ba445118f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minImpactVelocity: 0.1
+  minImpactVelocity: 0.25
   maxImpactVelocity: 1
   impactPow: 16
   surfaceReduction: 0.12

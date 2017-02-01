@@ -309,9 +309,13 @@ public class Game : MonoBehaviour
 		{
 			UnityEngine.Random.InitState(seed.GetHashCode());
 		}
-			
+		
+		// these two must happen before anything else kicks off
 		GameUtils.SetHash();
 		GameUtils.CreateSeedTable();
+
+		// start generating world parameters
+		NoiseConfig.Initialize();
 		TileFactory.GenerateColorPalette();
 		Blocks.Initialize();
 		cosmos.CreateSky();
