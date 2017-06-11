@@ -227,7 +227,7 @@ public class SpawnManager : MonoBehaviour {
 		}
 		if (pickup.type == PickupType.Black)
 		{
-			pickup.color = Color.Lerp(Tile.Brighten(color,0.3f), Color.black, 0.25f);
+			pickup.color = Color.Lerp(Tile.Brighten(color,0.3f), Color.black, 0.35f);
 			pickup.size = 1f;
 			pickup.baseScore = 25;
 			pickup.driftIntensity = 10000f;
@@ -330,9 +330,8 @@ public class SpawnManager : MonoBehaviour {
 			ball.SpawnValue = 16f;
 
 			int note = Mathf.FloorToInt(Mathf.Lerp(0f, 6.999f, ball.hsvColor.h));
-			int note3 = Mathf.FloorToInt(Mathf.Lerp(0f, 20.999f, ball.hsvColor.h));
 			var playSound = ball.GetComponent<PlayHitSound>();
-			playSound.worldHitSound = selfHits[(int)scales[key][note3]];
+			playSound.worldHitSound = selfHits[(int)scales[key][note + 8]];
 			playSound.objectHitSound = largeBallOctave[(int)scales[key][note]];
 		}
 		if (ball.type == BallType.Moon)
@@ -354,7 +353,7 @@ public class SpawnManager : MonoBehaviour {
 
 			int note = Mathf.FloorToInt(Mathf.Lerp(0f, 6.999f, ball.hsvColor.h));
 			var playSound = ball.GetComponent<PlayHitSound>();
-			playSound.worldHitSound = selfBallOctave[(int)scales[key][note]];
+			playSound.worldHitSound = selfHits[(int)scales[key][note + 16]];
 			playSound.objectHitSound = moonOctave[(int)scales[key][note]];
 
 			ball.emission = Color.white;
@@ -378,7 +377,7 @@ public class SpawnManager : MonoBehaviour {
 
 			int note = Mathf.FloorToInt(Mathf.Lerp(0f, 6.999f, ball.hsvColor.h));
 			var playSound = ball.GetComponent<PlayHitSound>();
-			playSound.worldHitSound = selfBallOctave[(int)scales[key][note]];
+			playSound.worldHitSound = selfHits[(int)scales[key][note]];
 			playSound.objectHitSound = darkStarOctave[(int)scales[key][note]];
 
 			ball.emission = Color.black;
@@ -542,7 +541,7 @@ public class SpawnManager : MonoBehaviour {
 					}
 
 					// Exploding Balls
-					upper = Mathf.FloorToInt(range * 0.303f);
+					upper = Mathf.FloorToInt(range * 0.31f);
 					lower = Mathf.FloorToInt(range * 0.3f);
 					if (spawnValue >= exclusion + lower && spawnValue < exclusion + upper)
 					{
@@ -565,7 +564,7 @@ public class SpawnManager : MonoBehaviour {
 					}
 
 					// Imploding Balls
-					upper = Mathf.FloorToInt(range * 0.403f);
+					upper = Mathf.FloorToInt(range * 0.41f);
 					lower = Mathf.FloorToInt(range * 0.4f);
 					if (spawnValue >= exclusion + lower && spawnValue < exclusion + upper)
 					{
@@ -588,7 +587,7 @@ public class SpawnManager : MonoBehaviour {
 					}
 
 					// Moons
-					upper = Mathf.FloorToInt(range * 0.503f);
+					upper = Mathf.FloorToInt(range * 0.51f);
 					lower = Mathf.FloorToInt(range * 0.5f);
 					if (spawnValue >= exclusion + lower && spawnValue < exclusion + upper)
 					{
@@ -605,7 +604,7 @@ public class SpawnManager : MonoBehaviour {
 
 						continue;
 					}
-					upper = Mathf.FloorToInt(range * 0.603f);
+					upper = Mathf.FloorToInt(range * 0.62f);
 					lower = Mathf.FloorToInt(range * 0.6f);
 					if (spawnValue >= exclusion + lower && spawnValue < exclusion + upper)
 					{

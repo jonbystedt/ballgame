@@ -419,7 +419,7 @@ AudioSource:
   Spatialize: 0
   SpatializePostEffects: 0
   Priority: 128
-  DopplerLevel: 0
+  DopplerLevel: 0.1
   MinDistance: 1
   MaxDistance: 12
   Pan2D: 0
@@ -538,7 +538,7 @@ MonoBehaviour:
   maxImpactVelocity: 1
   impactPow: 10
   maxWorldVol: 250
-  maxObjectVol: 350
+  maxObjectVol: 500
   maxScoreVol: 500
   worldHitSound: {fileID: 0}
   objectHitSound: {fileID: 0}

@@ -3680,7 +3680,7 @@ MonoBehaviour:
   impactPow: 16
   maxWorldVol: 10
   maxObjectVol: 60
-  maxScoreVol: 100
+  maxScoreVol: 250
   worldHitSound: {fileID: 0}
   objectHitSound: {fileID: 0}
   scoreSound: {fileID: 0}
