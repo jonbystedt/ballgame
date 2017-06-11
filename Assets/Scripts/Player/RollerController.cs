@@ -105,7 +105,7 @@ public class RollerController : MonoBehaviour
 			Vector3 forwardNormal = Vector3.Normalize(planePos - planeLastPos);
 			float speed = Mathf.Abs(Vector3.Distance(transform.position, lastPosition));
 
-			roller.BashBlocks(forwardNormal, speed, boosting);
+			roller.BashBlocks(forwardNormal, speed, boosting, camOp.FirstPerson);
 		}
 
 	}

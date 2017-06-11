@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public enum BallType
 {
@@ -41,6 +42,11 @@ public class BouncyBall : SpawnedObject
 
 	public WorldPosition lastBlockPosition;
 
+	private int pickupCount;
+	private int ballCount;
+	private int maxPickup = 25;
+	private int maxBall = 1000;
+
 	public override void Reset()
 	{
 		base.Reset();
@@ -50,6 +56,8 @@ public class BouncyBall : SpawnedObject
 	public override void Wipe()
 	{
 		closest = null;
+		pickupCount = 0;
+		ballCount = 0;
 	}
 
 	protected override void SlowUpdate() 
@@ -78,6 +86,34 @@ public class BouncyBall : SpawnedObject
 		{
 			return;
 		}
+
+		if (type == BallType.Basic)
+		{
+			if (pickupCount >= maxPickup)
+			{
+				actionEnabled = false;
+				Split(100f * corruption);
+				StartCoroutine(Expand());
+				return;
+			}
+
+			if (ballCount >= maxBall)
+			{
+				actionEnabled = false;
+				Explode();
+				StartCoroutine(Expand());
+				return;
+			}
+
+			if (transform.localScale.x < minSize)
+			{
+				actionEnabled = false;
+				Explode();
+				StartCoroutine(Expand());
+				return;
+			}
+		}
+
 
 		WorldPosition blockPosition = World.GetBlockPosition(transform.position);
 		Vector3 d = closest.transform.position - transform.position;
@@ -154,28 +190,49 @@ public class BouncyBall : SpawnedObject
 
 		WorldPosition chunkPos = World.GetChunkPosition(transform.position);
 
-		// Add the spawns to the local column's spawn list so that they can be managed.
+		// Add the spawns to the local column spawn list so that they can be managed.
 		Column column = World.GetColumn(chunkPos);	
-
-		Color color = Tile.Colors[SpawnCount % 64];
-		if (type == BallType.Moon)
-		{
-			color = Tile.Lighten(color, 0.2f);
-		}
-		if (type == BallType.DarkStar)
-		{
-			color = Tile.Darken(color, 0.2f);
-		}
 
 		if (SpawnCount > 0)
 		{
-			World.Spawn.Objects(SpawnObject, Tile.Colors[SpawnCount % 64], transform.position, SpawnCount, 0f, column.spawns, corruption);
+			StartCoroutine(Spawn(() => {
+				isActive = false;
+				ReturnToPool();
+			}));
+		}
+		else
+		{
+			StartCoroutine(Wait(1f, () => {
+				isActive = false;
+				ReturnToPool();
+			}));
+		}
+	}
+
+	IEnumerator Spawn(Action callback)
+	{
+		int count = SpawnCount;
+
+		while (count > 0)
+		{
+			Color color = Tile.Colors[TerrainGenerator.GetNoise3D(transform.position,NoiseConfig.pattern, NoiseType.SimplexValue) % 64];
+
+			if (type == BallType.Moon)
+			{
+				color = Tile.Lighten(color, 0.2f);
+			}
+			if (type == BallType.DarkStar)
+			{
+				color = Tile.Darken(color, 0.2f);
+			}
+
+			World.Spawn.Object(SpawnObject, color, transform.position);
+			count--;
+
+			yield return null;
 		}
 
-		StartCoroutine(Wait(1f, () => {
-			isActive = false;
-			ReturnToPool();
-		}));
+		callback();
 	}
 
 	void Split(float velocity)
@@ -185,6 +242,9 @@ public class BouncyBall : SpawnedObject
 		{
 			Spawns spawn;
 			Color spawnColor = color;
+			Vector3 scale = transform.localScale * 0.5f;
+			float newSpawnValue = SpawnValue * 0.25f;
+
 			if (type == BallType.Imploding)
 			{
 				spawn = Spawns.MysteryEgg;
@@ -198,14 +258,17 @@ public class BouncyBall : SpawnedObject
 				spawn = Spawns.Moon;
 				spawnColor = Color.white;
 			}
-			else
+			else if (type == BallType.DarkStar)
 			{
 				spawn = Spawns.DarkStar;
 				spawnColor = Color.black;	
 			}
+			else 
+			{
+				spawn = Spawns.BouncyBall;
+				newSpawnValue = 1f;
+			}
 
-			Vector3 scale = transform.localScale * 0.5f;
-			float newSpawnValue = SpawnValue * 0.25f;
 			int splits = 2;
 			if (velocity > 15f)
 			{
@@ -214,6 +277,11 @@ public class BouncyBall : SpawnedObject
 			if (velocity > 20f)
 			{
 				splits = 5;
+			}
+
+			if (type == BallType.Basic)
+			{
+				splits *= 2;
 			}
 
 			StartCoroutine(Repeat(splits, 0.1f, () => {
@@ -307,6 +375,8 @@ public class BouncyBall : SpawnedObject
 				Game.UpdateScore(pickup.baseScore * scoreModifier);
 				actionEnabled = true;
 				corruption += 0.01f;
+				pickupCount++;
+				ballCount = 0;
 
 				if ((type == BallType.DarkStar && pickup.type == PickupType.Black) || (type == BallType.Moon && pickup.type == PickupType.Silver))
 				{
@@ -326,7 +396,7 @@ public class BouncyBall : SpawnedObject
 					}
 					else
 					{
-						pickup.GetComponent<PlayHitSound>().Score();
+						pickup.Score();
 						pickup.isLive = false;
 						pickup.RemoveIn(0.3f);
 					}
@@ -343,11 +413,12 @@ public class BouncyBall : SpawnedObject
 			{
 				corruption += 0.01f;
 				actionEnabled = true;
+				ballCount++;
 
 				float velocity = Mathf.Abs(other.attachedRigidbody.velocity.x + other.attachedRigidbody.velocity.y + other.attachedRigidbody.velocity.z);
 				float scaleRatio = ball.transform.localScale.x - transform.localScale.x;
 
-				if (scaleRatio > 0 && Random.value < scaleRatio)
+				if (scaleRatio > 0 && UnityEngine.Random.value < scaleRatio)
 				{
 					ball.Grow(velocity);
 					ball.SpawnValue = ball.SpawnValue + SpawnValue;

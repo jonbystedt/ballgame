@@ -8,13 +8,28 @@ public class PlayHitSound : MonoBehaviour
 	public float minImpactVelocity = 0.25f;
 	public float maxImpactVelocity = 1.0f;
 	public float impactPow = 10f;
-	public float surfaceReduction = 0.25f;
-	public float maxVol = 1f;
-	public AudioClip hitSound;
-	public AudioClip selfHitSound;
+
+	[Range(0f, 1000f)] 
+	public float maxWorldVol = 0.5f;
+
+	[Range(0f, 1000f)] 
+	public float maxObjectVol = 0.9f;
+
+	[Range(0f, 1000f)] 
+	public float maxScoreVol = 0.5f;
+
+	[HideInInspector]
+	public AudioClip worldHitSound;
+
+	[HideInInspector]
+	public AudioClip objectHitSound;
+
+	[HideInInspector]
 	public AudioClip scoreSound;
+	
 	public static Dictionary<string,float> clipTimers = new Dictionary<string,float>();
-	AudioSource audioSource;
+	AudioSource worldHitSource;
+	AudioSource objectHitSource;
 
 	public float sqrMinImpactVelocity
 	{
@@ -57,12 +72,13 @@ public class PlayHitSound : MonoBehaviour
 	private float _sqrMaxImpactVelocity = 0.0f;
 	private float _lastMaxImpactVelocity = 0.0f;
 
-	public float minPitch = 0.5f;
-	public float maxPitch = 1.5f;
 
 	void Start()
 	{
-		audioSource = GetComponent<AudioSource>();
+		var aSources = GetComponents<AudioSource>();
+     	worldHitSource = aSources[0];
+    	objectHitSource = aSources[1];
+
 		_maxSqrDistance = Mathf.Pow(Chunk.Size * 2f, 2f);
 	}
 
@@ -71,14 +87,13 @@ public class PlayHitSound : MonoBehaviour
 		_sqrDistanceFromPlayer = (transform.position - Game.Player.transform.position).sqrMagnitude;
 	}
 
-	public void Score()
+	public void PlayScoreSound(float impactForce)
 	{
 		if (scoreSound != null)
 		{
-			audioSource.clip = scoreSound;
-			audioSource.volume = 0.4f;
-			audioSource.pitch = 1f;
-			audioSource.Play();
+			worldHitSource.clip = scoreSound;
+			worldHitSource.volume = Mathf.Lerp(0.0f, maxScoreVol * 0.001f, impactForce);
+			worldHitSource.Play();
 		}
 	}
 
@@ -93,29 +108,29 @@ public class PlayHitSound : MonoBehaviour
 
 		if(sqrImpactVelocity > sqrMinImpactVelocity)
 		{
-			if (selfHitSound != null && (collision.gameObject.CompareTag("Pickup") || collision.gameObject.CompareTag("Ball") || collision.gameObject.CompareTag("Player")))
+			if (objectHitSound != null && (collision.gameObject.CompareTag("Pickup") || collision.gameObject.CompareTag("Ball") || collision.gameObject.CompareTag("Player")))
 			{
-				SelfHitSound(sqrImpactVelocity);
+				ObjectHitSound(sqrImpactVelocity);
 			}
-			else if (hitSound != null)
+			else if (worldHitSound != null)
 			{
-				HitSound(sqrImpactVelocity);
+				WorldHitSound(sqrImpactVelocity);
 			}
 		}
 	}
 
-	void HitSound(float sqrImpactVelocity)
+	void WorldHitSound(float sqrImpactVelocity)
 	{
 		if (String.IsNullOrEmpty(hitKey))
 		{
-			hitKey = hitSound.name + "_" + name;
+			hitKey = worldHitSound.name + "_" + name;
 		}
 		if (!clipTimers.ContainsKey(hitKey))
 		{
 			clipTimers.Add(hitKey, Time.time + clipTiming);
 		}
 
-		if (clipTimers[hitKey] > Time.time || audioSource.isPlaying)
+		if (clipTimers[hitKey] > Time.time || worldHitSource.isPlaying)
 		{
 			return;
 		}
@@ -126,22 +141,22 @@ public class PlayHitSound : MonoBehaviour
 
 		float impact = Mathf.Pow((sqrImpactVelocity - sqrMinImpactVelocity)/sqrMaxImpactVelocity, impactPow);
 
-		audioSource.clip = hitSound;
-		audioSource.volume = Mathf.Lerp(0.0f, surfaceReduction, impact);
-		audioSource.Play();
+		worldHitSource.clip = worldHitSound;
+		worldHitSource.volume = Mathf.Lerp(0.0f, maxWorldVol * 0.001f, impact);
+		worldHitSource.Play();
 	}
 
-	void SelfHitSound(float sqrImpactVelocity)
+	void ObjectHitSound(float sqrImpactVelocity)
 	{
 		if (String.IsNullOrEmpty(selfKey))
 		{
-			selfKey = selfHitSound.name + "_self_" + name;
+			selfKey = objectHitSound.name + "_self_" + name;
 		}
 		if (!clipTimers.ContainsKey(selfKey))
 		{
 			clipTimers.Add(selfKey, Time.time + clipTiming);
 		}
-		else if (clipTimers[selfKey] > Time.time)
+		else if (clipTimers[selfKey] > Time.time || objectHitSource.isPlaying)
 		{
 			return;
 		}
@@ -152,9 +167,8 @@ public class PlayHitSound : MonoBehaviour
 
 		float impact = Mathf.Pow((sqrImpactVelocity - sqrMinImpactVelocity)/sqrMaxImpactVelocity, impactPow);
 
-		audioSource.clip = selfHitSound;
-		audioSource.volume = Mathf.Lerp(0.0f, maxVol, impact);
-		audioSource.pitch = Mathf.Lerp(minPitch, maxPitch, impact);
-		audioSource.Play();
+		objectHitSource.clip = objectHitSound;
+		objectHitSource.volume = Mathf.Lerp(0.0f, maxObjectVol * 0.001f, impact);
+		objectHitSource.Play();
 	}
 }

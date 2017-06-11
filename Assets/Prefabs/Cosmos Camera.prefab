@@ -63,6 +63,8 @@ Camera:
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 0
+  m_AllowMSAA: 1
+  m_ForceIntoRT: 0
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
@@ -93,25 +95,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   distanceFog: 1
+  excludeFarPixels: 1
   useRadialDistance: 1
   heightFog: 0
   height: 1
   heightDensity: 2
   startDistance: 256
-  AffectSkyBox: 1
-  Advanced:
-    UseScattering: 1
-    Turbidity: 10
-    WorldScale: 1000
-    Rayleigh: 0.2
-    ScatteringSize: 0.8
-    ScatteringIntensity: 8
-    Bias: 0.1
-    contrast: 4.5
-    luminance: 0.005
-    lumaAmount: 0.2
-    Falloff: 0
-    BoostColor: 1
   fogShader: {fileID: 4800000, guid: 9fa05bc84b11e45d38f093167200bd52, type: 3}
 --- !u!124 &12455692
 Behaviour:

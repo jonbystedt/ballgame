@@ -115,7 +115,7 @@ public class Config : MonoBehaviour
 					GlobalFogEnabled = false;
 					AtmosphericScattering = false;
 					ShadowsEnabled = false;
-					Outlines = false;
+					Outlines = true;
 					ColoredOutlines = false;
 					World.ChunkShadows = false;
 					if (QualitySettings.GetQualityLevel() != 0)
@@ -134,7 +134,7 @@ public class Config : MonoBehaviour
 					GlobalFogEnabled = true;
 					AtmosphericScattering = false;
 					ShadowsEnabled = false;
-					Outlines = false;
+					Outlines = true;
 					ColoredOutlines = false;
 					World.ChunkShadows = false;
 					if (QualitySettings.GetQualityLevel() != 1)
@@ -153,7 +153,7 @@ public class Config : MonoBehaviour
 					GlobalFogEnabled = true;
 					AtmosphericScattering = true;
 					ShadowsEnabled = true;
-					Outlines = false;
+					Outlines = true;
 					ColoredOutlines = false;
 					World.ChunkShadows = false;
 					if (QualitySettings.GetQualityLevel() != 2)
@@ -172,7 +172,7 @@ public class Config : MonoBehaviour
 					GlobalFogEnabled = true;
 					AtmosphericScattering = true;
 					ShadowsEnabled = true;
-					Outlines = false;
+					Outlines = true;
 					ColoredOutlines = false;
 					World.ChunkShadows = true;
 					if (QualitySettings.GetQualityLevel() != 3)

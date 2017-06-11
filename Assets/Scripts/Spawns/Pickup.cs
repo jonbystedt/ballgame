@@ -15,6 +15,8 @@ public class Pickup : SpawnedObject
 	public float driftIntensity = 250f;
 	public PickupType type = PickupType.Basic;
 
+	float impactForce;
+
 	public override void Reset()
 	{
 		base.Reset();
@@ -78,6 +80,11 @@ public class Pickup : SpawnedObject
 		}
 	}
 
+	public void Score()
+	{
+		GetComponent<PlayHitSound>().PlayScoreSound(impactForce);
+	}
+
 	IEnumerator ExplodeRoutine(Column column)
 	{
 		Color spawnColor;
@@ -128,7 +135,7 @@ public class Pickup : SpawnedObject
 		ReturnToPool();
 	}
 
-	public void Fireworks(float impactForce)
+	public void Fireworks()
 	{
 		if (transform.localScale.x > 1f)
 		{
@@ -187,9 +194,9 @@ public class Pickup : SpawnedObject
 			Rigidbody rigidbody = transform.GetComponent<Rigidbody>();
 			Rigidbody c_rigidbody = other.transform.GetComponent<Rigidbody>();
 
-			float impactForce = GameUtils.GetImpactForce(rigidbody, c_rigidbody);
+			impactForce = GameUtils.GetImpactForce(rigidbody, c_rigidbody);
 
-			Fireworks(impactForce);
+			Fireworks();
 		}
 	}
 

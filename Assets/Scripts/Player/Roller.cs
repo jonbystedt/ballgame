@@ -63,6 +63,29 @@ public class Roller : MonoBehaviour
 		gravityAssist = maxGravityAssist;
 	}
 
+	public void SetFirstPerson(bool enabled)
+	{
+		if (enabled) 
+		{
+			 _rigidbody.mass = 750f;
+			_rigidbody.drag = 10f;
+			_rigidbody.angularDrag = 3f;
+			
+			jumpPower = 3000f;
+			boostPower = 1.6f;
+		}
+		else
+		{
+			_rigidbody.mass = 550f;
+			_rigidbody.drag = 8f;
+			_rigidbody.angularDrag = 2f;
+
+			jumpPower = 3500f;
+			boostPower = 2f;
+		}
+		
+	}
+
 	public void Move(Vector3 moveDirection, bool jump, bool boost, bool pound)
 	{
 		// *** SET FLAGS ***
@@ -153,7 +176,7 @@ public class Roller : MonoBehaviour
 		// world entry animation
 		if (asleep)
 		{
-			Game.CameraOp.FirstPerson = false;
+			//Game.CameraOp.FirstPerson = false;
 			asleep = false;
 		}
 
@@ -350,7 +373,7 @@ public class Roller : MonoBehaviour
 		}
 	}
 
-	public bool BashBlocks(Vector3 forward, float speed, bool boosting)
+	public bool BashBlocks(Vector3 forward, float speed, bool boosting, bool firstPerson)
 	{
 		//Game.Log("Speed: " + speed.ToString("N2") + " Contacts: " + collision.contacts.Length);
 		bool groundPounded = false;
@@ -374,7 +397,7 @@ public class Roller : MonoBehaviour
 		{
 			// Try to hit with the forward normal, fall back to a radial search
 			// TODO: be more selective with search angles
-			if (!grounded)
+			if (!grounded || firstPerson)
 			{
 				// Blocks above the player
 				normals.Add(Vector3.up);
@@ -387,7 +410,8 @@ public class Roller : MonoBehaviour
 				normals.Add(new Vector3(1,1,-1));
 				normals.Add(new Vector3(-1,1,-1));
 			}
-			else
+			
+			if (grounded || firstPerson)
 			{
 				normals.Add(forward);
 				normals.Add(new Vector3(1,0,0));
@@ -417,20 +441,21 @@ public class Roller : MonoBehaviour
 			// Don't break the floor!
 			if (b_pos.y > -48)
 			{
+				int blockPosY = Mathf.RoundToInt(pos.y);
 				// same level and boost button held
-				if (b_pos.y == Mathf.RoundToInt(pos.y) && boosting)
+				if (b_pos.y == blockPosY  && boosting)
 				{
 					bash = true;
 				}
 
 				// 1 level below and ground pound active
-				if (b_pos.y < Mathf.RoundToInt(pos.y) && b_pos.y > Mathf.FloorToInt(pos.y - 2) && groundPound)
+				if (b_pos.y < blockPosY && b_pos.y > blockPosY - 2 && groundPound)
 				{
 					bash = true;
 				}
 
 				// overhead and jumping
-				if (b_pos.y > Mathf.FloorToInt(pos.y) && jumping)
+				if (b_pos.y > blockPosY && (jumping || firstPerson))
 				{
 					bash = true;
 				}
@@ -457,10 +482,10 @@ public class Roller : MonoBehaviour
 					TileColor tileColor = Blocks.GetColor(bashBlock);
 					Color color = new Color(tileColor.r, tileColor.g, tileColor.b);
 			
-					if (Game.CameraOp.Distance > 5f)
-					{
+					//if (Game.CameraOp.Distance > 5f)
+					//{
 						SpawnPickupsFromBlock(b_pos, color);
-					}
+					//}
 				}
 			}
 		}
@@ -513,7 +538,7 @@ public class Roller : MonoBehaviour
 					if (UnityEngine.Random.value < 0.9f)
 					{
 						Pickup pickup = spawn.transform.GetComponent<Pickup>();
-						pickup.Fireworks(0.5f);
+						pickup.Fireworks();
 						blockSpawns.RemoveAt(i);
 
 						StartCoroutine(Wait(0.3f, () => {

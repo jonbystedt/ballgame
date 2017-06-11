@@ -234,7 +234,7 @@ public class Cosmos : MonoBehaviour {
 
 		var ma = stars.main;
 		ma.startColor = starColor;
-		ma.startSize = Mathf.Lerp(0.1f, 0.4f, Mathf.Pow(Random.value, 3));
+		ma.startSize = Mathf.Lerp(0.4f, 1f, Mathf.Pow(Random.value, 3));
  
 		// Fog Density
 		if (rain.RainIntensity > 0)
@@ -460,6 +460,6 @@ public class Cosmos : MonoBehaviour {
 		moonlight.nightDayColor = nightDayFogColor;
 
 		zodiac.transform.localScale = Vector3.one;
-		zodiac.transform.localScale *= 3f + (Config.WorldSize - 6f) * 0.25f;
+		zodiac.transform.localScale *= (Config.WorldSize - 6f) * 0.25f;
 	}
 }

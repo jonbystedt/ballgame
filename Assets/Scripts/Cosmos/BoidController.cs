@@ -24,9 +24,7 @@ namespace ProceduralToolkit.Examples
     {
         public Vector3 anchor = Vector3.zero;
         public float innerSphere = 30;
-        public float minInnerSphere = 5;
-        public float worldSphere = 60;
-        public float maxWorldSphere = 65f;
+        public float worldSphere = 10;
         public float terrainCheckSphere = 30;
 
         public int swarmCount = 500;
@@ -75,7 +73,7 @@ namespace ProceduralToolkit.Examples
             template.colors.Add(colorA);
             for (int i = 1; i < template.vertices.Count; i++)
             {
-                template.colors.Add(Tile.Lighten(colorB, 0.75f));
+                template.colors.Add(Tile.Lighten(colorB, i * 0.1f));
             }
 
             draft = new MeshDraft
@@ -93,7 +91,7 @@ namespace ProceduralToolkit.Examples
                 // Assign random starting values for each boid
                 var boid = new Boid
                 {
-                    position = Random.onUnitSphere*maxWorldSphere*0.8f,
+                    position = Random.onUnitSphere*worldSphere,
                     rotation = Random.rotation,
                     velocity = Random.onUnitSphere*maxSpeed
                 };
@@ -296,14 +294,8 @@ namespace ProceduralToolkit.Examples
             }
 
             interactionRadius = (float)TerrainGenerator.GetNoise1D(new Vector3(Cosmos.CurrentTime,0,0), NoiseConfig.boidInteraction, NoiseType.Value) + 10f;
-            alignmentCoefficient = (float)TerrainGenerator.GetNoise1D(new Vector3(Cosmos.CurrentTime,0,0), NoiseConfig.boidAlignment, NoiseType.Value) + 10f;
-            separationDistance  = (float)TerrainGenerator.GetNoise1D(new Vector3(Cosmos.CurrentTime,0,0), NoiseConfig.boidDistance, NoiseType.Value) + 10f;
-
-            float inner = (float)TerrainGenerator.GetNoise1D(new Vector3(Cosmos.CurrentTime,0,0), NoiseConfig.boidInner, NoiseType.Value);
-            float outer = (float)TerrainGenerator.GetNoise1D(new Vector3(Cosmos.CurrentTime,0,0), NoiseConfig.boidOuter, NoiseType.Value);
-
-            worldSphere = Mathf.Lerp(maxWorldSphere - 20f, maxWorldSphere, 1f - Mathf.Pow(outer,3));
-            innerSphere = Mathf.Lerp(minInnerSphere, worldSphere, 1f - Mathf.Pow(inner,10));
+            alignmentCoefficient = (float)TerrainGenerator.GetNoise1D(new Vector3(Cosmos.CurrentTime,0,0), NoiseConfig.boidAlignment, NoiseType.Value) + 20f;
+            separationDistance  = (float)TerrainGenerator.GetNoise1D(new Vector3(Cosmos.CurrentTime,0,0), NoiseConfig.boidDistance, NoiseType.Value) + 5f;
 
             for (int i = 0; i < boids.Count; i++)
             {

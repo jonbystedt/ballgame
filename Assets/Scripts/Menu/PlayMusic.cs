@@ -16,6 +16,8 @@ public class PlayMusic : MonoBehaviour {
 
 	public bool playing = false;
 
+	float fadeTime = 4f;
+
 	void Awake () 
 	{
 		//Get a component reference to the AudioSource attached to the UI game object
@@ -59,15 +61,15 @@ public class PlayMusic : MonoBehaviour {
 		musicSource.clip = request.GetAudioClip(false, true);
 		musicSource.Play();
 
-		Invoke("FadeOut", musicSource.clip.length - 2f);
+		Invoke("FadeOut", musicSource.clip.length - fadeTime);
 
 		// Make sure songs don't play too close to each other
-		Invoke("AllowSong", musicSource.clip.length * 2f);
+		Invoke("AllowSong", musicSource.clip.length);
 	}
 
 	public void FadeOut()
 	{
-		FadeDown(2f);
+		FadeDown(fadeTime);
 	}
 
 	public void StopPlaying()

@@ -5,6 +5,7 @@ public class CameraOperator : MonoBehaviour
 	// time taken to move when avoiding clipping (low value = fast)
     public float clipMoveTime = 0.05f;  
 	public float slowClipMoveTime = 0.1f;
+	public float clipReturnTime = 0.4f;
 
 	// time taken to move back towards desired position         
     public float returnTime = 0.4f; 
@@ -26,10 +27,12 @@ public class CameraOperator : MonoBehaviour
 			if (value)
 			{
 				freeLookCamera.m_MoveSpeed = 100000f;
+				_player.GetComponent<Roller>().SetFirstPerson(true);
 			}
 			else
 			{
 				freeLookCamera.m_MoveSpeed = 10000f;
+				_player.GetComponent<Roller>().SetFirstPerson(false);
 			}
 			firstPerson = value; 
 		}
@@ -135,7 +138,7 @@ public class CameraOperator : MonoBehaviour
 
 			// Smooth movement towards the new target
 			moveTime = currentDistance < targetDist 
-				? (cameraBlock == Block.Air ? returnTime : clipMoveTime)
+				? (cameraBlock == Block.Air ? clipReturnTime : clipMoveTime)
 				: (cameraBlock == Block.Air ? slowClipMoveTime : clipMoveTime);
 			targetDist = Mathf.Lerp(lastTargetDist, targetDist, moveTime);
 		}

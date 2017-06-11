@@ -133,8 +133,8 @@ public class Game : MonoBehaviour
 
 		player.GetComponent<Rigidbody>().isKinematic = true;
 		PlayerActive = false;
-		boids.StopBoids();
-		boids.StartBoids();
+		// boids.StopBoids();
+		// boids.StartBoids();
 
 		menuGlow.color = Tile.Brighten(RenderSettings.fogColor, 0.5f);
 		RenderSettings.fogColor = Tile.Brighten(Color.Lerp(RenderSettings.fogColor, Color.black, 0.9f), 0.05f);
@@ -255,11 +255,20 @@ public class Game : MonoBehaviour
 			Config.StartTime = "6:00";
 		}
 		SetTime(Config.StartTime);
-		boids.StartBoids();
+		//boids.StartBoids();
 
 		if (ShowStats)
 		{
 			UpdatePosition(World.GetChunkPosition(player.transform.position));
+		}
+		
+		if (Config.MusicVolume > 0)
+		{
+			startGame.playMusic.FadeUp(1f);
+		}
+		else
+		{
+			startGame.playMusic.FadeDown(1f);
 		}
 
 		StartCoroutine(Wait(1f, () => {
@@ -272,8 +281,11 @@ public class Game : MonoBehaviour
 			player.GetComponent<Roller>().asleep = true;
 			PlayerActive = true;
 			CameraOp.FirstPerson = true;
-			PlaySong();
 
+			if (Config.MusicVolume > 0) 
+			{
+				PlaySong();
+			}
 		}));
 	}
 
@@ -321,7 +333,6 @@ public class Game : MonoBehaviour
 		cosmos.CreateSky();
 
 		World.Seed = seed;
-		World.Key = scales[Mathf.FloorToInt(Mathf.Lerp(0, 11.999f, GameUtils.Seed))];
 
 		Serialization.Decompress();
 
@@ -366,6 +377,8 @@ public class Game : MonoBehaviour
 
 		RenderSettings.ambientIntensity = 0f;
 		sun.intensity = 0f;
+
+		boids.StartBoids();
 
 		firstRun = false;
 
