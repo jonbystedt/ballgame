@@ -104,6 +104,7 @@ namespace ProceduralToolkit.Examples
 
             mesh = draft.ToMesh();
             mesh.MarkDynamic();
+
             return mesh;
         }
 

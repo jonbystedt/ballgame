@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System;
+using System.Collections.Generic;
 
 public enum BallType
 {
@@ -58,6 +58,11 @@ public class BouncyBall : SpawnedObject
 		closest = null;
 		pickupCount = 0;
 		ballCount = 0;
+
+		if (Random.value - corruption > 0)
+		{
+			actionEnabled = false;
+		}
 	}
 
 	protected override void SlowUpdate() 
@@ -108,8 +113,10 @@ public class BouncyBall : SpawnedObject
 			if (transform.localScale.x < minSize)
 			{
 				actionEnabled = false;
-				Explode();
-				StartCoroutine(Expand());
+				StartCoroutine(Wait(1f, () => {
+					isActive = false;
+					ReturnToPool();
+				}));
 				return;
 			}
 		}
@@ -151,7 +158,7 @@ public class BouncyBall : SpawnedObject
 
 		if (transform.localScale.x > maxSize && explodeAtMax && !exploding)
 		{
-			if (velocity < 10f)
+			if (velocity < 15f)
 			{
 				Explode();
 				StartCoroutine(Expand());
@@ -195,21 +202,22 @@ public class BouncyBall : SpawnedObject
 
 		if (SpawnCount > 0)
 		{
-			StartCoroutine(Spawn(() => {
-				isActive = false;
-				ReturnToPool();
+			StartCoroutine(Spawn());
+			StartCoroutine(Wait(0.5f, () => {
+				exploding = false;
 			}));
 		}
 		else
 		{
-			StartCoroutine(Wait(1f, () => {
+			StartCoroutine(Wait(0.5f, () => {
+				exploding = false;
 				isActive = false;
 				ReturnToPool();
 			}));
 		}
 	}
 
-	IEnumerator Spawn(Action callback)
+	IEnumerator Spawn()
 	{
 		int count = SpawnCount;
 
@@ -232,7 +240,8 @@ public class BouncyBall : SpawnedObject
 			yield return null;
 		}
 
-		callback();
+		isActive = false;
+		ReturnToPool();
 	}
 
 	void Split(float velocity)
@@ -241,7 +250,8 @@ public class BouncyBall : SpawnedObject
 		if (column != null)
 		{
 			Spawns spawn;
-			Color spawnColor = color;
+			
+			//Color spawnColor = hsvColor.ToColor();
 			Vector3 scale = transform.localScale * 0.5f;
 			float newSpawnValue = SpawnValue * 0.25f;
 
@@ -256,36 +266,44 @@ public class BouncyBall : SpawnedObject
 			else if (type == BallType.Moon)
 			{
 				spawn = Spawns.Moon;
-				spawnColor = Color.white;
 			}
 			else if (type == BallType.DarkStar)
 			{
 				spawn = Spawns.DarkStar;
-				spawnColor = Color.black;	
 			}
 			else 
 			{
 				spawn = Spawns.BouncyBall;
 				newSpawnValue = 1f;
+				scale = Vector3.one * 0.55f;
 			}
 
-			int splits = 2;
-			if (velocity > 15f)
+			int splits = 1;
+			if (velocity > 20f)
+			{
+				splits = 2;
+			}
+			else if (velocity > 30f)
 			{
 				splits = 3;
 			}
-			if (velocity > 20f)
+			else if (velocity > 50f)
+			{
+				splits = 4;
+			}
+			else if (velocity > 80f)
 			{
 				splits = 5;
 			}
 
-			if (type == BallType.Basic)
-			{
-				splits *= 2;
-			}
+			List<ProceduralToolkit.ColorHSV> newColors = hsvColor.GetAnalogousPalette(splits);
+			int count = 0;
 
-			StartCoroutine(Repeat(splits, 0.1f, () => {
-				PooledObject obj = World.Spawn.Object(spawn, color, mass, transform.position);
+			StartCoroutine(Repeat(splits, 0.1f, () => 
+			{
+				PooledObject obj = World.Spawn.Object(spawn, newColors[count].ToColor(), mass, transform.position);
+				count++;
+
 				if (obj != null)
 				{
 					obj.transform.localScale = scale;
@@ -323,7 +341,7 @@ public class BouncyBall : SpawnedObject
 	{
 		for (;;)
 		{
-			if (!isActive)
+			if (!isActive || !exploding)
 			{
 				break;
 			}
@@ -333,8 +351,15 @@ public class BouncyBall : SpawnedObject
 				yield return null;
 			}
 
-			transform.localScale *= 1.01f;
-
+			if (transform.localScale.x < maxSize * 2f)
+			{
+				transform.localScale *= 1.02f;
+			}
+			else
+			{
+				break;
+			}
+			
 			yield return null;
 		}
 	}
@@ -343,7 +368,7 @@ public class BouncyBall : SpawnedObject
 	{
 		for (;;)
 		{
-			if (!isActive)
+			if (!isActive || !exploding)
 			{
 				break;
 			}
@@ -353,7 +378,14 @@ public class BouncyBall : SpawnedObject
 				yield return null;
 			}
 
-			transform.localScale /= 1.01f;
+			if (transform.localScale.x > minSize * 4f)
+			{
+				transform.localScale /= 1.02f;
+			}
+			else
+			{
+				break;
+			}
 
 			yield return null;
 		}

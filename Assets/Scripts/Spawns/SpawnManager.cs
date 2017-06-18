@@ -20,7 +20,9 @@ public enum Note
 {
 	C1, Cs1, D1, Eb1, E1, F1, Fs1, G1, Gs1, A1, Bb1, B1,
 	C2, Cs2, D2, Eb2, E2, F2, Fs2, G2, Gs2, A2, Bb2, B2,
-	C3, Cs3, D3, Eb3, E3, F3, Fs3, G3, Gs3, A3, Bb3, B3
+	C3, Cs3, D3, Eb3, E3, F3, Fs3, G3, Gs3, A3, Bb3, B3,
+	C4, Cs4, D4, Eb4, E4, F4, Fs4, G4, Gs4, A4, Bb4, B4,
+	C5, Cs5, D5, Eb5, E5, F5, Fs5, G5, Gs5, A5, Bb5, B5
 }
 
 public struct SpawnMap
@@ -67,8 +69,10 @@ public class SpawnManager : MonoBehaviour {
 	public AudioClip[] largeBallOctave;
 	public AudioClip[] selfBallOctave;
 	public AudioClip[] scoreOctave;
+	public AudioClip[] score2Octave;
 	public AudioClip[] moonOctave;
 	public AudioClip[] bigPickupOctave;
+	public AudioClip[] darkPickupOctave;
 	public AudioClip[] largeDarkOctave;
 	public AudioClip[] darkStarOctave;
 	public AudioClip[] selfHits;
@@ -204,10 +208,13 @@ public class SpawnManager : MonoBehaviour {
 			pickup.hsvColor = new ColorHSV(color);
 
 			int note = Mathf.FloorToInt(Mathf.Lerp(0f, 6.999f, pickup.hsvColor.h));
+			int scoreNote = Mathf.FloorToInt(Mathf.Lerp(0f, 23.999f, pickup.hsvColor.h));
 			var playSound = pickup.GetComponent<PlayHitSound>();
 			playSound.worldHitSound = pickupOctave[(int)(scales[key][note])];
 			playSound.objectHitSound = pickupOctave[(int)(scales[key][note])];
-			playSound.scoreSound = scoreOctave[(int)(scales[key][note])];
+
+			int scale = Mathf.FloorToInt(Mathf.Lerp(0f, 4.999f, pickup.hsvColor.h));
+			playSound.scoreSound = score2Octave[key * 4 + scale];
 		}
 		if (pickup.type == PickupType.Silver)
 		{
@@ -223,7 +230,9 @@ public class SpawnManager : MonoBehaviour {
 			var playSound = pickup.GetComponent<PlayHitSound>();
 			playSound.worldHitSound = pickupOctave[(int)scales[key][note]];
 			playSound.objectHitSound = bigPickupOctave[(int)scales[key][note]];
-			playSound.scoreSound = scoreOctave[(int)scales[key][note]];
+
+			int scale = Mathf.FloorToInt(Mathf.Lerp(0f, 5.999f, pickup.hsvColor.h));
+			playSound.scoreSound = scoreOctave[key * 5 + scale];
 		}
 		if (pickup.type == PickupType.Black)
 		{
@@ -238,8 +247,10 @@ public class SpawnManager : MonoBehaviour {
 			int note = Mathf.FloorToInt(Mathf.Lerp(0f, 6.999f, pickup.hsvColor.h));
 			var playSound = pickup.GetComponent<PlayHitSound>();
 			playSound.worldHitSound = pickupOctave[(int)scales[key][note]];
-			playSound.objectHitSound = bigPickupOctave[(int)scales[key][note]];
-			playSound.scoreSound = scoreOctave[(int)scales[key][note]];
+			playSound.objectHitSound = darkPickupOctave[(int)scales[key][note]];
+
+			int scale = Mathf.FloorToInt(Mathf.Lerp(0f, 5.999f, pickup.hsvColor.h));
+			playSound.scoreSound = scoreOctave[key * 5 + scale];
 		}
 
 		return (SpawnedObject)pickup;
@@ -331,7 +342,7 @@ public class SpawnManager : MonoBehaviour {
 
 			int note = Mathf.FloorToInt(Mathf.Lerp(0f, 6.999f, ball.hsvColor.h));
 			var playSound = ball.GetComponent<PlayHitSound>();
-			playSound.worldHitSound = selfHits[(int)scales[key][note + 8]];
+			playSound.worldHitSound = selfHits[(int)scales[key][note + 7]];
 			playSound.objectHitSound = largeBallOctave[(int)scales[key][note]];
 		}
 		if (ball.type == BallType.Moon)
@@ -353,7 +364,7 @@ public class SpawnManager : MonoBehaviour {
 
 			int note = Mathf.FloorToInt(Mathf.Lerp(0f, 6.999f, ball.hsvColor.h));
 			var playSound = ball.GetComponent<PlayHitSound>();
-			playSound.worldHitSound = selfHits[(int)scales[key][note + 16]];
+			playSound.worldHitSound = selfHits[(int)scales[key][note + 14]]; 
 			playSound.objectHitSound = moonOctave[(int)scales[key][note]];
 
 			ball.emission = Color.white;
@@ -509,7 +520,7 @@ public class SpawnManager : MonoBehaviour {
 							weight,
 							new WorldPosition(pos.x + x, sampleSet.spawnMap.height[x, z], pos.z + z), 
 							0.5f, 
-							sampleSet.spawnMap.frequency[x, z] * 3,
+							sampleSet.spawnMap.frequency[x, z] * 7,
 							1f,
 							spawns,
 							0f
@@ -519,7 +530,7 @@ public class SpawnManager : MonoBehaviour {
 					}
 
 					// Bouncy Balls
-					upper = Mathf.FloorToInt(range * 0.2f);
+					upper = Mathf.FloorToInt(range * 0.16f);
 					lower = Mathf.FloorToInt(range * 0.1f);
 					if (spawnValue >= exclusion + lower && spawnValue < exclusion + upper)
 					{
@@ -531,7 +542,7 @@ public class SpawnManager : MonoBehaviour {
 							weight,
 							new WorldPosition(pos.x + x, sampleSet.spawnMap.height[x, z], pos.z + z), 
 							1.5f,
-							sampleSet.spawnMap.frequency[x, z] * 5,
+							sampleSet.spawnMap.frequency[x, z] * 3,
 							1f,
 							spawns,
 							0f
@@ -541,7 +552,7 @@ public class SpawnManager : MonoBehaviour {
 					}
 
 					// Exploding Balls
-					upper = Mathf.FloorToInt(range * 0.31f);
+					upper = Mathf.FloorToInt(range * 0.3035f);
 					lower = Mathf.FloorToInt(range * 0.3f);
 					if (spawnValue >= exclusion + lower && spawnValue < exclusion + upper)
 					{
@@ -564,7 +575,7 @@ public class SpawnManager : MonoBehaviour {
 					}
 
 					// Imploding Balls
-					upper = Mathf.FloorToInt(range * 0.41f);
+					upper = Mathf.FloorToInt(range * 0.4035f);
 					lower = Mathf.FloorToInt(range * 0.4f);
 					if (spawnValue >= exclusion + lower && spawnValue < exclusion + upper)
 					{
@@ -587,7 +598,7 @@ public class SpawnManager : MonoBehaviour {
 					}
 
 					// Moons
-					upper = Mathf.FloorToInt(range * 0.51f);
+					upper = Mathf.FloorToInt(range * 0.5025f);
 					lower = Mathf.FloorToInt(range * 0.5f);
 					if (spawnValue >= exclusion + lower && spawnValue < exclusion + upper)
 					{
@@ -604,7 +615,7 @@ public class SpawnManager : MonoBehaviour {
 
 						continue;
 					}
-					upper = Mathf.FloorToInt(range * 0.62f);
+					upper = Mathf.FloorToInt(range * 0.6025f);
 					lower = Mathf.FloorToInt(range * 0.6f);
 					if (spawnValue >= exclusion + lower && spawnValue < exclusion + upper)
 					{
@@ -746,7 +757,9 @@ public class SpawnManager : MonoBehaviour {
 		{
 			Note.C1, Note.D1, Note.E1, Note.Fs1, Note.G1, Note.A1, Note.B1,
 			Note.C2, Note.D2, Note.E2, Note.Fs2, Note.G2, Note.A2, Note.B2,
-			Note.C3, Note.D3, Note.E3, Note.Fs3, Note.G3, Note.A3, Note.B3
+			Note.C3, Note.D3, Note.E3, Note.Fs3, Note.G3, Note.A3, Note.B3,
+			Note.C4, Note.D4, Note.E4, Note.Fs4, Note.G4, Note.A4, Note.B4,
+			Note.C5, Note.D5, Note.E5, Note.Fs5, Note.G5, Note.A5, Note.B5
 		});
 
 		// D
@@ -754,7 +767,9 @@ public class SpawnManager : MonoBehaviour {
 		{
 			Note.Cs1, Note.D1, Note.E1, Note.Fs1, Note.G1, Note.A1, Note.B1,
 			Note.Cs2, Note.D2, Note.E2, Note.Fs2, Note.G2, Note.A2, Note.B2,
-			Note.Cs3, Note.D3, Note.E3, Note.Fs3, Note.G3, Note.A3, Note.B3		
+			Note.Cs3, Note.D3, Note.E3, Note.Fs3, Note.G3, Note.A3, Note.B3,
+			Note.Cs4, Note.D4, Note.E4, Note.Fs4, Note.G4, Note.A4, Note.B4,
+			Note.Cs5, Note.D5, Note.E5, Note.Fs5, Note.G5, Note.A5, Note.B5				
 		});
 			
 		// A
@@ -762,7 +777,9 @@ public class SpawnManager : MonoBehaviour {
 		{
 			Note.Cs1, Note.D1, Note.E1, Note.Fs1, Note.Gs1, Note.A1, Note.B1,
 			Note.Cs2, Note.D2, Note.E2, Note.Fs2, Note.Gs2, Note.A2, Note.B2,
-			Note.Cs3, Note.D3, Note.E3, Note.Fs3, Note.Gs3, Note.A3, Note.B3
+			Note.Cs3, Note.D3, Note.E3, Note.Fs3, Note.Gs3, Note.A3, Note.B3,
+			Note.Cs4, Note.D4, Note.E4, Note.Fs4, Note.Gs4, Note.A4, Note.B4,
+			Note.Cs5, Note.D5, Note.E5, Note.Fs5, Note.Gs5, Note.A5, Note.B5
 		});
 
 		// E
@@ -770,7 +787,9 @@ public class SpawnManager : MonoBehaviour {
 		{
 			Note.Cs1, Note.Eb1, Note.E1, Note.Fs1, Note.Gs1, Note.A1, Note.B1,
 			Note.Cs2, Note.Eb2, Note.E2, Note.Fs2, Note.Gs2, Note.A2, Note.B2,
-			Note.Cs3, Note.Eb3, Note.E3, Note.Fs3, Note.Gs3, Note.A3, Note.B3
+			Note.Cs3, Note.Eb3, Note.E3, Note.Fs3, Note.Gs3, Note.A3, Note.B3,
+			Note.Cs4, Note.Eb4, Note.E4, Note.Fs4, Note.Gs4, Note.A4, Note.B4,
+			Note.Cs5, Note.Eb5, Note.E5, Note.Fs5, Note.Gs5, Note.A5, Note.B5
 		});
 
 		// B
@@ -778,7 +797,9 @@ public class SpawnManager : MonoBehaviour {
 		{
 			Note.Cs1, Note.Eb1, Note.E1, Note.Fs1, Note.Gs1, Note.Bb1, Note.B1,
 			Note.Cs2, Note.Eb2, Note.E2, Note.Fs2, Note.Gs2, Note.Bb2, Note.B2,
-			Note.Cs3, Note.Eb3, Note.E3, Note.Fs3, Note.Gs3, Note.Bb3, Note.B3
+			Note.Cs3, Note.Eb3, Note.E3, Note.Fs3, Note.Gs3, Note.Bb3, Note.B3,
+			Note.Cs4, Note.Eb4, Note.E4, Note.Fs4, Note.Gs4, Note.Bb4, Note.B4,
+			Note.Cs5, Note.Eb5, Note.E5, Note.Fs5, Note.Gs5, Note.Bb5, Note.B5
 		});
 
 		// F#
@@ -786,7 +807,9 @@ public class SpawnManager : MonoBehaviour {
 		{
 			Note.Cs1, Note.Eb1, Note.F1, Note.Fs1, Note.Gs1, Note.Bb1, Note.B1,
 			Note.Cs2, Note.Eb2, Note.F2, Note.Fs2, Note.Gs2, Note.Bb2, Note.B2,
-			Note.Cs3, Note.Eb3, Note.F3, Note.Fs3, Note.Gs3, Note.Bb3, Note.B3
+			Note.Cs3, Note.Eb3, Note.F3, Note.Fs3, Note.Gs3, Note.Bb3, Note.B3,
+			Note.Cs4, Note.Eb4, Note.F4, Note.Fs4, Note.Gs4, Note.Bb4, Note.B4,
+			Note.Cs5, Note.Eb5, Note.F5, Note.Fs5, Note.Gs5, Note.Bb5, Note.B5
 		});
 			
 		// C#
@@ -795,6 +818,8 @@ public class SpawnManager : MonoBehaviour {
 			Note.C1, Note.Cs1, Note.Eb1, Note.F1, Note.Fs1, Note.Gs1, Note.Bb1,
 			Note.C2, Note.Cs2, Note.Eb2, Note.F2, Note.Fs2, Note.Gs2, Note.Bb2,
 			Note.C3, Note.Cs3, Note.Eb3, Note.F3, Note.Fs3, Note.Gs3, Note.Bb3,
+			Note.C4, Note.Cs4, Note.Eb4, Note.F4, Note.Fs4, Note.Gs4, Note.Bb4,
+			Note.C5, Note.Cs5, Note.Eb5, Note.F5, Note.Fs5, Note.Gs5, Note.Bb5
 		});
 
 		// G#
@@ -802,7 +827,9 @@ public class SpawnManager : MonoBehaviour {
 		{
 			Note.C1, Note.Cs1, Note.Eb1, Note.F1, Note.G1, Note.Gs1, Note.Bb1,
 			Note.C2, Note.Cs2, Note.Eb2, Note.F2, Note.G2, Note.Gs2, Note.Bb2,
-			Note.C3, Note.Cs3, Note.Eb3, Note.F3, Note.G3, Note.Gs3, Note.Bb3
+			Note.C3, Note.Cs3, Note.Eb3, Note.F3, Note.G3, Note.Gs3, Note.Bb3,
+			Note.C4, Note.Cs4, Note.Eb4, Note.F4, Note.G4, Note.Gs4, Note.Bb4,
+			Note.C5, Note.Cs5, Note.Eb5, Note.F5, Note.G5, Note.Gs5, Note.Bb5
 		});
 
 		// Eb
@@ -810,7 +837,9 @@ public class SpawnManager : MonoBehaviour {
 		{
 			Note.C1, Note.D1, Note.Eb1, Note.F1, Note.G1, Note.Gs1, Note.Bb1,
 			Note.C2, Note.D2, Note.Eb2, Note.F2, Note.G2, Note.Gs2, Note.Bb2,
-			Note.C3, Note.D3, Note.Eb3, Note.F3, Note.G3, Note.Gs3, Note.Bb3
+			Note.C3, Note.D3, Note.Eb3, Note.F3, Note.G3, Note.Gs3, Note.Bb3,
+			Note.C4, Note.D4, Note.Eb4, Note.F4, Note.G4, Note.Gs4, Note.Bb4,
+			Note.C5, Note.D5, Note.Eb5, Note.F5, Note.G5, Note.Gs5, Note.Bb5
 		});
 
 		// Bb
@@ -818,7 +847,9 @@ public class SpawnManager : MonoBehaviour {
 		{
 			Note.C1, Note.D1, Note.Eb1, Note.F1, Note.G1, Note.A1, Note.Bb1,
 			Note.C2, Note.D2, Note.Eb2, Note.F2, Note.G2, Note.A2, Note.Bb2,
-			Note.C3, Note.D3, Note.Eb3, Note.F3, Note.G3, Note.A3, Note.Bb3
+			Note.C3, Note.D3, Note.Eb3, Note.F3, Note.G3, Note.A3, Note.Bb3,
+			Note.C4, Note.D4, Note.Eb4, Note.F4, Note.G4, Note.A4, Note.Bb4,
+			Note.C5, Note.D5, Note.Eb5, Note.F5, Note.G5, Note.A5, Note.Bb5
 		});
 
 		// F
@@ -826,7 +857,9 @@ public class SpawnManager : MonoBehaviour {
 		{
 			Note.C1, Note.D1, Note.E1, Note.F1, Note.G1, Note.A1, Note.Bb1,
 			Note.C2, Note.D2, Note.E2, Note.F2, Note.G2, Note.A2, Note.Bb2,
-			Note.C3, Note.D3, Note.E3, Note.F3, Note.G3, Note.A3, Note.Bb3
+			Note.C3, Note.D3, Note.E3, Note.F3, Note.G3, Note.A3, Note.Bb3,
+			Note.C4, Note.D4, Note.E4, Note.F4, Note.G4, Note.A4, Note.Bb4,
+			Note.C5, Note.D5, Note.E5, Note.F5, Note.G5, Note.A5, Note.Bb5
 		});
 
 		// C
@@ -834,7 +867,9 @@ public class SpawnManager : MonoBehaviour {
 		{
 			Note.C1, Note.D1, Note.E1, Note.F1, Note.G1, Note.A1, Note.B1,
 			Note.C2, Note.D2, Note.E2, Note.F2, Note.G2, Note.A2, Note.B2,
-			Note.C3, Note.D3, Note.E3, Note.F3, Note.G3, Note.A3, Note.B3
+			Note.C3, Note.D3, Note.E3, Note.F3, Note.G3, Note.A3, Note.B3,
+			Note.C4, Note.D4, Note.E4, Note.F4, Note.G4, Note.A4, Note.B4,
+			Note.C5, Note.D5, Note.E5, Note.F5, Note.G5, Note.A5, Note.B5
 		});
 	}
 }

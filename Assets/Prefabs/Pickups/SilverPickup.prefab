@@ -3658,9 +3658,9 @@ MonoBehaviour:
   minImpactVelocity: 0.1
   maxImpactVelocity: 1
   impactPow: 16
-  maxWorldVol: 10
-  maxObjectVol: 60
-  maxScoreVol: 500
+  maxWorldVol: 40
+  maxObjectVol: 500
+  maxScoreVol: 1000
   worldHitSound: {fileID: 0}
   objectHitSound: {fileID: 0}
   scoreSound: {fileID: 0}

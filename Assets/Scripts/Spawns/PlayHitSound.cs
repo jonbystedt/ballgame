@@ -27,7 +27,6 @@ public class PlayHitSound : MonoBehaviour
 	[HideInInspector]
 	public AudioClip scoreSound;
 	
-	public static Dictionary<string,float> clipTimers = new Dictionary<string,float>();
 	AudioSource worldHitSource;
 	AudioSource objectHitSource;
 
@@ -50,11 +49,6 @@ public class PlayHitSound : MonoBehaviour
 	private float _maxSqrDistance = 0.0f;
 	private float _lastMinImpactVelocity = 0.0f;
 
-	private float clipTiming = 0.1f;
-
-	private string hitKey;
-	private string selfKey;
-
 	public float sqrMaxImpactVelocity
 	{
 		get
@@ -71,7 +65,6 @@ public class PlayHitSound : MonoBehaviour
 
 	private float _sqrMaxImpactVelocity = 0.0f;
 	private float _lastMaxImpactVelocity = 0.0f;
-
 
 	void Start()
 	{
@@ -121,22 +114,9 @@ public class PlayHitSound : MonoBehaviour
 
 	void WorldHitSound(float sqrImpactVelocity)
 	{
-		if (String.IsNullOrEmpty(hitKey))
-		{
-			hitKey = worldHitSound.name + "_" + name;
-		}
-		if (!clipTimers.ContainsKey(hitKey))
-		{
-			clipTimers.Add(hitKey, Time.time + clipTiming);
-		}
-
-		if (clipTimers[hitKey] > Time.time || worldHitSource.isPlaying)
+		if (worldHitSource.isPlaying)
 		{
 			return;
-		}
-		else
-		{
-			clipTimers[hitKey] = Time.time + clipTiming;
 		}
 
 		float impact = Mathf.Pow((sqrImpactVelocity - sqrMinImpactVelocity)/sqrMaxImpactVelocity, impactPow);
@@ -148,21 +128,9 @@ public class PlayHitSound : MonoBehaviour
 
 	void ObjectHitSound(float sqrImpactVelocity)
 	{
-		if (String.IsNullOrEmpty(selfKey))
-		{
-			selfKey = objectHitSound.name + "_self_" + name;
-		}
-		if (!clipTimers.ContainsKey(selfKey))
-		{
-			clipTimers.Add(selfKey, Time.time + clipTiming);
-		}
-		else if (clipTimers[selfKey] > Time.time || objectHitSource.isPlaying)
+		if (objectHitSource.isPlaying)
 		{
 			return;
-		}
-		else
-		{
-			clipTimers[selfKey] = Time.time + clipTiming;
 		}
 
 		float impact = Mathf.Pow((sqrImpactVelocity - sqrMinImpactVelocity)/sqrMaxImpactVelocity, impactPow);

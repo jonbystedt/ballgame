@@ -852,8 +852,8 @@ public class TerrainGenerator : MonoBehaviour
 		cloudBreakPoint = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.cloudBreak.low, Config.Noise.cloudBreak.high, GameUtils.Seed));
 		islandBreakPoint = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.islandBreak.low, Config.Noise.islandBreak.high, Mathf.Pow(GameUtils.Seed, 2)));
 
-		glassIncrease1 = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.glass1.low, Config.Noise.glass1.high, Mathf.Pow(GameUtils.Seed, 2)));
-		glassIncrease2 = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.glass2.low, Config.Noise.glass2.high, Mathf.Pow(GameUtils.Seed, 2)));
+		glassIncrease1 = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.glass1.low, Config.Noise.glass1.high, Mathf.Pow(GameUtils.Seed, 6)));
+		glassIncrease2 = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.glass2.low, Config.Noise.glass2.high, Mathf.Pow(GameUtils.Seed, 6)));
 
 		flipStripes = GameUtils.Seed > 0.98f ? true : false;
 
@@ -867,8 +867,8 @@ public class TerrainGenerator : MonoBehaviour
 			modPatterns[i] = GameUtils.Seed > 0.9f ? true : false;
 		}
 
-		glassy1 = GameUtils.Seed > 0.85f ? true : false;
-		glassy2 = GameUtils.Seed > 0.85f ? true : false;
+		glassy1 = GameUtils.Seed > 0.98f ? true : false;
+		glassy2 = GameUtils.Seed > 0.98f ? true : false;
 
 		freakyFriday = GameUtils.Seed > 0.98f ? true : false;
 

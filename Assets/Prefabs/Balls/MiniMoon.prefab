@@ -113,10 +113,10 @@ MonoBehaviour:
   _mass: 150
   _size: 7
   scoreModifier: 10
-  growthRate: 1.2
-  shrinkRate: 0.9
+  growthRate: 1.05
+  shrinkRate: 0.98
   massIncrease: 1.01
-  massDecrease: 1.05
+  massDecrease: 1.02
   maxSize: 14
   minSize: 2
   corruption: 0
@@ -298,7 +298,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 0.1
   MinDistance: 1
-  MaxDistance: 12
+  MaxDistance: 24
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
@@ -408,7 +408,7 @@ AudioSource:
   m_GameObject: {fileID: 176868}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 24301952, guid: 0ac7fb39e445048d89688f69c2a1839a,
+  OutputAudioMixerGroup: {fileID: 243913842462178366, guid: 0ac7fb39e445048d89688f69c2a1839a,
     type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
@@ -421,7 +421,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 0.1
   MinDistance: 1
-  MaxDistance: 12
+  MaxDistance: 24
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
@@ -537,8 +537,8 @@ MonoBehaviour:
   minImpactVelocity: 0.25
   maxImpactVelocity: 1
   impactPow: 10
-  maxWorldVol: 250
-  maxObjectVol: 500
+  maxWorldVol: 200
+  maxObjectVol: 1000
   maxScoreVol: 500
   worldHitSound: {fileID: 0}
   objectHitSound: {fileID: 0}
