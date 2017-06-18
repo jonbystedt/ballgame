@@ -32,7 +32,7 @@ AudioMixerController:
     - 432620d359caa5d4cae72b1a329352e0
     name: View
   m_CurrentViewIndex: 0
-  m_TargetSnapshot: {fileID: 24500003}
+  m_TargetSnapshot: {fileID: 24519918}
 --- !u!243 &24300001
 AudioMixerGroupController:
   m_ObjectHideFlags: 0
@@ -223,7 +223,7 @@ AudioMixerGroupController:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Weather
+  m_Name: Lightning
   m_AudioMixer: {fileID: 24100000}
   m_GroupID: 875551043583e4a46a0035ec31d34dc0
   m_Children: []

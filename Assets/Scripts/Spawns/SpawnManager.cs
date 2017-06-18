@@ -214,7 +214,7 @@ public class SpawnManager : MonoBehaviour {
 			playSound.objectHitSound = pickupOctave[(int)(scales[key][note])];
 
 			int scale = Mathf.FloorToInt(Mathf.Lerp(0f, 4.999f, pickup.hsvColor.h));
-			playSound.scoreSound = score2Octave[key * 4 + scale];
+			playSound.scoreSound = score2Octave[key * 3 + scale];
 		}
 		if (pickup.type == PickupType.Silver)
 		{

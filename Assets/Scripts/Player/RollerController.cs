@@ -34,6 +34,7 @@ public class RollerController : MonoBehaviour
 		_rigidbody = GetComponent<Rigidbody>();
 		_collider = GetComponent<Collider>();
 		cam = Camera.main.transform;
+		roller.camOp = camOp;
 
 		// Make sure we don't fall off
 		StartCoroutine(CheckOutOfBounds());

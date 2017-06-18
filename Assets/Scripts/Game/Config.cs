@@ -155,7 +155,7 @@ public class Config : MonoBehaviour
 					ShadowsEnabled = true;
 					Outlines = true;
 					ColoredOutlines = false;
-					World.ChunkShadows = false;
+					World.ChunkShadows = true;
 					if (QualitySettings.GetQualityLevel() != 2)
 					{
 						QualitySettings.SetQualityLevel(2);

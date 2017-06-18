@@ -23,6 +23,7 @@ public class Roller : MonoBehaviour
 	public AnimationCurve gravityCurve;
 	float hoverPower;
 	float gravityAssist;
+	[HideInInspector] public CameraOperator camOp;
 
 	bool boostReady = true;
 	[HideInInspector] public bool groundPound = false;
@@ -137,7 +138,18 @@ public class Roller : MonoBehaviour
 		// *** HANDLE HITTING THE GROUND ***
 		if (grounded)
 		{
-			HitGround();
+			if (camOp.FirstPerson) 
+			{
+				if (!boosting && jumping)
+				{
+					HitGround();
+				}
+			}
+			else
+			{
+				HitGround();
+			}
+			
 		}
 
 		// *** HANDLE BOOST ACTIVATION ***
@@ -187,12 +199,6 @@ public class Roller : MonoBehaviour
 
 		StopAllCoroutines();
 
-		if (hoverRoutine != null)
-		{
-			hoverPower = maxHoverPower;
-			StopCoroutine(hoverRoutine);
-		}
-
 		if (freeFalling)
 		{
 			freeFalling = false;
@@ -214,14 +220,10 @@ public class Roller : MonoBehaviour
 
 	Vector3 HandleBoost(Vector3 moveDirection)
 	{
-		if (!grounded)
+		if (grounded || !camOp.FirstPerson)
 		{
 			moveDirection *= boostPower;
 		}
-		else
-		{
-			moveDirection *= boostPower;
-		}	
 
 		return moveDirection;
 	}
@@ -259,10 +261,11 @@ public class Roller : MonoBehaviour
 			//logString += "   Jump Started";
 			jumpStarted = true;
 			jumpGrounded = false;
+
 			groundPoundEnabled = true;
 
 			// ...add force in upwards. boost jump
-			if (boosting)
+			if (boosting && !camOp.FirstPerson)
 			{
 				float multiplier = Mathf.Lerp(20f, 10f, Mathf.Clamp01((moveDirection.x + moveDirection.y) / 5f));
 				_rigidbody.AddForce(moveDirection * movePower * airResistance + Vector3.up * jumpPower*multiplier, ForceMode.Impulse);
@@ -301,6 +304,7 @@ public class Roller : MonoBehaviour
 
 	void ApplyGravity(Vector3 moveDirection)
 	{
+		//Game.Log((jumping ? "JUMPING" : " - ") + (jumpGrounded ? "JUMPGROUNDED" : " - ") + (groundPound ? "GP" : " - "));
 		// *** FALLING ***
 		// in the air and not jumping is falling, whether we have leaped or fallen off a cliff
 		if ((!jumping || jumpGrounded) && !groundPound)
@@ -317,11 +321,12 @@ public class Roller : MonoBehaviour
 			gravityAttenuation++;
 
 			// stop the hover power calculations from running
+			//Game.Log("Killing Hover");
 			StopAllCoroutines();
 			
 		}
 		// regular assist, always applied unless boosting. affected by calculation above when falling.
-		if (!boosting || (boosting && !jumpEnded))
+		if (camOp.FirstPerson || !boosting || (boosting && !jumpEnded))
 		{
 			_rigidbody.AddForce(moveDirection * movePower * airResistance + Vector3.down * gravityAssist, ForceMode.Impulse);
 		}
@@ -586,6 +591,8 @@ public class Roller : MonoBehaviour
 				break;
 			}
 
+			//Game.Log("Boost Hover");
+
 			yield return null;
 		}
 
@@ -599,6 +606,8 @@ public class Roller : MonoBehaviour
 				gravityAssist = maxGravityAssist;
 				break;
 			}
+
+			//Game.Log("Float Hover");
 
 			yield return null;
 		}

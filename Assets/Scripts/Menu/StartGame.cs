@@ -288,8 +288,8 @@ public class StartGame : MonoBehaviour {
 		Config.Noise.cloudBreak = new Range(512f, 768f);
 		Config.Noise.islandBreak = new Range(0f, 256f);
 
-		Config.Noise.glass1 = new Range(0f, 512f);
-		Config.Noise.glass2 = new Range(0f, 512f);
+		Config.Noise.glass1 = new Range(0f, 128f);
+		Config.Noise.glass2 = new Range(0f, 128f);
 
 		Config.Noise.modScale = new Range(2f, 128f);
 
