@@ -3549,7 +3549,7 @@ AudioSource:
   m_GameObject: {fileID: 119876}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 24301952, guid: 0ac7fb39e445048d89688f69c2a1839a,
+  OutputAudioMixerGroup: {fileID: 243913842462178366, guid: 0ac7fb39e445048d89688f69c2a1839a,
     type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
@@ -3678,9 +3678,9 @@ MonoBehaviour:
   minImpactVelocity: 0.1
   maxImpactVelocity: 1
   impactPow: 16
-  maxWorldVol: 40
+  maxWorldVol: 0
   maxObjectVol: 240
-  maxScoreVol: 1000
+  maxScoreVol: 750
   worldHitSound: {fileID: 0}
   objectHitSound: {fileID: 0}
   scoreSound: {fileID: 0}

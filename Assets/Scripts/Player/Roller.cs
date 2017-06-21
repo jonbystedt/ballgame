@@ -534,34 +534,34 @@ public class Roller : MonoBehaviour
 		}
 
 		// Decimate them :)
-		StartCoroutine(Wait(2f, () => {
-			for(int i = blockSpawns.Count - 1; i >= 0; i--)
-			{
-				PooledObject spawn = blockSpawns[i];
-				if (spawn != null)
-				{
-					if (UnityEngine.Random.value < 0.9f)
-					{
-						Pickup pickup = spawn.transform.GetComponent<Pickup>();
-						pickup.Fireworks();
-						blockSpawns.RemoveAt(i);
+		// StartCoroutine(Wait(2f, () => {
+		// 	for(int i = blockSpawns.Count - 1; i >= 0; i--)
+		// 	{
+		// 		PooledObject spawn = blockSpawns[i];
+		// 		if (spawn != null)
+		// 		{
+		// 			if (UnityEngine.Random.value < 0.9f)
+		// 			{
+		// 				Pickup pickup = spawn.transform.GetComponent<Pickup>();
+		// 				pickup.Fireworks();
+		// 				blockSpawns.RemoveAt(i);
 
-						StartCoroutine(Wait(0.3f, () => {
-							spawn.ReturnToPool();
-						}));
-					}
-					else
-					{
-						blockSpawns.RemoveAt(i);
-						Column column = World.GetColumn(bashBlock);	
-						if (column != null)
-						{
-							column.AddSpawn(spawn);
-						}
-					}
-				}
-			}
-		}));
+		// 				StartCoroutine(Wait(0.3f, () => {
+		// 					spawn.ReturnToPool();
+		// 				}));
+		// 			}
+		// 			else
+		// 			{
+		// 				blockSpawns.RemoveAt(i);
+		// 				Column column = World.GetColumn(bashBlock);	
+		// 				if (column != null)
+		// 				{
+		// 					column.AddSpawn(spawn);
+		// 				}
+		// 			}
+		// 		}
+		// 	}
+		// }));
 	}
 
 	IEnumerator Wait(float time, Action callback)

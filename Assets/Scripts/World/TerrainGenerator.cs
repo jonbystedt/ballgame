@@ -356,7 +356,7 @@ public class TerrainGenerator : MonoBehaviour
 						// If we are less than the corresponding 'hollow' value this is air
 						if (glassValue < NoiseConfig.pattern.scale * hollowGlassValue) 
 						{
-							chunk.SetBlock (localX, localY, localZ, Block.Air);
+							chunk.SetBlock(localX, localY, localZ, Block.Air);
 							if (!air)
 							{
 								sampleSet.spawnMap.height[localX, localZ] = y;
@@ -376,7 +376,15 @@ public class TerrainGenerator : MonoBehaviour
 								{
 									colorIndex = GetModIndex(colorIndex, glassValue, stripeValue, 16);
 								}
-								chunk.SetBlock (localX, localY, localZ, Blocks.Glass(colorIndex));
+								if (modScale % (Mathf.Abs(y) + 1) < colorIndex) 
+								{
+									chunk.SetBlock(localX, localY, localZ, Blocks.Glass(colorIndex));
+								}
+								else
+								{
+									chunk.SetBlock(localX, localY, localZ, Blocks.Rock(colorIndex));
+								}
+								
 								air = false;
 							} 
 							else 
@@ -435,8 +443,15 @@ public class TerrainGenerator : MonoBehaviour
 									{
 										colorIndex = GetModIndex(colorIndex, glassValue, stripeValue, 16);
 									}
+									if (modScale % (Mathf.Abs(y) + 1) < colorIndex) 
+									{
+										chunk.SetBlock(localX, localY, localZ, Blocks.Glass(colorIndex));
+									}
+									else
+									{
+										chunk.SetBlock(localX, localY, localZ, Blocks.Rock(colorIndex));
+									}
 									
-									chunk.SetBlock (localX, localY, localZ, Blocks.Glass(colorIndex));
 									air = false;
 								}
 								else
@@ -448,7 +463,7 @@ public class TerrainGenerator : MonoBehaviour
 										colorIndex = GetModIndex(colorIndex, glassValue, stripeValue, 32);
 									}
 									
-									chunk.SetBlock (localX, localY, localZ, Blocks.Glass(colorIndex));
+									chunk.SetBlock (localX, localY, localZ, Blocks.Rock(colorIndex));
 									air = false;
 								}
 
@@ -517,7 +532,14 @@ public class TerrainGenerator : MonoBehaviour
 						}
 						else
 						{
-							chunk.SetBlock(localX, localY, localZ, Blocks.Glass(modPatterns[1] ? modIndex : colorIndex));
+							if (modScale % (Mathf.Abs(y) + 1) < colorIndex) 
+							{
+								chunk.SetBlock(localX, localY, localZ, Blocks.Glass(modPatterns[1] ? modIndex : colorIndex));
+							}
+							else
+							{
+								chunk.SetBlock(localX, localY, localZ, Blocks.Rock(modPatterns[1] ? modIndex : colorIndex));
+							}
 						}
 
 						air = false;
@@ -578,7 +600,15 @@ public class TerrainGenerator : MonoBehaviour
 							}
 							else
 							{
-								chunk.SetBlock(localX, localY, localZ, Blocks.Glass((modPatterns[4] ? modIndex : colorIndex)));
+								if (modScale % (Mathf.Abs(y) + 1) < colorIndex) 
+								{
+									chunk.SetBlock(localX, localY, localZ, Blocks.Glass((modPatterns[4] ? modIndex : colorIndex)));
+								}
+								else
+								{
+									chunk.SetBlock(localX, localY, localZ, Blocks.Rock((modPatterns[4] ? modIndex : colorIndex)));
+								}
+								
 							}
 
 						}
@@ -587,7 +617,15 @@ public class TerrainGenerator : MonoBehaviour
 							// other stripes
 							if (stripeBreakPoint > stripeValue)
 							{
-								chunk.SetBlock(localX, localY, localZ, Blocks.Glass(colorIndex));
+								if (modScale % y < colorIndex) 
+								{
+									chunk.SetBlock(localX, localY, localZ, Blocks.Glass(colorIndex));
+								}
+								else
+								{
+									chunk.SetBlock(localX, localY, localZ, Blocks.Rock(colorIndex));
+								}
+								
 							}
 							else
 							{
@@ -623,8 +661,15 @@ public class TerrainGenerator : MonoBehaviour
 							{
 								colorIndex = Mathf.FloorToInt(Mathf.Lerp(0, 16, (stripeValue - stripeBreakPoint) / (float)(NoiseConfig.stripe.scale - stripeBreakPoint)));
 							}
-
-							chunk.SetBlock (localX, localY, localZ, Blocks.Glass(colorIndex));
+							if (modScale % (Mathf.Abs(y) + 1) < colorIndex) 
+							{
+								chunk.SetBlock (localX, localY, localZ, Blocks.Glass(colorIndex));
+							}
+							else
+							{
+								chunk.SetBlock (localX, localY, localZ, Blocks.Rock(colorIndex));
+							}
+							
 							air = false;
 						}
 						else

@@ -133,8 +133,8 @@ public class Game : MonoBehaviour
 
 		player.GetComponent<Rigidbody>().isKinematic = true;
 		PlayerActive = false;
-		// boids.StopBoids();
-		// boids.StartBoids();
+		boids.StopBoids();
+		boids.StartBoids();
 
 		menuGlow.color = Tile.Brighten(RenderSettings.fogColor, 0.5f);
 		RenderSettings.fogColor = Tile.Brighten(Color.Lerp(RenderSettings.fogColor, Color.black, 0.9f), 0.05f);
@@ -142,7 +142,7 @@ public class Game : MonoBehaviour
 		RenderSettings.fogDensity = 10f;
 		RenderSettings.ambientIntensity = 0f;
 		sun.intensity = 0f;
-		afterburner.SetActive(true);
+		afterburner.SetActive(false);
 
 		clockText.text = "";
 		positionText.text = "";
@@ -186,7 +186,6 @@ public class Game : MonoBehaviour
 		RenderSettings.skybox.SetColor("_Tint", RenderSettings.fogColor);
 
 		StartCoroutine(GetRandomWord());
-
 		// float resolution = 1E9f / Stopwatch.Frequency;
 		//Game.Log(String.Format("The minimum measurable time on this system is: {0} nanoseconds", resolution.ToString()));
 	}
@@ -226,7 +225,7 @@ public class Game : MonoBehaviour
 			}
 			else
 			{
-				UpdatePosition(World.GetChunkPosition(player.transform.position));
+				UpdatePosition(new WorldPosition(player.transform.position));
 			}
 		}
 
@@ -255,7 +254,6 @@ public class Game : MonoBehaviour
 			Config.StartTime = "6:00";
 		}
 		SetTime(Config.StartTime);
-		//boids.StartBoids();
 
 		if (ShowStats)
 		{

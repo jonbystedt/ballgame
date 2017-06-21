@@ -145,10 +145,12 @@ public class Pickup : SpawnedObject
 		explosion.Stop();
 		explosion.Clear();
 
+		float forcePow = impactForce * impactForce;
+
 		var ma = explosion.main;
 		if (type == PickupType.Silver || type == PickupType.Black)
 		{
-			ma.simulationSpeed = Mathf.Lerp(0.5f, 4f, Mathf.Pow(impactForce, 2));
+			ma.simulationSpeed = Mathf.Lerp(0.5f, 1f, forcePow);
 
 			var col = explosion.colorOverLifetime;
 			col.enabled = true;
@@ -157,33 +159,33 @@ public class Pickup : SpawnedObject
 			col.color = gradient;
 
 			ParticleSystem.EmitParams p = new ParticleSystem.EmitParams();
-			p.startLifetime = Mathf.Lerp(1f, 6f, impactForce);
+			p.startLifetime = Mathf.Lerp(1f, 2f, impactForce);
 			p.startColor = gradient.Evaluate(0f);
 
 			if (type == PickupType.Silver)
 			{
-				p.startSize = 0.35f;
-				explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(4f, 40f, impactForce * impactForce)));
+				p.startSize = 0.25f;
+				explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(4f, 40f, forcePow)));
 				World.Spawn.Objects(Spawns.Pickup, Tile.Inverse(color), transform.position, 4, Config.SpawnDelay, 0f);
 			}
 			else
 			{
-				p.startSize = 0.35f;
-				explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(4f, 40f, impactForce * impactForce)));
+				p.startSize = 0.25f;
+				explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(4f, 40f, forcePow)));
 				World.Spawn.Objects(Spawns.Pickup, Tile.Inverse(color), transform.position, 4, Config.SpawnDelay, 0f);
 			}
 
 		}
 		else
 		{
-			ma.simulationSpeed = Mathf.Lerp(0.5f, 3f, impactForce);
+			ma.simulationSpeed = Mathf.Lerp(0.5f, 1f, forcePow);
 
 			ParticleSystem.EmitParams p = new ParticleSystem.EmitParams();
-			p.startLifetime = Mathf.Lerp(1f, 5f, impactForce);
+			p.startLifetime = Mathf.Lerp(1f, 2f, forcePow);
 			p.startSize = 0.25f;
 			p.startColor = color;
 
-			explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(4f, 24f, impactForce * impactForce)));
+			explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(4f, 24f, forcePow)));
 		}
 	}
 

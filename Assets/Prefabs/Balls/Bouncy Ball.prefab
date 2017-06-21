@@ -299,7 +299,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 0
   MinDistance: 1
-  MaxDistance: 12
+  MaxDistance: 24
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
@@ -538,8 +538,8 @@ MonoBehaviour:
   minImpactVelocity: 0.25
   maxImpactVelocity: 1
   impactPow: 16
-  maxWorldVol: 400
-  maxObjectVol: 300
+  maxWorldVol: 350
+  maxObjectVol: 200
   maxScoreVol: 100
   worldHitSound: {fileID: 0}
   objectHitSound: {fileID: 0}

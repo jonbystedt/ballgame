@@ -446,7 +446,7 @@ public class Cosmos : MonoBehaviour {
 		gck[0].color = Color.Lerp(Tile.Colors[55], Color.black, 0.8f);
 		gck[0].time = 0.0f;
 		gck[1].color = Tile.Brighten(Color.Lerp(Tile.Colors[54], Color.black, 0.75f), 0.05f);
-		gck[1].time = 0.15f;
+		gck[1].time = 0.09f;
 		gck[2].color = Tile.Brighten(Color.Lerp(Tile.Colors[53], Color.black, 0.45f), 0.05f);
 		gck[2].time = 0.19f;
 		gck[3].color = Tile.Brighten(Color.Lerp(Tile.Colors[52], Color.black, 0.25f), 0.05f);
