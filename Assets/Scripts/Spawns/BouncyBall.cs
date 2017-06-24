@@ -296,6 +296,11 @@ public class BouncyBall : SpawnedObject
 				splits = 5;
 			}
 
+			if (type == BallType.Basic)
+			{
+				splits *= 10;
+			}
+
 			List<ProceduralToolkit.ColorHSV> newColors = hsvColor.GetAnalogousPalette(splits);
 			int count = 0;
 

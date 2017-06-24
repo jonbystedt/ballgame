@@ -308,7 +308,7 @@ public class TerrainGenerator : MonoBehaviour
 				}
 
 				// mountains if less than or equal to the height of a 2D noisemap, and not in the 'cave' negative space
-				if (y <= mountainHeight)
+				if (y <= mountainHeight && caveChance < caveValue)
 				{
 					// glass or rock? if the value of the 3D 'glass' noisemap is greater than the breakpoint this is potentially rock
                     if (patternBreakPoint < glassValue) 
@@ -476,7 +476,7 @@ public class TerrainGenerator : MonoBehaviour
 
 				// formations
 				else if (caveValue > cloudChance && caveValue < cloudChance + ((NoiseConfig.cave.scale - cloudChance) * hollowFormation) 
-					&& glassValue > cloudChance - ((NoiseConfig.pattern.scale - cloudChance) * hollowFormation))
+					&& glassValue > cloudChance - ((NoiseConfig.pattern.scale - cloudChance)))
 				{
 					// two colors
 					if (stripeValue > stripeBreakPoint - glassIncrease1) 
@@ -897,8 +897,8 @@ public class TerrainGenerator : MonoBehaviour
 		cloudBreakPoint = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.cloudBreak.low, Config.Noise.cloudBreak.high, GameUtils.Seed));
 		islandBreakPoint = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.islandBreak.low, Config.Noise.islandBreak.high, Mathf.Pow(GameUtils.Seed, 2)));
 
-		glassIncrease1 = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.glass1.low, Config.Noise.glass1.high, Mathf.Pow(GameUtils.Seed, 6)));
-		glassIncrease2 = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.glass2.low, Config.Noise.glass2.high, Mathf.Pow(GameUtils.Seed, 6)));
+		glassIncrease1 = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.glass1.low, Config.Noise.glass1.high, Mathf.Pow(GameUtils.Seed, 10)));
+		glassIncrease2 = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.glass2.low, Config.Noise.glass2.high, Mathf.Pow(GameUtils.Seed, 10)));
 
 		flipStripes = GameUtils.Seed > 0.98f ? true : false;
 

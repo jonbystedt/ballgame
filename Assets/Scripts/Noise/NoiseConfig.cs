@@ -79,7 +79,7 @@ public static class NoiseConfig {
 				Seed
 				), 
 			32,
-			Mathf.Pow(Seed - 0.5f, 10 + Mathf.FloorToInt(Seed * 10) % 10)
+			Mathf.Pow(Seed - 0.5f, 10 + Mathf.FloorToInt(Seed * 10))
 			); 
 
 		mountain = new NoiseOptions(
@@ -104,7 +104,7 @@ public static class NoiseConfig {
 				Seed
 				), 
 			64 - Mathf.FloorToInt(Mathf.Lerp(0, 16, Mathf.Pow(Seed, 2))),
-			Mathf.Pow(Seed - 0.5f, 8 + Mathf.FloorToInt(Seed * 8) % 8)
+			Mathf.Pow(Seed - 0.5f, 8 + Mathf.FloorToInt(Seed * 8))
 			); 
 
 		cave = new NoiseOptions(
@@ -129,7 +129,7 @@ public static class NoiseConfig {
 				Seed
 				), 
 			1024,
-			Mathf.Pow(Seed - 0.5f, 12 + Mathf.FloorToInt(Seed * 10) % 10)
+			Mathf.Pow(Seed - 0.5f, 16 + Mathf.FloorToInt(Seed * 10))
 			);
 
 		pattern = new NoiseOptions(
@@ -154,7 +154,7 @@ public static class NoiseConfig {
 				Seed
 				), 
 			1024,
-			Mathf.Pow((Seed * 0.25f) - 0.125f, 12 + Mathf.FloorToInt(Seed * 8) % 8)
+			Mathf.Pow(Seed - 0.5f, 16 + Mathf.FloorToInt(Seed * 10))
 			);
 
 		stripe = new NoiseOptions(
@@ -179,7 +179,7 @@ public static class NoiseConfig {
 				Seed
 				),
 			1024,
-			Mathf.Pow(Seed - 0.5f, 6 + Mathf.FloorToInt(Seed * 8) % 8)
+			Mathf.Pow(Seed - 0.5f, Mathf.FloorToInt(Seed * 8))
 			);
 
 		s = Seed;
