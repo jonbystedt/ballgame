@@ -98,7 +98,6 @@ public class BouncyBall : SpawnedObject
 			{
 				actionEnabled = false;
 				Split(100f * corruption);
-				StartCoroutine(Expand());
 				return;
 			}
 
@@ -203,9 +202,6 @@ public class BouncyBall : SpawnedObject
 		if (SpawnCount > 0)
 		{
 			StartCoroutine(Spawn());
-			StartCoroutine(Wait(0.5f, () => {
-				exploding = false;
-			}));
 		}
 		else
 		{
@@ -220,6 +216,11 @@ public class BouncyBall : SpawnedObject
 	IEnumerator Spawn()
 	{
 		int count = SpawnCount;
+
+		if (type == BallType.Basic && count == 1)
+		{
+			count = 0;
+		}
 
 		while (count > 0)
 		{
@@ -240,6 +241,7 @@ public class BouncyBall : SpawnedObject
 			yield return null;
 		}
 
+		exploding = false;
 		isActive = false;
 		ReturnToPool();
 	}
@@ -254,6 +256,24 @@ public class BouncyBall : SpawnedObject
 			//Color spawnColor = hsvColor.ToColor();
 			Vector3 scale = transform.localScale * 0.5f;
 			float newSpawnValue = SpawnValue * 0.25f;
+
+			int splits = 1;
+			if (velocity > 20f)
+			{
+				splits = 2;
+			}
+			else if (velocity > 30f)
+			{
+				splits = 3;
+			}
+			else if (velocity > 50f)
+			{
+				splits = 4;
+			}
+			else if (velocity > 80f)
+			{
+				splits = 5;
+			}
 
 			if (type == BallType.Imploding)
 			{
@@ -275,29 +295,7 @@ public class BouncyBall : SpawnedObject
 			{
 				spawn = Spawns.BouncyBall;
 				newSpawnValue = 1f;
-				scale = Vector3.one * 0.55f;
-			}
-
-			int splits = 1;
-			if (velocity > 20f)
-			{
-				splits = 2;
-			}
-			else if (velocity > 30f)
-			{
-				splits = 3;
-			}
-			else if (velocity > 50f)
-			{
-				splits = 4;
-			}
-			else if (velocity > 80f)
-			{
-				splits = 5;
-			}
-
-			if (type == BallType.Basic)
-			{
+				scale = transform.localScale * 0.95f;
 				splits *= 10;
 			}
 
@@ -336,10 +334,13 @@ public class BouncyBall : SpawnedObject
 
 	public void Activate(float time)
 	{
-		exploding = true;
-		StartCoroutine(Wait(time, () => {
-			exploding = false;
-		}));
+		if (gameObject.activeSelf)
+		{
+			exploding = true;
+			StartCoroutine(Wait(time, () => {
+				exploding = false;
+			}));
+		}
 	}
 
 	IEnumerator Expand()

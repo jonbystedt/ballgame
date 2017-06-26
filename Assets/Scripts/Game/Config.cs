@@ -17,6 +17,7 @@ public class Config : MonoBehaviour
 	int maxItemSpawns;
 	float chunkDeleteTiming = 0.1f;
 	bool swapInputs = false;
+	int interpolationFactor = 1;
 
 	public Camera mainCamera;
 
@@ -79,8 +80,8 @@ public class Config : MonoBehaviour
 				// TODO: detect memory usage to trigger deletion
 				_instance.chunkDeleteRadius = value * 5;
 
-				// Despawn radius is 2/3 the world size. Spawn radius is always 1.
-				_instance.despawnRadius = value;//value - Mathf.CeilToInt(value / 3f);
+				// Despawn radius is 3/4 the world size. Spawn radius is always 1.
+				_instance.despawnRadius = value - Mathf.CeilToInt(value / 4f);
 				_instance.spawnRadius = 1;
 
 				// The maximum render distance is the world size * chunk size
@@ -112,12 +113,13 @@ public class Config : MonoBehaviour
 					MaxSmallObjectCount = 60;
 					BlockSpawnChance = 0.05f;
 					ContactShadows = false;
-					GlobalFogEnabled = false;
+					GlobalFogEnabled = true;
 					AtmosphericScattering = false;
 					ShadowsEnabled = false;
 					Outlines = true;
 					ColoredOutlines = false;
 					World.ChunkShadows = false;
+					InterpolationFactor = 4;
 					if (QualitySettings.GetQualityLevel() != 0)
 					{
 						QualitySettings.SetQualityLevel(0);
@@ -126,17 +128,18 @@ public class Config : MonoBehaviour
 
 				if (value == GraphicsMode.Medium)
 				{
-					MaxItemSpawns = 50;
-					MaxLargeObjectCount = 25;
-					MaxSmallObjectCount = 125;
+					MaxItemSpawns = 35;
+					MaxLargeObjectCount = 20;
+					MaxSmallObjectCount = 100;
 					BlockSpawnChance = 0.05f;
-					ContactShadows = false;
+					ContactShadows = true;
 					GlobalFogEnabled = true;
 					AtmosphericScattering = false;
 					ShadowsEnabled = false;
 					Outlines = true;
 					ColoredOutlines = false;
 					World.ChunkShadows = false;
+					InterpolationFactor = 2;
 					if (QualitySettings.GetQualityLevel() != 1)
 					{
 						QualitySettings.SetQualityLevel(1);
@@ -145,9 +148,9 @@ public class Config : MonoBehaviour
 
 				if (value == GraphicsMode.High)
 				{
-					MaxItemSpawns = 100;
-					MaxLargeObjectCount = 50;
-					MaxSmallObjectCount = 250;
+					MaxItemSpawns = 80;
+					MaxLargeObjectCount = 40;
+					MaxSmallObjectCount = 200;
 					BlockSpawnChance = 0.05f;
 					ContactShadows = true;
 					GlobalFogEnabled = true;
@@ -156,6 +159,7 @@ public class Config : MonoBehaviour
 					Outlines = true;
 					ColoredOutlines = false;
 					World.ChunkShadows = true;
+					InterpolationFactor = 1;
 					if (QualitySettings.GetQualityLevel() != 2)
 					{
 						QualitySettings.SetQualityLevel(2);
@@ -175,6 +179,7 @@ public class Config : MonoBehaviour
 					Outlines = true;
 					ColoredOutlines = false;
 					World.ChunkShadows = true;
+					InterpolationFactor = 1;
 					if (QualitySettings.GetQualityLevel() != 3)
 					{
 						QualitySettings.SetQualityLevel(3);
@@ -209,6 +214,12 @@ public class Config : MonoBehaviour
 	public static int MaxRenderDistance
 	{
 		get { return _instance.maxRenderDistance; }
+	}
+
+	public static int InterpolationFactor
+	{
+		get { return _instance.interpolationFactor; }
+		set { _instance.interpolationFactor = value; }
 	}
 
 	// Spawn Settings

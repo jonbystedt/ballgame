@@ -41,6 +41,8 @@ public class PooledObject : MonoBehaviour {
 
 	public void ReturnToPool() 
 	{
+		StopAllCoroutines();
+		
 		if (Pool)
 		{
 			Pool.AddObject(this);

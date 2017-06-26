@@ -131,6 +131,7 @@ public class Game : MonoBehaviour
 		GameUtils.Seed = 0;
 		Serialization.Reset();
 
+		player.transform.position = new Vector3(0f, -3f, 10f);
 		player.GetComponent<Rigidbody>().isKinematic = true;
 		PlayerActive = false;
 		boids.StopBoids();

@@ -40,9 +40,14 @@ public class InterpolatedNoise : MonoBehaviour
 
 	IEnumerator GetSamplesAsync(SampleRegion i)
 	{
-		int sampleX = (i.region.sizeX / (i.sampleRate * 2)) + 1;
+		int h_rate = 2;
+		if (Config.GraphicsMode == GraphicsMode.Ultra) 
+		{
+			h_rate = Config.InterpolationFactor;
+		}
+		int sampleX = (i.region.sizeX / (i.sampleRate * h_rate)) + 1;
 		int sampleY = (i.region.sizeY / i.sampleRate) + 1;
-		int sampleZ = (i.region.sizeZ / (i.sampleRate * 2)) + 1;
+		int sampleZ = (i.region.sizeZ / (i.sampleRate * h_rate)) + 1;
 
 		if (i.samples == null || i.samples.Length != sampleX * sampleY * sampleZ)
 		{
@@ -58,7 +63,19 @@ public class InterpolatedNoise : MonoBehaviour
 					(x * i.sampleRate + (i.region.min.x / 2f)) * i.zoom.x,
 					(z * i.sampleRate + (i.region.min.z / 2f)) * i.zoom.z
 					);
-				float distance = Mathf.Abs(Vector2.Distance(Vector2.zero, location));
+				//float distance = Mathf.Abs(Vector2.Distance(Vector2.zero, location));
+
+				float driftMap = 0f;
+				if (i.options.drift != 0f)
+				{
+					driftMap = NoiseGenerator.Sum(
+						NoiseGenerator.noiseMethods[(int)NoiseType.Perlin][1],
+						location,
+						NoiseConfig.driftMap.frequency.value,
+						NoiseConfig.driftMap.octaves,
+						NoiseConfig.driftMap.lacunarity,
+						NoiseConfig.driftMap.persistance);
+				}
 				 
 				for (int y = 0; y < sampleY; y++)
 				{
@@ -70,10 +87,13 @@ public class InterpolatedNoise : MonoBehaviour
 						);
 
 					// with drift
+					//i.options.frequency + (i.options.drift * distance), 
 					i.samples[x, y, z] = NoiseGenerator.Sum(
 						i.method, 
 						position, 
-						i.options.frequency + (i.options.drift * distance), 
+						i.options.drift != 0f 
+							? Mathf.Lerp(i.options.frequency.value, driftMap > 0f ? i.options.frequency.max : i.options.frequency.min, Mathf.Abs(driftMap))
+							: i.options.frequency.value,
 						i.options.octaves, 
 						i.options.lacunarity, 
 						i.options.persistance
@@ -180,7 +200,19 @@ public class InterpolatedNoise : MonoBehaviour
 					(x * i.sampleRate + (i.region.min.x / 2f)) * i.zoom.x,
 					(z * i.sampleRate + (i.region.min.z / 2f)) * i.zoom.z
 					);
-				float distance = Mathf.Abs(Vector2.Distance(Vector2.zero, location));
+				//float distance = Mathf.Abs(Vector2.Distance(Vector2.zero, location));
+
+				float driftMap = 0f;
+				if (i.options.drift != 0f)
+				{
+					driftMap = NoiseGenerator.Sum(
+						NoiseGenerator.noiseMethods[(int)NoiseType.Perlin][1],
+						location,
+						NoiseConfig.driftMap.frequency.value,
+						NoiseConfig.driftMap.octaves,
+						NoiseConfig.driftMap.lacunarity,
+						NoiseConfig.driftMap.persistance);
+				}
 				 
 				for (int y = 0; y < sampleY; y++)
 				{
@@ -192,10 +224,13 @@ public class InterpolatedNoise : MonoBehaviour
 						);
 
 					// with drift
+					//i.options.frequency + (i.options.drift * distance), 
 					i.samples[x, y, z] = NoiseGenerator.Sum(
 						i.method, 
 						position, 
-						i.options.frequency + (i.options.drift * distance), 
+						i.options.drift != 0f 
+							? Mathf.Lerp(i.options.frequency.value, driftMap > 0f ? i.options.frequency.max : i.options.frequency.min, Mathf.Abs(driftMap))
+							: i.options.frequency.value,
 						i.options.octaves, 
 						i.options.lacunarity, 
 						i.options.persistance

@@ -231,16 +231,8 @@ public class SpawnManager : MonoBehaviour {
 			playSound.worldHitSound = pickupOctave[(int)scales[key][note]];
 			playSound.objectHitSound = bigPickupOctave[(int)scales[key][note]];
 
-			int scale = Mathf.FloorToInt(Mathf.Lerp(0f, 5.999f, pickup.hsvColor.h));
-
-			if (key* 5 + scale < scoreOctave.Length)
-			{
-				playSound.scoreSound = scoreOctave[key * 5 + scale];
-			}
-			else
-			{
-				Game.Log("Value Was " + (key * 5 + scale).ToString());
-			}
+			int scale = Mathf.FloorToInt(Mathf.Lerp(0f, 4.999f, pickup.hsvColor.h));
+			playSound.scoreSound = scoreOctave[key * 5 + scale];
 		}
 		if (pickup.type == PickupType.Black)
 		{
@@ -257,7 +249,7 @@ public class SpawnManager : MonoBehaviour {
 			playSound.worldHitSound = pickupOctave[(int)scales[key][note]];
 			playSound.objectHitSound = darkPickupOctave[(int)scales[key][note]];
 
-			int scale = Mathf.FloorToInt(Mathf.Lerp(0f, 5.999f, pickup.hsvColor.h));
+			int scale = Mathf.FloorToInt(Mathf.Lerp(0f, 4.999f, pickup.hsvColor.h));
 			playSound.scoreSound = scoreOctave[key * 5 + scale];
 		}
 
@@ -517,7 +509,7 @@ public class SpawnManager : MonoBehaviour {
 					range = totalRange - exclusion;
 
 					// Pickups
-					upper = Mathf.FloorToInt(range * 0.006f);
+					upper = Mathf.FloorToInt(range * 0.007f);
 					lower = 0;
 					if (spawnValue >= exclusion + lower && spawnValue < exclusion + upper)
 					{
@@ -529,7 +521,7 @@ public class SpawnManager : MonoBehaviour {
 							weight,
 							new WorldPosition(pos.x + x, sampleSet.spawnMap.height[x, z], pos.z + z), 
 							0.5f, 
-							sampleSet.spawnMap.frequency[x, z] * 7,
+							sampleSet.spawnMap.frequency[x, z],
 							1f,
 							spawns,
 							0f
@@ -551,7 +543,7 @@ public class SpawnManager : MonoBehaviour {
 							weight,
 							new WorldPosition(pos.x + x, sampleSet.spawnMap.height[x, z], pos.z + z), 
 							1.5f,
-							sampleSet.spawnMap.frequency[x, z] * 3,
+							sampleSet.spawnMap.frequency[x, z],
 							1f,
 							spawns,
 							0f
@@ -561,7 +553,7 @@ public class SpawnManager : MonoBehaviour {
 					}
 
 					// Exploding Balls
-					upper = Mathf.FloorToInt(range * 0.3035f);
+					upper = Mathf.FloorToInt(range * 0.3025f);
 					lower = Mathf.FloorToInt(range * 0.3f);
 					if (spawnValue >= exclusion + lower && spawnValue < exclusion + upper)
 					{
@@ -584,7 +576,7 @@ public class SpawnManager : MonoBehaviour {
 					}
 
 					// Imploding Balls
-					upper = Mathf.FloorToInt(range * 0.4035f);
+					upper = Mathf.FloorToInt(range * 0.4025f);
 					lower = Mathf.FloorToInt(range * 0.4f);
 					if (spawnValue >= exclusion + lower && spawnValue < exclusion + upper)
 					{
@@ -642,7 +634,14 @@ public class SpawnManager : MonoBehaviour {
 						continue;
 					}
 
-					yield return new WaitForSeconds(Config.SpawnTiming);
+					if (Game.PlayerActive) 
+					{
+						yield return new WaitForSeconds(Config.SpawnTiming);
+					}
+					else
+					{
+						break;
+					}
 				}
 			}
 		}

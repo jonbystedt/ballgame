@@ -59,7 +59,7 @@ public class Pickup : SpawnedObject
 		Vector3 force = NoiseGenerator.SumWithDerivative(
 			NoiseGenerator.Value3D, 
 			World.GetBlockPosition(transform.position).ToVector3(), 
-			NoiseConfig.terrain.frequency, 
+			NoiseConfig.terrain.frequency.value, 
 			NoiseConfig.terrain.octaves, 
 			NoiseConfig.terrain.lacunarity, 
 			NoiseConfig.terrain.persistance

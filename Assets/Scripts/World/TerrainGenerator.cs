@@ -109,9 +109,9 @@ public class TerrainGenerator : MonoBehaviour
 
 	SampleSet CreateNewSampleSet()
 	{
-		SampleRegion caves = new SampleRegion(NoiseConfig.cave, NoiseConfig.caveMethod, 4, new Vector3(1,1,1));
+		SampleRegion caves = new SampleRegion(NoiseConfig.cave, NoiseConfig.caveMethod, Config.InterpolationFactor, new Vector3(1,1,1));
 
-		SampleRegion patterns = new SampleRegion(NoiseConfig.pattern, NoiseConfig.patternMethod, 2, new Vector3(1,1,1));
+		SampleRegion patterns = new SampleRegion(NoiseConfig.pattern, NoiseConfig.patternMethod, Config.InterpolationFactor, new Vector3(1,1,1));
 
 		SampleRegion stripes;
 
@@ -120,7 +120,7 @@ public class TerrainGenerator : MonoBehaviour
 			stripes= new SampleRegion(
 				NoiseConfig.stripe, 
 				NoiseConfig.stripeMethod, 
-				1, 
+				Mathf.CeilToInt(Config.InterpolationFactor / 2f), 
 				new Vector3(1f / stretchFactor, squishFactor, 1f / stretchFactor));
 		}
 		else
@@ -128,7 +128,7 @@ public class TerrainGenerator : MonoBehaviour
 			stripes = new SampleRegion(
 				NoiseConfig.stripe, 
 				NoiseConfig.stripeMethod, 
-				1, 
+				Mathf.CeilToInt(Config.InterpolationFactor / 2f), 
 				new Vector3(squishFactor, 1f / stretchFactor, squishFactor));
 		}
 
@@ -259,7 +259,12 @@ public class TerrainGenerator : MonoBehaviour
 		int terrainHeight = GetNoise3D(new Vector3(x, 0, z), NoiseConfig.terrain, NoiseConfig.terrainType);
 
 		int oldScale = NoiseConfig.mountain.scale;
-		NoiseConfig.mountain.scale = NoiseConfig.mountain.scale - terrainHeight;
+		//NoiseConfig.mountain.scale = NoiseConfig.mountain.scale - terrainHeight;
+		if (NoiseConfig.mountain.scale + terrainHeight > Config.WorldHeight * Chunk.Size)
+		{
+			NoiseConfig.mountain.scale = (Config.WorldHeight * Chunk.Size) - terrainHeight;
+		}
+
 		int mountainHeight = mountainBase + GetNoise3D(new Vector3(x, 0, z), NoiseConfig.mountain, NoiseConfig.mountainType);
 		NoiseConfig.mountain.scale = oldScale;
 
@@ -703,7 +708,6 @@ public class TerrainGenerator : MonoBehaviour
 					sampleSet.spawnMap.height[localX, localZ] = y + 1;
 				}
 			}
-
 		}
 	}
 
@@ -779,7 +783,8 @@ public class TerrainGenerator : MonoBehaviour
 			(NoiseGenerator.Sum(
 				NoiseGenerator.noiseMethods[(int)method][2], 
 				new Vector3(point.x, point.y, point.z), 
-				options.frequency, options.octaves, 
+				options.frequency.value, 
+				options.octaves, 
 				options.lacunarity, 
 				options.persistance) + 1f).value * (options.scale / 2f));
 	}
@@ -790,7 +795,8 @@ public class TerrainGenerator : MonoBehaviour
 			(NoiseGenerator.Sum(
 				NoiseGenerator.noiseMethods[(int)method][1], 
 				new Vector3(point.x, point.y, 0), 
-				options.frequency, options.octaves, 
+				options.frequency.value,
+				options.octaves, 
 				options.lacunarity, 
 				options.persistance) + 1f).value * (options.scale / 2f));
 	}
@@ -801,7 +807,7 @@ public class TerrainGenerator : MonoBehaviour
 			(NoiseGenerator.Sum(
 				NoiseGenerator.noiseMethods[(int)method][0], 
 				new Vector3(point.x, 0, 0), 
-				options.frequency, 
+				options.frequency.value, 
 				options.octaves, 
 				options.lacunarity, 
 				options.persistance) + 1f).value * (options.scale / 2f));

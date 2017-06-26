@@ -1,15 +1,29 @@
 ﻿using UnityEngine;
 
+public struct ValueRange
+{
+	public float max;
+	public float min;
+	public float value;
+
+	public ValueRange(float ma, float mi, float v)
+	{
+		max = ma;
+		min = mi;
+		value = v;
+	}
+}
+
 public struct NoiseOptions
 {
-	public float frequency;
+	public ValueRange frequency;
 	public int octaves;
 	public float lacunarity;
 	public float persistance;
 	public int scale;
 	public float drift;
 
-	public NoiseOptions(float f, int o, float l, float p, int s, float d)
+	public NoiseOptions(ValueRange f, int o, float l, float p, int s, float d)
 	{
 		frequency = f;
 		octaves = o;
@@ -37,6 +51,7 @@ public static class NoiseConfig {
 	public static NoiseOptions boidDistance;
 	public static NoiseOptions boidAlignment;
 	public static NoiseOptions worldKey;
+	public static NoiseOptions driftMap;
 
 	// Intensity will never be below this number.
 	public static int spawnIntensityBase = -20;
@@ -58,11 +73,14 @@ public static class NoiseConfig {
 		lightningBreakValue = lightningBreakValue + Mathf.FloorToInt(s * s * 250);
 
 		terrain = new NoiseOptions(
-			Mathf.Lerp(
-				Config.Noise.terrain.frequency.low, 
+			new ValueRange(
 				Config.Noise.terrain.frequency.high, 
-				Mathf.Pow(Seed, 1.2f)
-				),
+				Config.Noise.terrain.frequency.low,
+				Mathf.Lerp(
+					Config.Noise.terrain.frequency.low, 
+					Config.Noise.terrain.frequency.high, 
+					Mathf.Pow(Seed, 1.2f) 
+				)),
 			Mathf.FloorToInt(Mathf.Lerp(
 				Config.Noise.terrain.octaves.low,
 				Config.Noise.terrain.octaves.high,
@@ -79,15 +97,18 @@ public static class NoiseConfig {
 				Seed
 				), 
 			32,
-			Mathf.Pow(Seed - 0.5f, 10 + Mathf.FloorToInt(Seed * 10))
+			Seed//Mathf.Pow(Seed - 0.5f, 10 + Mathf.FloorToInt(Seed * 10))
 			); 
 
 		mountain = new NoiseOptions(
-			Mathf.Lerp(
-				Config.Noise.mountain.frequency.low,
+			new ValueRange(
 				Config.Noise.mountain.frequency.high, 
-				Mathf.Pow(Seed, 2f)
-				),
+				Config.Noise.mountain.frequency.low,
+				Mathf.Lerp(
+					Config.Noise.mountain.frequency.low, 
+					Config.Noise.mountain.frequency.high, 
+					Mathf.Pow(Seed, 2f)
+				)),
 			Mathf.FloorToInt(Mathf.Lerp(
 				Config.Noise.mountain.octaves.low,
 				Config.Noise.mountain.octaves.high,
@@ -104,15 +125,18 @@ public static class NoiseConfig {
 				Seed
 				), 
 			64 - Mathf.FloorToInt(Mathf.Lerp(0, 16, Mathf.Pow(Seed, 2))),
-			Mathf.Pow(Seed - 0.5f, 8 + Mathf.FloorToInt(Seed * 8))
+			Seed//Mathf.Pow(Seed - 0.5f, 8 + Mathf.FloorToInt(Seed * 8))
 			); 
 
 		cave = new NoiseOptions(
-			Mathf.Lerp(
-				Config.Noise.cave.frequency.low, 
+			new ValueRange(
 				Config.Noise.cave.frequency.high, 
-				Mathf.Pow(Seed,2)
-				), 
+				Config.Noise.cave.frequency.low,
+				Mathf.Lerp(
+					Config.Noise.cave.frequency.low, 
+					Config.Noise.cave.frequency.high, 
+					Mathf.Pow(Seed, 2f)
+				)),
 			Mathf.FloorToInt(Mathf.Lerp(
 				Config.Noise.cave.octaves.low,
 				Config.Noise.cave.octaves.high,
@@ -129,15 +153,18 @@ public static class NoiseConfig {
 				Seed
 				), 
 			1024,
-			Mathf.Pow(Seed - 0.5f, 16 + Mathf.FloorToInt(Seed * 10))
+			Seed//Mathf.Pow(Seed - 0.5f, 20 + Mathf.FloorToInt(Seed * 10))
 			);
 
 		pattern = new NoiseOptions(
-			Mathf.Lerp(
-				Config.Noise.pattern.frequency.low, 
+			new ValueRange(
 				Config.Noise.pattern.frequency.high, 
-				Mathf.Pow(Seed,3)
-				), 
+				Config.Noise.pattern.frequency.low,
+				Mathf.Lerp(
+					Config.Noise.pattern.frequency.low, 
+					Config.Noise.pattern.frequency.high, 
+					Mathf.Pow(Seed, 3f)
+				)),
 			Mathf.FloorToInt(Mathf.Lerp(
 				Config.Noise.pattern.octaves.low, 
 				Config.Noise.pattern.octaves.high, 
@@ -154,15 +181,18 @@ public static class NoiseConfig {
 				Seed
 				), 
 			1024,
-			Mathf.Pow(Seed - 0.5f, 16 + Mathf.FloorToInt(Seed * 10))
+			Seed//Mathf.Pow(Seed - 0.5f, 16 + Mathf.FloorToInt(Seed * 10))
 			);
 
 		stripe = new NoiseOptions(
-			Mathf.Lerp(
-				Config.Noise.stripe.frequency.low, 
+			new ValueRange(
 				Config.Noise.stripe.frequency.high, 
-				Seed
-				),  
+				Config.Noise.stripe.frequency.low,
+				Mathf.Lerp(
+					Config.Noise.stripe.frequency.low, 
+					Config.Noise.stripe.frequency.high, 
+					Seed
+				)), 
 			Mathf.FloorToInt(Mathf.Lerp(
 				Config.Noise.stripe.octaves.low,
 				Config.Noise.stripe.octaves.high,
@@ -179,40 +209,40 @@ public static class NoiseConfig {
 				Seed
 				),
 			1024,
-			Mathf.Pow(Seed - 0.5f, Mathf.FloorToInt(Seed * 8))
+			Seed//Mathf.Pow(Seed - 0.5f, Mathf.FloorToInt(Seed * 8))
 			);
 
 		s = Seed;
 		spawnTypes = new NoiseOptions(
-			Mathf.Lerp(0.008f, 0.05f, s * s), 
+			new ValueRange(0.05f, 0.008f, Mathf.Lerp(0.008f, 0.05f, s * s)), 
 			Mathf.FloorToInt(Mathf.Lerp(1,2,Seed)),//1, 
 			Mathf.Lerp(0f, 2f, Seed),
 			Mathf.Lerp(0f, 2f, Seed),
 			10000,
-			0f
+			Seed//0f
 			);
 
 		spawnFrequency = new NoiseOptions(
-			Mathf.Lerp(0.04f, 2f, Seed), 
+			new ValueRange(2f, 0.04f, Mathf.Lerp(0.04f, 2f, Seed)), 
 			Mathf.FloorToInt(Mathf.Lerp(1,2,Seed)),//1, 
 			Mathf.Lerp(0f, 2f, Seed),
 			Mathf.Lerp(0f, 2f, Seed),
 			100,
-			0f
+			Seed//0f
 			);
 
 		s = Seed;
 		spawnIntensity = new NoiseOptions(
-			Mathf.Lerp(0.004f, 0.05f, s * s), 
+			new ValueRange(0.05f, 0.004f, Mathf.Lerp(0.004f, 0.05f, s * s)), 
 			Mathf.FloorToInt(Mathf.Lerp(1,2,Seed)) + 2,//1, 
 			Mathf.Lerp(0f, 2f, Seed),
 			Mathf.Lerp(0f, 2f, Seed),
 			100,
-			0f
+			Seed//0f
 			);
 
 		rainIntensity = new NoiseOptions(
-			Mathf.Lerp(0.002f, 0.001f, Seed),
+			new ValueRange(0.001f, 0.002f, Mathf.Lerp(0.002f, 0.001f, Seed)),
 			Mathf.FloorToInt(Mathf.Lerp(1,4, Seed)),
 			Mathf.Lerp(0f, 2f, Seed),
 			Mathf.Lerp(0f, 2f, Seed),
@@ -230,7 +260,7 @@ public static class NoiseConfig {
 			);
 		
 		boidInteraction = new NoiseOptions(
-			Mathf.Lerp(0.00002f, 0.001f, Seed),
+			new ValueRange(0.01f, 0.0002f, Mathf.Lerp(0.0002f, 0.01f, Seed)),
 			1,
 			Mathf.Lerp(0f, 2f, Seed),
 			Mathf.Lerp(0f, 2f, Seed),
@@ -239,7 +269,7 @@ public static class NoiseConfig {
 			);
 		
 		boidDistance = new NoiseOptions(
-			Mathf.Lerp(0.00002f, 0.001f, Seed),
+			new ValueRange(0.01f, 0.0002f, Mathf.Lerp(0.0002f, 0.01f, Seed)),
 			1,
 			Mathf.Lerp(0f, 2f, Seed),
 			Mathf.Lerp(0f, 2f, Seed),
@@ -248,7 +278,7 @@ public static class NoiseConfig {
 			);
 		
 		boidAlignment = new NoiseOptions(
-			Mathf.Lerp(0.00002f, 0.001f, Seed),
+			new ValueRange(0.01f, 0.0002f, Mathf.Lerp(0.0002f, 0.01f, Seed)),
 			1,
 			Mathf.Lerp(0f, 2f, Seed),
 			Mathf.Lerp(0f, 2f, Seed),
@@ -257,13 +287,22 @@ public static class NoiseConfig {
 			);
 
 		worldKey = new NoiseOptions(
-			Mathf.Lerp(0.0002f, 0.01f, Seed),
+			new ValueRange(0.01f, 0.0002f, Mathf.Lerp(0.0002f, 0.01f, Seed)),
 			2,
 			Mathf.Lerp(0f, 2f, Seed),
 			Mathf.Lerp(0f, 2f, Seed),
 			12,
-			0f
+			Seed
 			);
+
+		driftMap = new NoiseOptions(
+			new ValueRange(0.01f, 0.0002f, Mathf.Lerp(0.0002f, 0.01f, Seed)),
+			Mathf.FloorToInt(Mathf.Lerp(1,4, Seed)),
+			Mathf.Lerp(0f, 2f, Seed),
+			Mathf.Lerp(0f, 2f, Seed),
+			1,
+			0f
+		);
 
 		// Noise Methods
 		int index = Mathf.FloorToInt(Mathf.Lerp(0, Config.Noise.caveTypes.Length - 0.001f, Seed));
