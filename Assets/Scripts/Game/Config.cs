@@ -1,11 +1,19 @@
 ﻿using UnityEngine;
 
-public enum GraphicsMode
+public enum Quality
 {
 	Low,
-	Medium,
+	Normal,
 	High,
 	Ultra
+}
+
+public enum InterpolationLevel
+{
+	Off,
+	Low,
+	Normal,
+	High
 }
 	
 
@@ -20,6 +28,7 @@ public class Config : MonoBehaviour
 	int interpolationFactor = 1;
 
 	public Camera mainCamera;
+	public UnityStandardAssets.ImageEffects.Antialiasing antialiasing;
 
 	public int startChunksToLoad;
 	public int spawnRadius;
@@ -44,7 +53,8 @@ public class Config : MonoBehaviour
 
 	private int coroutineTiming = 12000;
 
-	public GraphicsMode graphicsMode;
+	public Quality graphicsMode;
+	public InterpolationLevel interpolation;
 
 	public static int WorldHeight = 4;
 
@@ -66,10 +76,6 @@ public class Config : MonoBehaviour
 				StartChunksToLoad = 128 * Mathf.FloorToInt((value - 2f) * 0.25f);
 				// set fog scale
 				float baseFog = 1.2f;
-				if (Config.GraphicsMode == 0)
-				{
-					baseFog = 1.6f;
-				}
 
 				Config.FogScale = baseFog - (value * 0.0333f);
 
@@ -94,19 +100,19 @@ public class Config : MonoBehaviour
 		}
 	}
 
-	public static GraphicsMode GraphicsMode
+	public static Quality QualityLevel
 	{
 		get 
 		{ 
-			return (GraphicsMode)Settings.graphicsQuality; 
+			return (Quality)Settings.quality; 
 		}
 		set 
 		{ 
 			if (_instance != null)
 			{
-				Settings.graphicsQuality = (int)value; 
+				Settings.quality = (int)value; 
 
-				if (value == GraphicsMode.Low)
+				if (value == Quality.Low)
 				{
 					MaxItemSpawns = 25;
 					MaxLargeObjectCount = 12;
@@ -119,14 +125,16 @@ public class Config : MonoBehaviour
 					Outlines = true;
 					ColoredOutlines = false;
 					World.ChunkShadows = false;
-					InterpolationFactor = 4;
+					
 					if (QualitySettings.GetQualityLevel() != 0)
 					{
 						QualitySettings.SetQualityLevel(0);
 					}
+
+					_instance.antialiasing.enabled = false;
 				}
 
-				if (value == GraphicsMode.Medium)
+				if (value == Quality.Normal)
 				{
 					MaxItemSpawns = 35;
 					MaxLargeObjectCount = 20;
@@ -139,14 +147,16 @@ public class Config : MonoBehaviour
 					Outlines = true;
 					ColoredOutlines = false;
 					World.ChunkShadows = false;
-					InterpolationFactor = 2;
+
 					if (QualitySettings.GetQualityLevel() != 1)
 					{
 						QualitySettings.SetQualityLevel(1);
 					}
+
+					_instance.antialiasing.enabled = true;
 				}
 
-				if (value == GraphicsMode.High)
+				if (value == Quality.High)
 				{
 					MaxItemSpawns = 80;
 					MaxLargeObjectCount = 40;
@@ -159,14 +169,17 @@ public class Config : MonoBehaviour
 					Outlines = true;
 					ColoredOutlines = false;
 					World.ChunkShadows = true;
-					InterpolationFactor = 1;
+
+					Interpolation = InterpolationLevel.Low;
 					if (QualitySettings.GetQualityLevel() != 2)
 					{
 						QualitySettings.SetQualityLevel(2);
 					}
+
+					_instance.antialiasing.enabled = true;
 				}
 
-				if (value == GraphicsMode.Ultra)
+				if (value == Quality.Ultra)
 				{
 					MaxItemSpawns = 125;
 					MaxLargeObjectCount = 100;
@@ -179,14 +192,38 @@ public class Config : MonoBehaviour
 					Outlines = true;
 					ColoredOutlines = false;
 					World.ChunkShadows = true;
-					InterpolationFactor = 1;
+
 					if (QualitySettings.GetQualityLevel() != 3)
 					{
 						QualitySettings.SetQualityLevel(3);
 					}
+
+					_instance.antialiasing.enabled = true;
 				}
 			}
 
+		}
+	}
+
+	public static InterpolationLevel Interpolation
+	{
+		get { return (InterpolationLevel)Settings.interpolation; }
+		set { Settings.interpolation = (int)value; }
+	}
+
+	public static int SampleRate
+	{
+		get 
+		{
+			if (Interpolation == InterpolationLevel.High)
+			{
+				return 4;
+			}
+			if (Interpolation == InterpolationLevel.Normal)
+			{
+				return 2;
+			}
+			else return 1;
 		}
 	}
 
@@ -214,12 +251,6 @@ public class Config : MonoBehaviour
 	public static int MaxRenderDistance
 	{
 		get { return _instance.maxRenderDistance; }
-	}
-
-	public static int InterpolationFactor
-	{
-		get { return _instance.interpolationFactor; }
-		set { _instance.interpolationFactor = value; }
 	}
 
 	// Spawn Settings

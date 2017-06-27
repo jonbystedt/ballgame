@@ -99,7 +99,7 @@ public class StartGame : MonoBehaviour {
 				}
 
 				setOptions.SetResolution(Config.Settings.resolution);
-				Config.GraphicsMode = Config.GraphicsMode;
+				Config.QualityLevel = Config.QualityLevel;
 				Config.WorldSize = Config.Settings.worldSize;
 				setOptions.SetMusicLevel(Config.MusicVolume * 0.01f);
 				setOptions.SetSfxLevel(Config.SfxVolume * 0.01f);
@@ -217,7 +217,8 @@ public class StartGame : MonoBehaviour {
 	void ApplyDefaultConfig()
 	{
 		Config.Settings.startTime = "6:00";
-		Config.Settings.graphicsQuality = 1;
+		Config.Settings.quality = 1;
+		Config.Settings.interpolation = 2;
 		Config.Settings.worldSize = 12;
 		Config.Settings.spawnIntensity = 50;
 		Config.Settings.musicVol = 80;

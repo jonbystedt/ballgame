@@ -86,7 +86,7 @@ public class RollerController : MonoBehaviour
 		{
 			boostEffect.SetActive(false);
 		}
-		if ((int)Config.GraphicsMode >= 2)
+		if ((int)Config.QualityLevel >= 2)
 		{
 			if (boostOn && !camOp.FirstPerson)
 			{

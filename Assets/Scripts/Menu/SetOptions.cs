@@ -9,17 +9,22 @@ public class SetOptions : MonoBehaviour {
 	public AudioMixer mainMixer;
 	public Text graphicsModeText;
 	public Text worldSizeText;
+	public Text interpolationText;
 	public Slider graphicsModeSlider;
 	public Slider worldSizeSlider;
+	public Slider interpolationSlider;
 	public Dropdown resolutionDropdown;
 
 	void Start()
 	{
-		graphicsModeText.text = Config.GraphicsMode.ToString();
-		graphicsModeSlider.value = (float)Config.GraphicsMode;
+		graphicsModeText.text = Config.QualityLevel.ToString();
+		graphicsModeSlider.value = (float)Config.QualityLevel;
 
 		worldSizeText.text = Config.WorldSize.ToString();
 		worldSizeSlider.value = Mathf.Floor((Config.WorldSize / 2f) - 3f);
+
+		interpolationText.text = Config.Interpolation.ToString();
+		interpolationSlider.value = (float)Config.Interpolation;
 
 		List<string> resolutions = new List<string>();
 		int selected = 0;
@@ -73,8 +78,8 @@ public class SetOptions : MonoBehaviour {
 
 	public void SetGraphicsLevel(float value)
 	{
-		Config.GraphicsMode = (GraphicsMode)(int)value;
-		graphicsModeText.text = Config.GraphicsMode.ToString();
+		Config.QualityLevel = (Quality)(int)value;
+		graphicsModeText.text = Config.QualityLevel.ToString();
 
 		// TODO: This would be a problem if it were possible to use the UI with a controller
 		if (Input.GetMouseButton(0))
@@ -82,6 +87,31 @@ public class SetOptions : MonoBehaviour {
 			Config.WorldSize = 8 + ((int)value * 4);
 			worldSizeSlider.value = Mathf.Floor((Config.WorldSize / 2f) - 3f);
 			worldSizeText.text = Config.WorldSize.ToString();
+
+			if (Config.QualityLevel == Quality.Ultra)
+			{
+				Config.Interpolation = InterpolationLevel.Off;
+				interpolationSlider.value = 0f;
+				interpolationText.text = Config.Interpolation.ToString();
+			}
+			else if (Config.QualityLevel == Quality.High)
+			{
+				Config.Interpolation = InterpolationLevel.Low;
+				interpolationSlider.value = 1f;
+				interpolationText.text = Config.Interpolation.ToString();
+			}
+			else if (Config.QualityLevel == Quality.Normal)
+			{
+				Config.Interpolation = InterpolationLevel.Normal;
+				interpolationSlider.value = 2f;
+				interpolationText.text = Config.Interpolation.ToString();
+			}
+			else if (Config.QualityLevel == Quality.Low)
+			{
+				Config.Interpolation = InterpolationLevel.High;
+				interpolationSlider.value = 3f;
+				interpolationText.text = Config.Interpolation.ToString();
+			}
 		}
 	}
 
@@ -89,6 +119,12 @@ public class SetOptions : MonoBehaviour {
 	{
 		Config.WorldSize = Mathf.FloorToInt(6f + (worldSize * 2f));
 		worldSizeText.text = Config.WorldSize.ToString();
+	}
+
+	public void SetInterpolation(float value)
+	{
+		Config.Interpolation = (InterpolationLevel)(int)value;
+		interpolationText.text = Config.Interpolation.ToString();
 	}
 
 	public void SetResolution(int index)

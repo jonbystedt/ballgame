@@ -40,8 +40,13 @@ public class Boids : MonoBehaviour {
 			300f + (300f * (Config.WorldSize - 6f) * 0.5f), 
 			Mathf.Pow(Random.value, 2)));
 
-		controller.worldSphere = Config.WorldSize * 4f;
-        controller.innerSphere = controller.worldSphere - Config.WorldSize * 1.25f;
+		float size = Config.WorldSize;
+		if (size < 12)
+		{
+			size = 12;
+		}
+		controller.worldSphere = size * 4f;
+        controller.innerSphere = controller.worldSphere - size * 1.25f;
 
 		// A single mesh is shared by all boids
 		var mesh = controller.Generate(Tile.Brighten(Tile.Colors[0], 0.8f), Tile.Colors[32]);

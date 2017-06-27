@@ -41,9 +41,9 @@ public class InterpolatedNoise : MonoBehaviour
 	IEnumerator GetSamplesAsync(SampleRegion i)
 	{
 		int h_rate = 2;
-		if (Config.GraphicsMode == GraphicsMode.Ultra) 
+		if (Config.Interpolation == InterpolationLevel.Off) 
 		{
-			h_rate = Config.InterpolationFactor;
+			h_rate = 1;
 		}
 		int sampleX = (i.region.sizeX / (i.sampleRate * h_rate)) + 1;
 		int sampleY = (i.region.sizeY / i.sampleRate) + 1;

@@ -109,9 +109,11 @@ public class TerrainGenerator : MonoBehaviour
 
 	SampleSet CreateNewSampleSet()
 	{
-		SampleRegion caves = new SampleRegion(NoiseConfig.cave, NoiseConfig.caveMethod, Config.InterpolationFactor, new Vector3(1,1,1));
 
-		SampleRegion patterns = new SampleRegion(NoiseConfig.pattern, NoiseConfig.patternMethod, Config.InterpolationFactor, new Vector3(1,1,1));
+
+		SampleRegion caves = new SampleRegion(NoiseConfig.cave, NoiseConfig.caveMethod, Config.SampleRate, new Vector3(1,1,1));
+
+		SampleRegion patterns = new SampleRegion(NoiseConfig.pattern, NoiseConfig.patternMethod, Config.SampleRate, new Vector3(1,1,1));
 
 		SampleRegion stripes;
 
@@ -120,7 +122,7 @@ public class TerrainGenerator : MonoBehaviour
 			stripes= new SampleRegion(
 				NoiseConfig.stripe, 
 				NoiseConfig.stripeMethod, 
-				Mathf.CeilToInt(Config.InterpolationFactor / 2f), 
+				Mathf.CeilToInt(Config.SampleRate / 2f), 
 				new Vector3(1f / stretchFactor, squishFactor, 1f / stretchFactor));
 		}
 		else
@@ -128,7 +130,7 @@ public class TerrainGenerator : MonoBehaviour
 			stripes = new SampleRegion(
 				NoiseConfig.stripe, 
 				NoiseConfig.stripeMethod, 
-				Mathf.CeilToInt(Config.InterpolationFactor / 2f), 
+				Mathf.CeilToInt(Config.SampleRate / 2f), 
 				new Vector3(squishFactor, 1f / stretchFactor, squishFactor));
 		}
 

@@ -357,7 +357,7 @@ public class Game : MonoBehaviour
 
 		if (Config.ShadowsEnabled)
 		{
-			if (Config.GraphicsMode == GraphicsMode.Ultra)
+			if (Config.QualityLevel == Quality.Ultra)
 			{
 				sun.shadows = LightShadows.Soft;
 				moon.shadows = LightShadows.Soft;

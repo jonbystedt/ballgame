@@ -415,19 +415,16 @@ public class Roller : MonoBehaviour
 				normals.Add(new Vector3(1,1,-1));
 				normals.Add(new Vector3(-1,1,-1));
 			}
-			
-			if (grounded || firstPerson)
-			{
-				normals.Add(forward);
-				normals.Add(new Vector3(1,0,0));
-				normals.Add(new Vector3(0,0,1));
-				normals.Add(new Vector3(-1,0,0));
-				normals.Add(new Vector3(0,0,-1));
-				normals.Add(new Vector3(1,0,1));
-				normals.Add(new Vector3(-1,0,1));
-				normals.Add(new Vector3(1,0,-1));
-				normals.Add(new Vector3(-1,0,-1));
-			}
+
+			normals.Add(forward);
+			normals.Add(new Vector3(1,0,0));
+			normals.Add(new Vector3(0,0,1));
+			normals.Add(new Vector3(-1,0,0));
+			normals.Add(new Vector3(0,0,-1));
+			normals.Add(new Vector3(1,0,1));
+			normals.Add(new Vector3(-1,0,1));
+			normals.Add(new Vector3(1,0,-1));
+			normals.Add(new Vector3(-1,0,-1));
 		}
 			
 		Vector3 pos = transform.position;
@@ -532,36 +529,6 @@ public class Roller : MonoBehaviour
 				}
 			}
 		}
-
-		// Decimate them :)
-		// StartCoroutine(Wait(2f, () => {
-		// 	for(int i = blockSpawns.Count - 1; i >= 0; i--)
-		// 	{
-		// 		PooledObject spawn = blockSpawns[i];
-		// 		if (spawn != null)
-		// 		{
-		// 			if (UnityEngine.Random.value < 0.9f)
-		// 			{
-		// 				Pickup pickup = spawn.transform.GetComponent<Pickup>();
-		// 				pickup.Fireworks();
-		// 				blockSpawns.RemoveAt(i);
-
-		// 				StartCoroutine(Wait(0.3f, () => {
-		// 					spawn.ReturnToPool();
-		// 				}));
-		// 			}
-		// 			else
-		// 			{
-		// 				blockSpawns.RemoveAt(i);
-		// 				Column column = World.GetColumn(bashBlock);	
-		// 				if (column != null)
-		// 				{
-		// 					column.AddSpawn(spawn);
-		// 				}
-		// 			}
-		// 		}
-		// 	}
-		// }));
 	}
 
 	IEnumerator Wait(float time, Action callback)
