@@ -24,17 +24,32 @@ public class CameraOperator : MonoBehaviour
 		get { return firstPerson; }
 		set 
 		{ 
-			if (value)
+			WorldPosition overhead = World.GetBlockPosition(
+				new Vector3(
+					Game.Player.transform.position.x, 
+					Game.Player.transform.position.y + 1f, 
+					Game.Player.transform.position.z)
+					);
+
+			if (value && World.GetBlock(overhead) == Block.Air)
 			{
 				freeLookCamera.m_MoveSpeed = 100000f;
 				_player.GetComponent<Roller>().SetFirstPerson(true);
+
+				closestDistance = 0f;
+
+				firstPerson = value;
 			}
-			else
+			else if (!value)
 			{
 				freeLookCamera.m_MoveSpeed = 10000f;
 				_player.GetComponent<Roller>().SetFirstPerson(false);
+
+				closestDistance = 1f;
+
+				firstPerson = value;
 			}
-			firstPerson = value; 
+			 
 		}
 	}
 

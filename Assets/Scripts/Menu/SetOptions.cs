@@ -10,9 +10,11 @@ public class SetOptions : MonoBehaviour {
 	public Text graphicsModeText;
 	public Text worldSizeText;
 	public Text interpolationText;
+	public Text spawnText;
 	public Slider graphicsModeSlider;
 	public Slider worldSizeSlider;
 	public Slider interpolationSlider;
+	public Slider spawnSlider;
 	public Dropdown resolutionDropdown;
 
 	void Start()
@@ -25,6 +27,9 @@ public class SetOptions : MonoBehaviour {
 
 		interpolationText.text = Config.Interpolation.ToString();
 		interpolationSlider.value = (float)Config.Interpolation;
+
+		spawnText.text = Config.SpawnIntensity.ToString();
+		spawnSlider.value = (float)Config.SpawnIntensity;
 
 		List<string> resolutions = new List<string>();
 		int selected = 0;
@@ -113,6 +118,12 @@ public class SetOptions : MonoBehaviour {
 				interpolationText.text = Config.Interpolation.ToString();
 			}
 		}
+	}
+
+	public void SetSpawnLevel(float value)
+	{
+		Config.SpawnIntensity = (int)value;
+		spawnText.text = Config.SpawnIntensity.ToString();
 	}
 
 	public void SetWorldSize(float worldSize)

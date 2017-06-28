@@ -47,7 +47,6 @@ public class Roller : MonoBehaviour
 	int gravityAttenuation = 0;
 
 	private Rigidbody _rigidbody;
-	private Collider _collider;
 
 	private Coroutine hoverRoutine;
 
@@ -56,7 +55,6 @@ public class Roller : MonoBehaviour
 	private void Start()
 	{
 		_rigidbody = GetComponent<Rigidbody>();
-		_collider = _rigidbody.GetComponent<Collider>();
 
 		// Set the maximum angular velocity.
 		_rigidbody.maxAngularVelocity = maxAngularVelocity;
@@ -72,8 +70,9 @@ public class Roller : MonoBehaviour
 			_rigidbody.drag = 10f;
 			_rigidbody.angularDrag = 3f;
 			
+			movePower = 100000f;
 			jumpPower = 3000f;
-			boostPower = 1.6f;
+			boostPower = 1.25f;	
 		}
 		else
 		{
@@ -81,6 +80,7 @@ public class Roller : MonoBehaviour
 			_rigidbody.drag = 8f;
 			_rigidbody.angularDrag = 2f;
 
+			movePower = 70000f;
 			jumpPower = 3500f;
 			boostPower = 2f;
 		}
@@ -414,6 +414,20 @@ public class Roller : MonoBehaviour
 				normals.Add(new Vector3(-1,1,1));
 				normals.Add(new Vector3(1,1,-1));
 				normals.Add(new Vector3(-1,1,-1));
+			}
+
+			if (firstPerson && !grounded)
+			{
+				// Blocks above the player
+				normals.Add(new Vector3(0,2,0));
+				normals.Add(new Vector3(1,2,0));
+				normals.Add(new Vector3(0,2,1));
+				normals.Add(new Vector3(-1,2,0));
+				normals.Add(new Vector3(0,2,-1));
+				normals.Add(new Vector3(1,2,1));
+				normals.Add(new Vector3(-1,2,1));
+				normals.Add(new Vector3(1,2,-1));
+				normals.Add(new Vector3(-1,2,-1));
 			}
 
 			normals.Add(forward);

@@ -4,6 +4,7 @@ using System.Collections;
 public class RollerController : MonoBehaviour
 {
 	public GameObject boostEffect;
+	public GameObject robotForm;
 	public Light boostLight;
 	public CameraOperator camOp;
 	private Roller roller; 
@@ -118,6 +119,21 @@ public class RollerController : MonoBehaviour
         {
             return;
         }
+
+		if (camOp.FirstPerson)
+		{
+			if (!robotForm.activeSelf)
+			{
+				robotForm.SetActive(true);
+			}
+			robotForm.transform.rotation = Quaternion.identity;
+			robotForm.transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
+		}
+		else if (robotForm.activeSelf)
+		{
+			robotForm.SetActive(false);
+		}
+		
 
 		// move ball
 		roller.Move(move, jumping, boosting, pound);

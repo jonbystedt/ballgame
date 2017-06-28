@@ -114,7 +114,7 @@ public class Config : MonoBehaviour
 
 				if (value == Quality.Low)
 				{
-					MaxItemSpawns = 25;
+					MaxItemSpawns = 20;
 					MaxLargeObjectCount = 12;
 					MaxSmallObjectCount = 60;
 					BlockSpawnChance = 0.05f;
@@ -136,7 +136,7 @@ public class Config : MonoBehaviour
 
 				if (value == Quality.Normal)
 				{
-					MaxItemSpawns = 35;
+					MaxItemSpawns = 30;
 					MaxLargeObjectCount = 20;
 					MaxSmallObjectCount = 100;
 					BlockSpawnChance = 0.05f;
@@ -158,7 +158,7 @@ public class Config : MonoBehaviour
 
 				if (value == Quality.High)
 				{
-					MaxItemSpawns = 80;
+					MaxItemSpawns = 60;
 					MaxLargeObjectCount = 40;
 					MaxSmallObjectCount = 200;
 					BlockSpawnChance = 0.05f;
@@ -181,9 +181,9 @@ public class Config : MonoBehaviour
 
 				if (value == Quality.Ultra)
 				{
-					MaxItemSpawns = 125;
-					MaxLargeObjectCount = 100;
-					MaxSmallObjectCount = 500;
+					MaxItemSpawns = 100;
+					MaxLargeObjectCount = 60;
+					MaxSmallObjectCount = 300;
 					BlockSpawnChance = 0.05f;
 					ContactShadows = true;
 					GlobalFogEnabled = true;
