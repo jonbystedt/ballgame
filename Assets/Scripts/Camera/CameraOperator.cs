@@ -31,7 +31,9 @@ public class CameraOperator : MonoBehaviour
 					Game.Player.transform.position.z)
 					);
 
-			if (value && World.GetBlock(overhead) == Block.Air)
+			ushort block = World.GetBlock(overhead);
+
+			if (value && (block == Block.Air || block == Block.Null))
 			{
 				freeLookCamera.m_MoveSpeed = 100000f;
 				_player.GetComponent<Roller>().SetFirstPerson(true);

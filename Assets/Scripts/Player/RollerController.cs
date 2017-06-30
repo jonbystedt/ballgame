@@ -55,8 +55,6 @@ public class RollerController : MonoBehaviour
 			{
 				robotForm.SetActive(true);
 			}
-			robotForm.transform.rotation = Quaternion.identity;
-			robotForm.transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
 		}
 		else if (robotForm.activeSelf)
 		{

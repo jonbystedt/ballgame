@@ -73,7 +73,7 @@ public class Roller : MonoBehaviour
 			_rigidbody.drag = 10f;
 			_rigidbody.angularDrag = 2f;
 			
-			movePower = 100000f;
+			movePower = 120000f;
 			jumpPower = 3000f;
 			boostPower = 1.25f;	
 		}
@@ -92,10 +92,10 @@ public class Roller : MonoBehaviour
 
 	public void Move(Vector3 moveDirection, bool jump, bool boost, bool pound)
 	{
-		// if (moveDirection == Vector3.zero)
-		// {
-		// 	_rigidbody.angularVelocity *= 0.8f;
-		// }
+		if (moveDirection == Vector3.zero)
+		{
+			_rigidbody.angularVelocity *= 0.8f;
+		}
 
 		// *** SET FLAGS ***
 		// player released jump
@@ -471,10 +471,12 @@ public class Roller : MonoBehaviour
 		foreach(Vector3 normal in normals)
 		{
 			float searchRadius = 1f;
+			int blockPosY = Mathf.FloorToInt(pos.y);
+			float offset = pos.y - ((float)blockPosY + 0.5f);
 			
 			WorldPosition b_pos = new WorldPosition(
 				Mathf.FloorToInt(pos.x + normal.x * searchRadius), 
-				Mathf.FloorToInt(pos.y + normal.y * searchRadius), 
+				Mathf.FloorToInt(pos.y - 0.49f + normal.y * searchRadius), 
 				Mathf.FloorToInt(pos.z + normal.z * searchRadius));
 
 			bool bash = false;
@@ -482,7 +484,6 @@ public class Roller : MonoBehaviour
 			// Don't break the floor!
 			if (b_pos.y > -48)
 			{
-				int blockPosY = Mathf.RoundToInt(pos.y);
 				// same level and boost button held
 				if (b_pos.y == blockPosY  && boosting)
 				{
