@@ -295,7 +295,6 @@ public class BouncyBall : SpawnedObject
 			{
 				spawn = Spawns.BouncyBall;
 				newSpawnValue = 1f;
-				scale = transform.localScale * 0.95f;
 				splits *= 10;
 			}
 

@@ -17,6 +17,7 @@ public class Roller : MonoBehaviour
 	[SerializeField] private float hoverTime = 2f;
 	[SerializeField] private float lift = 25f;
 	[SerializeField] private float stall = 50f;
+	[SerializeField] private float torque = 0.1f;
 
 	public bool asleep = true;
 	public AnimationCurve hoverCurve;
@@ -60,15 +61,17 @@ public class Roller : MonoBehaviour
 		_rigidbody.maxAngularVelocity = maxAngularVelocity;
 
 		gravityAssist = maxGravityAssist;
+
+		SetFirstPerson(camOp.FirstPerson);
 	}
 
 	public void SetFirstPerson(bool enabled)
 	{
 		if (enabled) 
 		{
-			 _rigidbody.mass = 750f;
+			 _rigidbody.mass = 1000f;
 			_rigidbody.drag = 10f;
-			_rigidbody.angularDrag = 3f;
+			_rigidbody.angularDrag = 2f;
 			
 			movePower = 100000f;
 			jumpPower = 3000f;
@@ -76,8 +79,8 @@ public class Roller : MonoBehaviour
 		}
 		else
 		{
-			_rigidbody.mass = 550f;
-			_rigidbody.drag = 8f;
+			_rigidbody.mass = 750f;
+			_rigidbody.drag = 4f;
 			_rigidbody.angularDrag = 2f;
 
 			movePower = 70000f;
@@ -89,6 +92,11 @@ public class Roller : MonoBehaviour
 
 	public void Move(Vector3 moveDirection, bool jump, bool boost, bool pound)
 	{
+		// if (moveDirection == Vector3.zero)
+		// {
+		// 	_rigidbody.angularVelocity *= 0.8f;
+		// }
+
 		// *** SET FLAGS ***
 		// player released jump
 		if (jumping && !jump)
@@ -289,10 +297,10 @@ public class Roller : MonoBehaviour
 
 	void ApplyLateralForce(Vector3 moveDirection)
 	{
-		if (useTorque || !boostIsActive)
+		if (useTorque)
 		{
 			// ... add torque around the axis defined by the move direction.
-			_rigidbody.AddTorque(new Vector3(moveDirection.z, 0, -moveDirection.x) * movePower * 0.01f);
+			_rigidbody.AddTorque(new Vector3(moveDirection.z, 0, -moveDirection.x) * movePower * torque);
 			_rigidbody.AddForce(moveDirection * movePower);
 		}
 		else
@@ -354,24 +362,41 @@ public class Roller : MonoBehaviour
 
 	public void CreateBlocks()
 	{
-		for (int x = -1; x < 2; x++)
+		if (camOp.FirstPerson)
 		{
-			for (int y = -3; y < 0; y++)
+			Vector3 camForward = Vector3.Scale(Game.MainCamera.transform.forward, new Vector3(1, 0, 1)).normalized;
+			Vector3 editLocation = transform.position + camForward;
+
+			WorldPosition editBlock = World.GetBlockPosition(editLocation);
+
+			ushort block = World.GetBlock(editBlock);
+
+			if (block == Block.Air)
 			{
-				for (int z = -1; z < 2; z++)
+				VoxelEditor.SetBlock(editBlock, Blocks.Glass(0));
+			}
+		}
+		else
+		{
+			for (int x = -1; x < 2; x++)
+			{
+				for (int y = -3; y < 0; y++)
 				{
-					Vector3 editLocation = new Vector3(
-						gameObject.transform.position.x + x, 
-						gameObject.transform.position.y + y, 
-						gameObject.transform.position.z + z);
-
-					WorldPosition editBlock = World.GetBlockPosition(editLocation);
-
-					ushort block = World.GetBlock(editBlock);
-
-					if (block == Block.Air)
+					for (int z = -1; z < 2; z++)
 					{
-						VoxelEditor.SetBlock(editBlock, Blocks.Glass(0));
+						Vector3 editLocation = new Vector3(
+							gameObject.transform.position.x + x, 
+							gameObject.transform.position.y + y, 
+							gameObject.transform.position.z + z);
+
+						WorldPosition editBlock = World.GetBlockPosition(editLocation);
+
+						ushort block = World.GetBlock(editBlock);
+
+						if (block == Block.Air)
+						{
+							VoxelEditor.SetBlock(editBlock, Blocks.Glass(0));
+						}
 					}
 				}
 			}
