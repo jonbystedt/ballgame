@@ -77,6 +77,16 @@ public class PooledObject : MonoBehaviour {
 		}
 	}
 
+	public IEnumerator RepeatThen(int count, float delay, Action callback, Action thendo)
+	{
+		for (int i = 0; i < count; i++)
+		{
+			callback();
+			yield return new WaitForSeconds(delay);
+		}
+		thendo();
+	}
+
 	protected IEnumerator UpdateAfterDelay(float delay)
 	{
 		for(;;) 

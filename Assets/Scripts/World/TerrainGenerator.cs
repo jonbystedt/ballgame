@@ -43,6 +43,7 @@ public class TerrainGenerator : MonoBehaviour
 	bool glassy1;
 	bool glassy2;
 	bool freakyFriday;
+	bool tigerStripes;
 	bool reverseHollowTaper;
 	float hollowFormation;
     float hollowMountains;
@@ -261,8 +262,12 @@ public class TerrainGenerator : MonoBehaviour
 		int terrainHeight = GetNoise3D(new Vector3(x, 0, z), NoiseConfig.terrain, NoiseConfig.terrainType);
 
 		int oldScale = NoiseConfig.mountain.scale;
-		//NoiseConfig.mountain.scale = NoiseConfig.mountain.scale - terrainHeight;
-		if (NoiseConfig.mountain.scale + terrainHeight > Config.WorldHeight * Chunk.Size)
+
+		if (tigerStripes)
+		{
+			NoiseConfig.mountain.scale = NoiseConfig.mountain.scale - terrainHeight;
+		}
+		else if (NoiseConfig.mountain.scale + terrainHeight > Config.WorldHeight * Chunk.Size)
 		{
 			NoiseConfig.mountain.scale = (Config.WorldHeight * Chunk.Size) - terrainHeight;
 		}
@@ -908,7 +913,7 @@ public class TerrainGenerator : MonoBehaviour
 		glassIncrease1 = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.glass1.low, Config.Noise.glass1.high, Mathf.Pow(GameUtils.Seed, 10)));
 		glassIncrease2 = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.glass2.low, Config.Noise.glass2.high, Mathf.Pow(GameUtils.Seed, 10)));
 
-		flipStripes = GameUtils.Seed > 0.98f ? true : false;
+		flipStripes = GameUtils.Seed > 0.95f ? true : false;
 
 		modScale = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.modScale.low, Config.Noise.modScale.high, Mathf.Pow(GameUtils.Seed,2)));
 
@@ -923,9 +928,11 @@ public class TerrainGenerator : MonoBehaviour
 		glassy1 = GameUtils.Seed > 0.98f ? true : false;
 		glassy2 = GameUtils.Seed > 0.98f ? true : false;
 
-		freakyFriday = GameUtils.Seed > 0.98f ? true : false;
+		freakyFriday = GameUtils.Seed > 0.95f ? true : false;
 
-		reverseHollowTaper = GameUtils.Seed > 0.95 ? true : false;
+		tigerStripes = GameUtils.Seed > 0.8f ? true : false;
+
+		reverseHollowTaper = GameUtils.Seed > 0.5 ? true : false;
 
         hollowFormation = GameUtils.Seed;
 		hollowMountains = Mathf.Pow(GameUtils.Seed * 0.1f, 14f);

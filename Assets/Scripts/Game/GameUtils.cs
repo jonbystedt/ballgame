@@ -102,6 +102,13 @@ public static class GameUtils
 			BiLerp(v001, v101, v011, v111, tx, ty), tz);
 	}
 
+	public static int IntLerp(int a, int b, float t)
+	{
+		return Mathf.FloorToInt(
+			Mathf.Lerp((float)a, (float)b + 0.9999f, t)
+			);
+	}
+
 	public static float Smooth (float t) 
 	{
 		return t * t * t * (t * (t * 6f - 15f) + 10f);

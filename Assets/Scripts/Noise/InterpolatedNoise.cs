@@ -63,13 +63,12 @@ public class InterpolatedNoise : MonoBehaviour
 					(x * i.sampleRate + (i.region.min.x / 2f)) * i.zoom.x,
 					(z * i.sampleRate + (i.region.min.z / 2f)) * i.zoom.z
 					);
-				//float distance = Mathf.Abs(Vector2.Distance(Vector2.zero, location));
 
 				float driftMap = 0f;
 				if (i.options.drift != 0f)
 				{
 					driftMap = NoiseGenerator.Sum(
-						NoiseGenerator.noiseMethods[(int)NoiseType.Perlin][1],
+						NoiseConfig.driftMapMethod,
 						location,
 						NoiseConfig.driftMap.frequency.value,
 						NoiseConfig.driftMap.octaves,
@@ -87,7 +86,6 @@ public class InterpolatedNoise : MonoBehaviour
 						);
 
 					// with drift
-					//i.options.frequency + (i.options.drift * distance), 
 					i.samples[x, y, z] = NoiseGenerator.Sum(
 						i.method, 
 						position, 

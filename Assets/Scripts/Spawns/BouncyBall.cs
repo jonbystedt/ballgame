@@ -45,7 +45,7 @@ public class BouncyBall : SpawnedObject
 	private int pickupCount;
 	private int ballCount;
 	private int maxPickup = 25;
-	private int maxBall = 1000;
+	private int maxBall = 100;
 
 	public override void Reset()
 	{
@@ -98,14 +98,17 @@ public class BouncyBall : SpawnedObject
 			{
 				actionEnabled = false;
 				Split(100f * corruption);
+				//Explode();
+				pickupCount = Mathf.FloorToInt(pickupCount * corruption);;
 				return;
 			}
 
 			if (ballCount >= maxBall)
 			{
 				actionEnabled = false;
+				SpawnObject = Spawns.Pickup;
 				Explode();
-				StartCoroutine(Expand());
+				ballCount = Mathf.FloorToInt(ballCount * corruption);
 				return;
 			}
 
@@ -194,10 +197,10 @@ public class BouncyBall : SpawnedObject
 	{
 		exploding = true;
 
-		WorldPosition chunkPos = World.GetChunkPosition(transform.position);
+		// WorldPosition chunkPos = World.GetChunkPosition(transform.position);
 
-		// Add the spawns to the local column spawn list so that they can be managed.
-		Column column = World.GetColumn(chunkPos);	
+		// // Add the spawns to the local column spawn list so that they can be managed.
+		// Column column = World.GetColumn(chunkPos);	
 
 		if (SpawnCount > 0)
 		{
@@ -217,9 +220,9 @@ public class BouncyBall : SpawnedObject
 	{
 		int count = SpawnCount;
 
-		if (type == BallType.Basic && count == 1)
+		if (type == BallType.Basic)
 		{
-			count = 0;
+			count *= 3;
 		}
 
 		while (count > 0)
@@ -294,6 +297,7 @@ public class BouncyBall : SpawnedObject
 			else 
 			{
 				spawn = Spawns.BouncyBall;
+				scale = transform.localScale;
 				newSpawnValue = 1f;
 				splits *= 10;
 			}
@@ -301,7 +305,7 @@ public class BouncyBall : SpawnedObject
 			List<ProceduralToolkit.ColorHSV> newColors = hsvColor.GetAnalogousPalette(splits);
 			int count = 0;
 
-			StartCoroutine(Repeat(splits, 0.1f, () => 
+			StartCoroutine(RepeatThen(splits, 0.1f, () => 
 			{
 				PooledObject obj = World.Spawn.Object(spawn, newColors[count].ToColor(), mass, transform.position);
 				count++;
@@ -323,11 +327,8 @@ public class BouncyBall : SpawnedObject
 
 					column.spawns.Add(obj);
 				}
-			}));
-
-			// Boom
-			//SpawnValue /= 2f;
-			Explode();
+			},
+			() => { Explode(); }));
 		}
 	}
 
@@ -439,8 +440,11 @@ public class BouncyBall : SpawnedObject
 					}
 				}
 			}
-
-			Shrink();
+			
+			if (type != BallType.Basic)
+			{
+				Shrink();
+			}
 		}
 
 		if (other.gameObject.CompareTag("Ball"))
