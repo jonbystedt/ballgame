@@ -80,5 +80,5 @@ public class NoiseSettings
 	public IntRange modScale { get; set; }
 	public Range stretch { get; set; }
 	public Range squish { get; set; }
-
+	public float driftFactor { get; set; }
 }

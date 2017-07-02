@@ -411,5 +411,7 @@ public static class NoiseConfig {
 
 		Config.Noise.stretch = new Range(0f, 1000f);
 		Config.Noise.squish = new Range(0f, 10f);
+
+		Config.Noise.driftFactor = 1f;
 	}
 }

@@ -58,39 +58,48 @@ public class InterpolatedNoise : MonoBehaviour
 		{
 			for (int x = 0; x < sampleX; x++)
 			{
-				// distance calculation for drift
-				Vector2 location = new Vector2(
+				Vector2 location = new Vector2
+				(
 					(x * i.sampleRate + (i.region.min.x / 2f)) * i.zoom.x,
 					(z * i.sampleRate + (i.region.min.z / 2f)) * i.zoom.z
-					);
+				);
 
 				float driftMap = 0f;
 				if (i.options.drift != 0f)
 				{
-					driftMap = NoiseGenerator.Sum(
+					driftMap = NoiseGenerator.Sum
+					(
 						NoiseConfig.driftMapMethod,
 						location,
 						NoiseConfig.driftMap.frequency.value,
 						NoiseConfig.driftMap.octaves,
 						NoiseConfig.driftMap.lacunarity,
-						NoiseConfig.driftMap.persistance);
+						NoiseConfig.driftMap.persistance
+					);
 				}
 				 
 				for (int y = 0; y < sampleY; y++)
 				{
 					// x and z are calculated above
-					Vector3 position = new Vector3(
+					Vector3 position = new Vector3
+					(
 						location.x,
 						(y * i.sampleRate + i.region.min.y) * i.zoom.y,
 						location.y
-						);
+					);
 
 					// with drift
 					i.samples[x, y, z] = NoiseGenerator.Sum(
 						i.method, 
 						position, 
 						i.options.drift != 0f 
-							? Mathf.Lerp(i.options.frequency.value, driftMap > 0f ? i.options.frequency.max : i.options.frequency.min, Mathf.Abs(driftMap))
+							? Mathf.Lerp (
+								i.options.frequency.value, 
+								driftMap > 0f 
+									? i.options.frequency.max * Config.Noise.driftFactor
+									: i.options.frequency.min / Config.Noise.driftFactor, 
+								Mathf.Abs(driftMap)
+								)
 							: i.options.frequency.value,
 						i.options.octaves, 
 						i.options.lacunarity, 
@@ -193,41 +202,48 @@ public class InterpolatedNoise : MonoBehaviour
 		{
 			for (int x = 0; x < sampleX; x++)
 			{
-				// distance calculation for drift
-				Vector2 location = new Vector2(
+				Vector2 location = new Vector2
+				(
 					(x * i.sampleRate + (i.region.min.x / 2f)) * i.zoom.x,
 					(z * i.sampleRate + (i.region.min.z / 2f)) * i.zoom.z
-					);
-				//float distance = Mathf.Abs(Vector2.Distance(Vector2.zero, location));
+				);
 
 				float driftMap = 0f;
 				if (i.options.drift != 0f)
 				{
-					driftMap = NoiseGenerator.Sum(
-						NoiseGenerator.noiseMethods[(int)NoiseType.Perlin][1],
+					driftMap = NoiseGenerator.Sum
+					(
+						NoiseConfig.driftMapMethod,
 						location,
 						NoiseConfig.driftMap.frequency.value,
 						NoiseConfig.driftMap.octaves,
 						NoiseConfig.driftMap.lacunarity,
-						NoiseConfig.driftMap.persistance);
+						NoiseConfig.driftMap.persistance
+					);
 				}
 				 
 				for (int y = 0; y < sampleY; y++)
 				{
 					// x and z are calculated above
-					Vector3 position = new Vector3(
+					Vector3 position = new Vector3
+					(
 						location.x,
 						(y * i.sampleRate + i.region.min.y) * i.zoom.y,
 						location.y
-						);
+					);
 
 					// with drift
-					//i.options.frequency + (i.options.drift * distance), 
 					i.samples[x, y, z] = NoiseGenerator.Sum(
 						i.method, 
 						position, 
 						i.options.drift != 0f 
-							? Mathf.Lerp(i.options.frequency.value, driftMap > 0f ? i.options.frequency.max : i.options.frequency.min, Mathf.Abs(driftMap))
+							? Mathf.Lerp (
+								i.options.frequency.value, 
+								driftMap > 0f 
+									? i.options.frequency.max * Config.Noise.driftFactor
+									: i.options.frequency.min / Config.Noise.driftFactor, 
+								Mathf.Abs(driftMap)
+								)
 							: i.options.frequency.value,
 						i.options.octaves, 
 						i.options.lacunarity, 

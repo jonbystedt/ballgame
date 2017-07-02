@@ -299,7 +299,7 @@ public class BouncyBall : SpawnedObject
 				spawn = Spawns.BouncyBall;
 				scale = transform.localScale;
 				newSpawnValue = 1f;
-				splits *= 10;
+				splits *= 3;
 			}
 
 			List<ProceduralToolkit.ColorHSV> newColors = hsvColor.GetAnalogousPalette(splits);
