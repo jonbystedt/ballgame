@@ -296,6 +296,18 @@ public class TerrainGenerator : MonoBehaviour
 					continue;
 				}
 
+				// carve out the tops of the mesas
+				if (ToWorldHeight(y) > WORLD_BLOCK_HEIGHT - terrainHeight)
+				{
+					chunk.SetBlock(localX, localY, localZ, Block.Air);
+					if (!air)
+					{
+						sampleSet.spawnMap.height[localX, localZ] = y;
+					}
+					air = true;
+					continue;
+				}
+
 				int caveValue = caves[localX, (i * Chunk.Size) + localY, localZ];
 				int stripeValue = stripes[localX, (i * Chunk.Size) + localY, localZ];
 				int glassValue = patterns[localX, (i * Chunk.Size) + localY, localZ];
@@ -928,11 +940,11 @@ public class TerrainGenerator : MonoBehaviour
 		glassy1 = GameUtils.Seed > 0.98f ? true : false;
 		glassy2 = GameUtils.Seed > 0.98f ? true : false;
 
-		freakyFriday = GameUtils.Seed > 0.95f ? true : false;
+		freakyFriday = GameUtils.Seed > 0.5f ? true : false;
 
 		tigerStripes = GameUtils.Seed > 0.8f ? true : false;
 
-		reverseHollowTaper = GameUtils.Seed > 0.5 ? true : false;
+		reverseHollowTaper = GameUtils.Seed > 0.95 ? true : false;
 
         hollowFormation = GameUtils.Seed;
 		hollowMountains = Mathf.Pow(GameUtils.Seed * 0.1f, 14f);

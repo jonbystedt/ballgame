@@ -73,9 +73,9 @@ public class Roller : MonoBehaviour
 			_rigidbody.drag = 10f;
 			_rigidbody.angularDrag = 2f;
 			
-			movePower = 120000f;
-			jumpPower = 3000f;
-			boostPower = 1.25f;	
+			movePower = 200000f;
+			jumpPower = 4000f;
+			boostPower = 2f;	
 		}
 		else
 		{
@@ -273,7 +273,7 @@ public class Roller : MonoBehaviour
 			groundPoundEnabled = true;
 
 			// ...add force in upwards. boost jump
-			if (boosting && !camOp.FirstPerson)
+			if (boosting)
 			{
 				float multiplier = Mathf.Lerp(20f, 10f, Mathf.Clamp01((moveDirection.x + moveDirection.y) / 5f));
 				_rigidbody.AddForce(moveDirection * movePower * airResistance + Vector3.up * jumpPower*multiplier, ForceMode.Impulse);
@@ -334,7 +334,7 @@ public class Roller : MonoBehaviour
 			
 		}
 		// regular assist, always applied unless boosting. affected by calculation above when falling.
-		if (camOp.FirstPerson || !boosting || (boosting && !jumpEnded))
+		if (!boosting || (boosting && !jumpEnded))
 		{
 			_rigidbody.AddForce(moveDirection * movePower * airResistance + Vector3.down * gravityAssist, ForceMode.Impulse);
 		}
@@ -403,7 +403,7 @@ public class Roller : MonoBehaviour
 		}
 	}
 
-	public bool BashBlocks(Vector3 forward, float speed, bool boosting, bool firstPerson)
+	public bool BashBlocks(Vector3 forward, float speed, bool boosting, bool jumping, bool firstPerson)
 	{
 		//Game.Log("Speed: " + speed.ToString("N2") + " Contacts: " + collision.contacts.Length);
 		bool groundPounded = false;
@@ -427,7 +427,7 @@ public class Roller : MonoBehaviour
 		{
 			// Try to hit with the forward normal, fall back to a radial search
 			// TODO: be more selective with search angles
-			if (!grounded || firstPerson)
+			if ((!grounded || jumping) || firstPerson)
 			{
 				// Blocks above the player
 				normals.Add(Vector3.up);
@@ -441,7 +441,7 @@ public class Roller : MonoBehaviour
 				normals.Add(new Vector3(-1,1,-1));
 			}
 
-			if (firstPerson && !grounded)
+			if (firstPerson && (!grounded || jumping))
 			{
 				// Blocks above the player
 				normals.Add(new Vector3(0,2,0));
@@ -470,14 +470,26 @@ public class Roller : MonoBehaviour
 
 		foreach(Vector3 normal in normals)
 		{
-			float searchRadius = 1f;
 			int blockPosY = Mathf.FloorToInt(pos.y);
 			float offset = pos.y - ((float)blockPosY + 0.5f);
+			WorldPosition b_pos;
 			
-			WorldPosition b_pos = new WorldPosition(
-				Mathf.FloorToInt(pos.x + normal.x * searchRadius), 
-				Mathf.FloorToInt(pos.y - 0.49f + normal.y * searchRadius), 
-				Mathf.FloorToInt(pos.z + normal.z * searchRadius));
+			if (!jumping)
+			{
+				b_pos = new WorldPosition(
+					Mathf.FloorToInt(pos.x + normal.x), 
+					Mathf.FloorToInt(pos.y - offset + normal.y), 
+					Mathf.FloorToInt(pos.z + normal.z)
+					);
+			}
+			else
+			{
+				b_pos = new WorldPosition(
+					Mathf.FloorToInt(pos.x + normal.x), 
+					Mathf.FloorToInt(pos.y - offset + normal.y), 
+					Mathf.FloorToInt(pos.z + normal.z)
+					);
+			}
 
 			bool bash = false;
 

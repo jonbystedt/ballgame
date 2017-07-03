@@ -241,7 +241,7 @@ public class InterpolatedNoise : MonoBehaviour
 								i.options.frequency.value, 
 								driftMap > 0f 
 									? i.options.frequency.max * Config.Noise.driftFactor
-									: i.options.frequency.min / Config.Noise.driftFactor, 
+									: i.options.frequency.min, 
 								Mathf.Abs(driftMap)
 								)
 							: i.options.frequency.value,

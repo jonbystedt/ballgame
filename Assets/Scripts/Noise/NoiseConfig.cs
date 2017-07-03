@@ -102,7 +102,9 @@ public static class NoiseConfig {
 				Seed
 				), 
 			32,
-			Config.Noise.terrain.drift ? Seed : 0f
+			Config.Noise.terrain.drift 
+				? Mathf.Pow(Seed, 2f)
+				: 0f
 			); 
 
 		mountain = new NoiseOptions(
@@ -126,8 +128,14 @@ public static class NoiseConfig {
 				Config.Noise.mountain.persistance.high, 
 				Seed
 				), 
-			64 - GameUtils.IntLerp(0, 16, Mathf.Pow(Seed, 2)),
-			Config.Noise.mountain.drift ? Seed : 0f
+			64 - GameUtils.IntLerp(
+				0, 
+				16, 
+				Mathf.Pow(Seed, 2)
+				),
+			Config.Noise.mountain.drift 
+				? Mathf.Pow(Seed, 2) 
+				: 0f
 			); 
 
 		cave = new NoiseOptions(
@@ -152,7 +160,9 @@ public static class NoiseConfig {
 				Seed
 				), 
 			1024,
-			Config.Noise.cave.drift ? Seed : 0f
+			Config.Noise.cave.drift 
+				? Mathf.Pow(Seed, 2) 
+				: 0f
 			);
 
 		pattern = new NoiseOptions(
@@ -177,7 +187,9 @@ public static class NoiseConfig {
 				Seed
 				), 
 			1024,
-			Config.Noise.pattern.drift ? Seed : 0f
+			Config.Noise.pattern.drift 
+				? Mathf.Pow(Seed, 2)
+				: 0f
 			);
 
 		stripe = new NoiseOptions(
@@ -201,7 +213,9 @@ public static class NoiseConfig {
 				Seed
 				),
 			1024,
-			Config.Noise.stripe.drift ? Seed : 0f
+			Config.Noise.stripe.drift 
+				? Seed 
+				: 0f
 			);
 
 		driftMap = new NoiseOptions(
@@ -224,8 +238,7 @@ public static class NoiseConfig {
 				Config.Noise.driftMap.persistance.high, 
 				Seed
 				),
-			1,
-			0f
+			1, 0f
 		);
 
 		spawnTypes = new NoiseOptions
