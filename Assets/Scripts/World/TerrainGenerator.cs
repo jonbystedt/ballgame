@@ -110,29 +110,29 @@ public class TerrainGenerator : MonoBehaviour
 
 	SampleSet CreateNewSampleSet()
 	{
-
-
-		SampleRegion caves = new SampleRegion(NoiseConfig.cave, NoiseConfig.caveMethod, Config.SampleRate, new Vector3(1,1,1));
-
-		SampleRegion patterns = new SampleRegion(NoiseConfig.pattern, NoiseConfig.patternMethod, Config.SampleRate, new Vector3(1,1,1));
-
+		SampleRegion caves = new SampleRegion(NoiseConfig.cave.id, NoiseConfig.caveMethod, Config.SampleRate, new Vector3(1,1,1));
+		SampleRegion patterns = new SampleRegion(NoiseConfig.pattern.id, NoiseConfig.patternMethod, Config.SampleRate, new Vector3(1,1,1));
 		SampleRegion stripes;
 
 		if (!flipStripes)
 		{
-			stripes= new SampleRegion(
-				NoiseConfig.stripe, 
+			stripes= new SampleRegion
+			(
+				NoiseConfig.stripe.id, 
 				NoiseConfig.stripeMethod, 
 				Mathf.CeilToInt(Config.SampleRate / 2f), 
-				new Vector3(1f / stretchFactor, squishFactor, 1f / stretchFactor));
+				new Vector3(1f / stretchFactor, squishFactor, 1f / stretchFactor)
+			);
 		}
 		else
 		{
-			stripes = new SampleRegion(
-				NoiseConfig.stripe, 
+			stripes = new SampleRegion
+			(
+				NoiseConfig.stripe.id, 
 				NoiseConfig.stripeMethod, 
 				Mathf.CeilToInt(Config.SampleRate / 2f), 
-				new Vector3(squishFactor, 1f / stretchFactor, squishFactor));
+				new Vector3(squishFactor, 1f / stretchFactor, squishFactor)
+			);
 		}
 
 		Dictionary<string,SampleRegion> sampleDict = new Dictionary<string, SampleRegion>()

@@ -40,6 +40,13 @@ public class InterpolatedNoise : MonoBehaviour
 
 	IEnumerator GetSamplesAsync(SampleRegion i)
 	{
+		NoiseOptions options = NoiseConfig.options[i.options];
+		NoiseOptions drift = new NoiseOptions();
+		if (options.driftMapId != -1)
+		{
+			drift = NoiseConfig.options[options.driftMapId];
+		}
+
 		int h_rate = 2;
 		if (Config.Interpolation == InterpolationLevel.Off) 
 		{
@@ -65,16 +72,17 @@ public class InterpolatedNoise : MonoBehaviour
 				);
 
 				float driftMap = 0f;
-				if (i.options.drift != 0f)
+				if (options.drift != 0f && options.driftMapId != -1)
 				{
+
 					driftMap = NoiseGenerator.Sum
 					(
 						NoiseConfig.driftMapMethod,
 						location,
-						NoiseConfig.driftMap.frequency.value,
-						NoiseConfig.driftMap.octaves,
-						NoiseConfig.driftMap.lacunarity,
-						NoiseConfig.driftMap.persistance
+						drift.frequency.value,
+						drift.octaves,
+						drift.lacunarity,
+						drift.persistance
 					);
 				}
 				 
@@ -92,18 +100,18 @@ public class InterpolatedNoise : MonoBehaviour
 					i.samples[x, y, z] = NoiseGenerator.Sum(
 						i.method, 
 						position, 
-						i.options.drift != 0f 
+						options.drift != 0f 
 							? Mathf.Lerp (
-								i.options.frequency.value, 
+								options.frequency.value, 
 								driftMap > 0f 
-									? i.options.frequency.max * Config.Noise.driftFactor
-									: i.options.frequency.min / Config.Noise.driftFactor, 
+									? options.frequency.max * Config.Noise.driftFactor
+									: options.frequency.min / Config.Noise.driftFactor, 
 								Mathf.Abs(driftMap)
 								)
-							: i.options.frequency.value,
-						i.options.octaves, 
-						i.options.lacunarity, 
-						i.options.persistance
+							: options.frequency.value,
+						options.octaves, 
+						options.lacunarity, 
+						options.persistance
 					);
 				}
 			}
@@ -129,6 +137,8 @@ public class InterpolatedNoise : MonoBehaviour
 				break;
 			}
 		}
+
+		NoiseOptions options = NoiseConfig.options[i.options];
 
 		if (i.interpolates == null)
 		{
@@ -171,7 +181,7 @@ public class InterpolatedNoise : MonoBehaviour
 								i.interpolates[x * (i.sampleRate * 2) + xi, y * i.sampleRate + yi, z * (i.sampleRate * 2) + zi]
 									= Mathf.FloorToInt(((
 										GameUtils.TriLerp (v000, v100, v010, v110, v001, v101, v011, v111, tx, ty, tz)
-									+ 1f) * (i.options.scale / 2f)));
+									+ 1f) * (options.scale / 2f)));
 							}
 						}
 					}
@@ -188,6 +198,13 @@ public class InterpolatedNoise : MonoBehaviour
 	{
 		Stopwatch stopwatch = new Stopwatch();
 		stopwatch.Start();
+
+		NoiseOptions options = NoiseConfig.options[i.options];
+		NoiseOptions drift = new NoiseOptions();
+		if (options.driftMapId != -1)
+		{
+			drift = NoiseConfig.options[options.driftMapId];
+		}
 
 		int sampleX = (i.region.sizeX / (i.sampleRate * 2)) + 1;
 		int sampleY = (i.region.sizeY / i.sampleRate) + 1;
@@ -209,16 +226,16 @@ public class InterpolatedNoise : MonoBehaviour
 				);
 
 				float driftMap = 0f;
-				if (i.options.drift != 0f)
+				if (options.drift != 0f && options.driftMapId != -1)
 				{
 					driftMap = NoiseGenerator.Sum
 					(
 						NoiseConfig.driftMapMethod,
 						location,
-						NoiseConfig.driftMap.frequency.value,
-						NoiseConfig.driftMap.octaves,
-						NoiseConfig.driftMap.lacunarity,
-						NoiseConfig.driftMap.persistance
+						drift.frequency.value,
+						drift.octaves,
+						drift.lacunarity,
+						drift.persistance
 					);
 				}
 				 
@@ -236,18 +253,18 @@ public class InterpolatedNoise : MonoBehaviour
 					i.samples[x, y, z] = NoiseGenerator.Sum(
 						i.method, 
 						position, 
-						i.options.drift != 0f 
+						options.drift != 0f 
 							? Mathf.Lerp (
-								i.options.frequency.value, 
+								options.frequency.value, 
 								driftMap > 0f 
-									? i.options.frequency.max * Config.Noise.driftFactor
-									: i.options.frequency.min, 
+									? options.frequency.max * Config.Noise.driftFactor
+									: options.frequency.min, 
 								Mathf.Abs(driftMap)
 								)
-							: i.options.frequency.value,
-						i.options.octaves, 
-						i.options.lacunarity, 
-						i.options.persistance
+							: options.frequency.value,
+						options.octaves, 
+						options.lacunarity, 
+						options.persistance
 					);
 
 					if (stopwatch.ElapsedTicks > Config.CoroutineTiming)
@@ -284,6 +301,8 @@ public class InterpolatedNoise : MonoBehaviour
 		Stopwatch stopwatch = new Stopwatch();
 		stopwatch.Start();
 
+		NoiseOptions options = NoiseConfig.options[i.options];
+
 		if (i.interpolates == null)
 		{
 			i.interpolates = new int[
@@ -325,7 +344,7 @@ public class InterpolatedNoise : MonoBehaviour
 								i.interpolates[x * (i.sampleRate * 2) + xi, y * i.sampleRate + yi, z * (i.sampleRate * 2) + zi]
 									= Mathf.FloorToInt(((
 										GameUtils.TriLerp (v000, v100, v010, v110, v001, v101, v011, v111, tx, ty, tz)
-									+ 1f) * (i.options.scale / 2f)));
+									+ 1f) * (options.scale / 2f)));
 
 								if (stopwatch.ElapsedTicks > Config.CoroutineTiming)
 								{

@@ -362,22 +362,22 @@ public class Roller : MonoBehaviour
 
 	public void CreateBlocks()
 	{
-		if (camOp.FirstPerson)
-		{
-			Vector3 camForward = Vector3.Scale(Game.MainCamera.transform.forward, new Vector3(1, 0, 1)).normalized;
-			Vector3 editLocation = transform.position + camForward;
+		// if (camOp.FirstPerson)
+		// {
+		// 	Vector3 camForward = Vector3.Scale(Game.MainCamera.transform.forward, new Vector3(1, 0, 1)).normalized;
+		// 	Vector3 editLocation = transform.position + camForward;
 
-			WorldPosition editBlock = World.GetBlockPosition(editLocation);
+		// 	WorldPosition editBlock = World.GetBlockPosition(editLocation);
 
-			ushort block = World.GetBlock(editBlock);
+		// 	ushort block = World.GetBlock(editBlock);
 
-			if (block == Block.Air)
-			{
-				VoxelEditor.SetBlock(editBlock, Blocks.Glass(0));
-			}
-		}
-		else
-		{
+		// 	if (block == Block.Air)
+		// 	{
+		// 		VoxelEditor.SetBlock(editBlock, Blocks.Glass(0));
+		// 	}
+		// }
+		// else
+		// {
 			for (int x = -1; x < 2; x++)
 			{
 				for (int y = -3; y < 0; y++)
@@ -400,7 +400,7 @@ public class Roller : MonoBehaviour
 					}
 				}
 			}
-		}
+		//}
 	}
 
 	public bool BashBlocks(Vector3 forward, float speed, bool boosting, bool jumping, bool firstPerson)

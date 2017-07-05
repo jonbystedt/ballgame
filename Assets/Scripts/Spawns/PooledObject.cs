@@ -42,6 +42,7 @@ public class PooledObject : MonoBehaviour {
 	public void ReturnToPool() 
 	{
 		StopAllCoroutines();
+		Wipe();
 		
 		if (Pool)
 		{

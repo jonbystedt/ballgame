@@ -60,10 +60,7 @@ AudioMixerGroupController:
   m_Name: SoundFx
   m_AudioMixer: {fileID: 24100000}
   m_GroupID: 9026203d423ca421185dfbf9561b4b2c
-  m_Children:
-  - {fileID: 243912607917999478}
-  - {fileID: 243913842462178366}
-  - {fileID: 243349889705930946}
+  m_Children: []
   m_Volume: 1e3a377f854de43b7a3e47634a4b05bc
   m_Pitch: 631bb5cafd88844b3bace4c8903eb759
   m_Effects:
@@ -173,6 +170,9 @@ AudioMixerGroupController:
   m_AudioMixer: {fileID: 24100000}
   m_GroupID: 77e98f4a5719b5d4bae8fb9247e38284
   m_Children:
+  - {fileID: 243912607917999478}
+  - {fileID: 243913842462178366}
+  - {fileID: 243349889705930946}
   - {fileID: 24301952}
   m_Volume: e149d383d712e244fb8bd81dfd80a7d6
   m_Pitch: f0f7cabee2801db48833dae127caac48

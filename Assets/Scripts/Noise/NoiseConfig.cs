@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 public struct ValueRange
 {
@@ -29,8 +30,10 @@ public struct NoiseOptions
 	public float persistance;
 	public int scale;
 	public float drift;
+	public int id;
+	public int driftMapId;
 
-	public NoiseOptions(ValueRange f, int o, float l, float p, int s, float d)
+	public NoiseOptions(ValueRange f, int o, float l, float p, int s, float d, int i, int di)
 	{
 		frequency = f;
 		octaves = o;
@@ -38,6 +41,8 @@ public struct NoiseOptions
 		persistance = p;
 		scale = s;
 		drift = d;
+		id = i;
+		driftMapId = di;
 	}
 }
 
@@ -58,7 +63,7 @@ public static class NoiseConfig {
 	public static NoiseOptions boidDistance;
 	public static NoiseOptions boidAlignment;
 	public static NoiseOptions worldKey;
-	public static NoiseOptions driftMap;
+	//public static NoiseOptions driftMap;
 
 	// Intensity will never be below this number.
 	public static int spawnIntensityBase = -20;
@@ -74,12 +79,22 @@ public static class NoiseConfig {
 
 	public static float Seed { get { return GameUtils.Seed; }}
 
+	static int optionCount = 0;
+	static float copyChance = 0.2f;
+
+	public static NoiseOptions[] options;
+	static List<NoiseOptions> opts = new List<NoiseOptions>();
+
 	public static void Initialize()
 	{
+		opts = new List<NoiseOptions>();
+		optionCount = 0;
+
 		float s = Seed;
 		rainBreakValue = rainBreakValue + Mathf.FloorToInt(s * s * 350);
 		lightningBreakValue = lightningBreakValue + Mathf.FloorToInt(s * s * 250);
 
+		int driftIndex = GetDriftIndex(Config.Noise.terrain.drift);
 		terrain = new NoiseOptions(
 			new ValueRange(
 				Config.Noise.terrain.frequency.low, 
@@ -103,10 +118,15 @@ public static class NoiseConfig {
 				), 
 			32,
 			Config.Noise.terrain.drift 
-				? Mathf.Pow(Seed, 2f)
-				: 0f
+				? Seed
+				: 0f,
+			optionCount++,
+			driftIndex
 			); 
 
+		opts.Add(terrain);
+
+		driftIndex = GetDriftIndex(Config.Noise.mountain.drift);
 		mountain = new NoiseOptions(
 			new ValueRange(
 				Config.Noise.mountain.frequency.low, 
@@ -134,10 +154,15 @@ public static class NoiseConfig {
 				Mathf.Pow(Seed, 2)
 				),
 			Config.Noise.mountain.drift 
-				? Mathf.Pow(Seed, 2) 
-				: 0f
+				? Mathf.Pow(Seed, 4) 
+				: 0f,
+				optionCount++,
+				driftIndex
 			); 
 
+		opts.Add(mountain);
+
+		driftIndex = GetDriftIndex(Config.Noise.cave.drift);
 		cave = new NoiseOptions(
 			new ValueRange(
 				Config.Noise.cave.frequency.low, 
@@ -162,9 +187,14 @@ public static class NoiseConfig {
 			1024,
 			Config.Noise.cave.drift 
 				? Mathf.Pow(Seed, 2) 
-				: 0f
+				: 0f,
+			optionCount++,
+			driftIndex
 			);
 
+		opts.Add(cave);
+
+		driftIndex = GetDriftIndex(Config.Noise.pattern.drift);
 		pattern = new NoiseOptions(
 			new ValueRange(
 				Config.Noise.pattern.frequency.low, 
@@ -189,9 +219,14 @@ public static class NoiseConfig {
 			1024,
 			Config.Noise.pattern.drift 
 				? Mathf.Pow(Seed, 2)
-				: 0f
+				: 0f,
+			optionCount++,
+			driftIndex
 			);
 
+		opts.Add(pattern);
+
+		driftIndex = GetDriftIndex(Config.Noise.stripe.drift);
 		stripe = new NoiseOptions(
 			new ValueRange(
 				Config.Noise.stripe.frequency.low, 
@@ -214,33 +249,38 @@ public static class NoiseConfig {
 				),
 			1024,
 			Config.Noise.stripe.drift 
-				? Seed 
-				: 0f
+				? Mathf.Pow(Seed, 2)
+				: 0f,
+			optionCount++,
+			driftIndex
 			);
 
-		driftMap = new NoiseOptions(
-			new ValueRange(
-				Config.Noise.driftMap.frequency.low, 
-				Config.Noise.driftMap.frequency.high
-				),
-			GameUtils.IntLerp(
-				Config.Noise.driftMap.octaves.low,
-				Config.Noise.driftMap.octaves.high, 
-				Seed
-				),
-			Mathf.Lerp(
-				Config.Noise.driftMap.lacunarity.low, 
-				Config.Noise.driftMap.lacunarity.high, 
-				Seed
-				),
-			Mathf.Lerp(
-				Config.Noise.driftMap.persistance.low, 
-				Config.Noise.driftMap.persistance.high, 
-				Seed
-				),
-			1, 0f
-		);
+		opts.Add(stripe);
 
+		// driftMap = new NoiseOptions(
+		// 	new ValueRange(
+		// 		Config.Noise.driftMap.frequency.low, 
+		// 		Config.Noise.driftMap.frequency.high
+		// 		),
+		// 	GameUtils.IntLerp(
+		// 		Config.Noise.driftMap.octaves.low,
+		// 		Config.Noise.driftMap.octaves.high, 
+		// 		Seed
+		// 		),
+		// 	Mathf.Lerp(
+		// 		Config.Noise.driftMap.lacunarity.low, 
+		// 		Config.Noise.driftMap.lacunarity.high, 
+		// 		Seed
+		// 		),
+		// 	Mathf.Lerp(
+		// 		Config.Noise.driftMap.persistance.low, 
+		// 		Config.Noise.driftMap.persistance.high, 
+		// 		Seed
+		// 		),
+		// 	1, 0f, optionCount++
+		// );
+
+		driftIndex = GetDriftIndex(true);
 		spawnTypes = new NoiseOptions
 		(
 			new ValueRange(0.008f, 0.05f, 2f), 
@@ -248,9 +288,14 @@ public static class NoiseConfig {
 			Mathf.Lerp(0f, 2f, Seed),
 			Mathf.Lerp(0f, 2f, Seed),
 			10000,
-			Seed
+			Seed,
+			optionCount++,
+			driftIndex
 		);
 
+		opts.Add(spawnTypes);
+
+		driftIndex = GetDriftIndex(true);
 		spawnFrequency = new NoiseOptions
 		(
 			new ValueRange(0.04f, 0.2f), 
@@ -258,9 +303,14 @@ public static class NoiseConfig {
 			Mathf.Lerp(0f, 2f, Seed),
 			Mathf.Lerp(0f, 2f, Seed),
 			100,
-			Seed
+			Seed,
+			optionCount++,
+			driftIndex
 		);
 
+		opts.Add(spawnFrequency);
+
+		driftIndex = GetDriftIndex(true);
 		spawnIntensity = new NoiseOptions
 		(
 			new ValueRange(0.004f, 0.05f, 2f), 
@@ -268,8 +318,12 @@ public static class NoiseConfig {
 			Mathf.Lerp(0f, 2f, Seed),
 			Mathf.Lerp(0f, 2f, Seed),
 			100,
-			Seed
+			Seed,
+			optionCount++,
+			driftIndex
 		);
+
+		opts.Add(spawnIntensity);
 
 		rainIntensity = new NoiseOptions
 		(
@@ -278,8 +332,12 @@ public static class NoiseConfig {
 			Mathf.Lerp(0f, 2f, Seed),
 			Mathf.Lerp(0f, 2f, Seed),
 			1000,
-			0f
+			0f,
+			optionCount++,
+			-1
 		);
+
+		opts.Add(rainIntensity);
 
 		lightningIntensity = new NoiseOptions
 		(
@@ -288,8 +346,12 @@ public static class NoiseConfig {
 			rainIntensity.lacunarity + Mathf.Lerp(0.01f, 0.0025f, Seed),
 			rainIntensity.persistance + Mathf.Lerp(0.01f, 0.0025f, Seed),
 			1000,
-			0f
+			0f,
+			optionCount++,
+			-1
 		);
+
+		opts.Add(lightningIntensity);
 		
 		boidInteraction = new NoiseOptions
 		(
@@ -298,9 +360,14 @@ public static class NoiseConfig {
 			Mathf.Lerp(0f, 2f, Seed),
 			Mathf.Lerp(0f, 2f, Seed),
 			20,
-			0f
+			0f,
+			optionCount++,
+			-1
 		);
+
+		opts.Add(boidInteraction);
 		
+
 		boidDistance = new NoiseOptions
 		(
 			new ValueRange(0.0002f, 0.01f),
@@ -308,9 +375,13 @@ public static class NoiseConfig {
 			Mathf.Lerp(0f, 2f, Seed),
 			Mathf.Lerp(0f, 2f, Seed),
 			20,
-			0f
+			0f,
+			optionCount++,
+			-1
 		);
 		
+		opts.Add(boidDistance);
+
 		boidAlignment = new NoiseOptions
 		(
 			new ValueRange(0.0002f, 0.01f),
@@ -318,8 +389,12 @@ public static class NoiseConfig {
 			Mathf.Lerp(0f, 2f, Seed),
 			Mathf.Lerp(0f, 2f, Seed),
 			20,
-			0f
+			0f,
+			optionCount++,
+			-1
 		);
+
+		opts.Add(boidAlignment);
 
 		worldKey = new NoiseOptions(
 			new ValueRange(0.0002f, 0.01f),
@@ -327,8 +402,13 @@ public static class NoiseConfig {
 			Mathf.Lerp(0f, 2f, Seed),
 			Mathf.Lerp(0f, 2f, Seed),
 			12,
-			Seed
+			0f,
+			optionCount++,
+			-1
 		);
+
+		opts.Add(worldKey);
+		options = opts.ToArray();
 
 		// Noise Methods
 		int index = GameUtils.IntLerp(0, Config.Noise.caveTypes.Length - 1, Seed);
@@ -350,6 +430,59 @@ public static class NoiseConfig {
 		driftMapMethod = NoiseGenerator.noiseMethods[(int)Config.Noise.driftMapTypes[index]][1];
 
 		terrain.scale = GameUtils.IntLerp(Config.Noise.terrainScale.low, Config.Noise.terrainScale.high, Seed);
+	}
+
+	static int GetDriftIndex(bool drift)
+	{
+		int driftIndex = -1;
+
+		if (drift)
+		{
+			foreach (NoiseOptions o in opts)
+			{
+				if (o.driftMapId != -1 && Seed < copyChance)
+				{
+					driftIndex = o.driftMapId;
+				}
+			}
+			
+			if (driftIndex == -1)
+			{
+				driftIndex = optionCount;
+				opts.Add(GetDriftMap());
+			}
+		}
+
+		return driftIndex;
+	}
+
+	static NoiseOptions GetDriftMap()
+	{
+		return new NoiseOptions(
+			new ValueRange(
+				Config.Noise.driftMap.frequency.low, 
+				Config.Noise.driftMap.frequency.high
+				),
+			GameUtils.IntLerp(
+				Config.Noise.driftMap.octaves.low,
+				Config.Noise.driftMap.octaves.high, 
+				Seed
+				),
+			Mathf.Lerp(
+				Config.Noise.driftMap.lacunarity.low, 
+				Config.Noise.driftMap.lacunarity.high, 
+				Seed
+				),
+			Mathf.Lerp(
+				Config.Noise.driftMap.persistance.low, 
+				Config.Noise.driftMap.persistance.high, 
+				Seed
+				),
+			1, 
+			0f, 
+			optionCount++, 
+			-1
+		);
 	}
 
 	public static void ApplyDefaults()

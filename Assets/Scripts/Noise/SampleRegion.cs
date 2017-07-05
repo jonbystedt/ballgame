@@ -8,14 +8,14 @@ public class SampleRegion
 
 	public int sampleRate;
 	public Vector3 zoom;
-	public NoiseOptions options;
+	public int options;
 	public NoiseMethod method;
 	public Region region;
 
 	public bool complete;
 	public bool sampled;
 
-	public SampleRegion(NoiseOptions o, NoiseMethod m, int sr, Vector3 z)
+	public SampleRegion(int o, NoiseMethod m, int sr, Vector3 z)
 	{
 		interpolates = null;
 		samples = null;
