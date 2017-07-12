@@ -218,12 +218,6 @@ public class Cosmos : MonoBehaviour {
 			RenderSettings.fogColor = skyColor;
 		}
 
-		// Outline Color
-		if (Config.ColoredOutlines)
-		{
-			edges.edgesColor = Tile.Darken(Color.Lerp(skyColor, Color.gray, 0.5f), 0.2f);
-		}
-
 		// Skybox Color
 		RenderSettings.skybox.SetColor("_Tint", skyColor);
 	
@@ -373,7 +367,6 @@ public class Cosmos : MonoBehaviour {
 		if (Input.GetKeyDown(KeyCode.Comma)) skySpeed *= 0.5f;
 		if (Input.GetKeyDown(KeyCode.Period)) skySpeed *= 2f;
 		if (Input.GetKeyDown(KeyCode.LeftBracket)) Config.Outlines = !Config.Outlines;
-		if (Input.GetKeyDown(KeyCode.RightBracket)) Config.ColoredOutlines = !Config.ColoredOutlines;
 	}
 		
 	float Rotate(Vector3 rotation)

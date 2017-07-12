@@ -17,7 +17,6 @@ public class Game : MonoBehaviour
 	public Cosmos cosmos;
 
 	public EdgeDetection edgeDetect;
-	public EdgeDetectionColor edgeDetectColor;
 	HBAO hbao;
 	GlobalFog fog;
 	GlobalFog distanceFog;
@@ -238,14 +237,6 @@ public class Game : MonoBehaviour
 		{
 			edgeDetect.enabled = false;
 		}
-		if (Config.ColoredOutlines && !edgeDetectColor.enabled)
-		{
-			edgeDetectColor.enabled = true;
-		}
-		if (!Config.ColoredOutlines && edgeDetectColor.enabled)
-		{
-			edgeDetectColor.enabled = false;
-		}
 	}
 
 	public void _begin()
@@ -342,7 +333,7 @@ public class Game : MonoBehaviour
 
 		// Initialize graphics
 		edgeDetect.enabled = Config.Outlines;
-		edgeDetectColor.enabled = Config.ColoredOutlines;
+		edgeDetect.sampleDist = ((float)Screen.height / 1080f) * 1.4f;
 
 		hbao = mainCamera.GetComponent<HBAO>();
 		hbao.enabled = Config.ContactShadows;

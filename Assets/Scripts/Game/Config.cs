@@ -120,10 +120,8 @@ public class Config : MonoBehaviour
 					BlockSpawnChance = 0.05f;
 					ContactShadows = false;
 					GlobalFogEnabled = true;
-					AtmosphericScattering = false;
 					ShadowsEnabled = false;
 					Outlines = true;
-					ColoredOutlines = false;
 					World.ChunkShadows = false;
 					
 					if (QualitySettings.GetQualityLevel() != 0)
@@ -142,10 +140,8 @@ public class Config : MonoBehaviour
 					BlockSpawnChance = 0.05f;
 					ContactShadows = true;
 					GlobalFogEnabled = true;
-					AtmosphericScattering = false;
 					ShadowsEnabled = false;
 					Outlines = true;
-					ColoredOutlines = false;
 					World.ChunkShadows = false;
 
 					if (QualitySettings.GetQualityLevel() != 1)
@@ -164,10 +160,8 @@ public class Config : MonoBehaviour
 					BlockSpawnChance = 0.05f;
 					ContactShadows = true;
 					GlobalFogEnabled = true;
-					AtmosphericScattering = true;
 					ShadowsEnabled = true;
 					Outlines = true;
-					ColoredOutlines = false;
 					World.ChunkShadows = true;
 
 					Interpolation = InterpolationLevel.Low;
@@ -187,10 +181,8 @@ public class Config : MonoBehaviour
 					BlockSpawnChance = 0.05f;
 					ContactShadows = true;
 					GlobalFogEnabled = true;
-					AtmosphericScattering = true;
 					ShadowsEnabled = true;
 					Outlines = true;
-					ColoredOutlines = false;
 					World.ChunkShadows = true;
 
 					if (QualitySettings.GetQualityLevel() != 3)
@@ -347,18 +339,6 @@ public class Config : MonoBehaviour
 	{
 		get { return _instance.outlines; }
 		set { _instance.outlines = value; }
-	}
-
-	public static bool ColoredOutlines
-	{
-		get { return _instance.coloredOutlines; }
-		set { _instance.coloredOutlines = value; }
-	}
-
-	public static bool AtmosphericScattering
-	{
-		get { return _instance.atmosphericScattering;}
-		set { _instance.atmosphericScattering = value; }
 	}
 
 	public static bool GlobalFogEnabled

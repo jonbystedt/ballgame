@@ -190,7 +190,7 @@ public class LoadChunks : MonoBehaviour
 		currentBuilds.Clear();
 		building = true;
 
-		// Pass the chunks positions in to queue the build processes
+		// Pass the chunks' positions in to queue the build processes
 		for (int i = buildList.Count - 1; i >= 0; i--)
 		{
 			World.CreateChunk(buildList[i]);
@@ -209,7 +209,7 @@ public class LoadChunks : MonoBehaviour
 
 	IEnumerator AwaitBuildComplete()
 	{
-		for (;;)
+		while (true)
 		{
 			yield return null;
 
@@ -255,9 +255,11 @@ public class LoadChunks : MonoBehaviour
 		for (int i = updateList.Count - 1; i >= 0; i--)
 		{
 			// Check first that this chunk is still in range and we should be instantiating it.
-			float distance = Vector3.Distance(
+			float distance = Vector3.Distance
+			(
 				new Vector3(updateList[i].x, 0, updateList[i].z),
-				new Vector3(transform.position.x, 0, transform.position.z));
+				new Vector3(transform.position.x, 0, transform.position.z
+			));
 
 			// If not, remove it from the list as it will be deleted immediately anyway
 			if (distance > (Config.ChunkDeleteRadius - 1) * Chunk.Size)
@@ -321,10 +323,12 @@ public class LoadChunks : MonoBehaviour
 		// check above and/or below
 		for (int yi = yStart; yi <= yEnd; yi++)
 		{
-				WorldPosition pos = new WorldPosition(
+				WorldPosition pos = new WorldPosition
+				(
 					chunk.pos.x, 
 					chunk.pos.y + (yi * Chunk.Size), 
-					chunk.pos.z);
+					chunk.pos.z
+				);
 
 				Chunk neighbor = World.GetChunk(pos);
 
@@ -339,7 +343,7 @@ public class LoadChunks : MonoBehaviour
 
 	void ExecuteSpawn()
 	{
-		if (!spawning)
+		if (!Game.PlayerActive)
 		{
 			return;
 		}
@@ -349,11 +353,12 @@ public class LoadChunks : MonoBehaviour
 			for (int i = 0; i < ChunkData.SpawnOrder.Count(); i++)
 			{
 				//translate the player position and array position into chunk position
-				WorldPosition spawnPosition = new WorldPosition(
+				WorldPosition spawnPosition = new WorldPosition
+				(
 					ChunkData.SpawnOrder[i].x * Chunk.Size + playerChunkPos.x,
 					0, 
 					ChunkData.SpawnOrder[i].z * Chunk.Size + playerChunkPos.z
-					);
+				);
 
 				Column column;
 				if (World.Columns.TryGetValue(spawnPosition.GetHashCode(), out column))
@@ -361,12 +366,14 @@ public class LoadChunks : MonoBehaviour
 					if (!column.spawned && column.rendered)
 					{
 						// Only spawn if the player is still around
-						WorldPosition currentPosition = World.GetChunkPosition(new Vector3(
+						WorldPosition currentPosition = World.GetChunkPosition(new Vector3
+						(
 							Game.Player.transform.position.x,
 							0,
 							Game.Player.transform.position.z
 						));
-						WorldPosition columnPosition = World.GetChunkPosition(new Vector3(
+						WorldPosition columnPosition = World.GetChunkPosition(new Vector3
+						(
 							column.region.min.x,
 							0,
 							column.region.min.z

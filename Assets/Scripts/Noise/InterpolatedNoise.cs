@@ -104,10 +104,9 @@ public class InterpolatedNoise : MonoBehaviour
 							? Mathf.Lerp (
 								options.frequency.value, 
 								driftMap > 0f 
-									? options.frequency.max * Config.Noise.driftFactor
-									: options.frequency.min / Config.Noise.driftFactor, 
-								Mathf.Abs(driftMap)
-								)
+									? options.frequency.max * options.driftScale
+									: options.frequency.min / options.driftScale, 
+								Mathf.Abs(driftMap))
 							: options.frequency.value,
 						options.octaves, 
 						options.lacunarity, 
@@ -257,10 +256,9 @@ public class InterpolatedNoise : MonoBehaviour
 							? Mathf.Lerp (
 								options.frequency.value, 
 								driftMap > 0f 
-									? options.frequency.max * Config.Noise.driftFactor
-									: options.frequency.min, 
-								Mathf.Abs(driftMap)
-								)
+									? options.frequency.max * options.driftScale
+									: options.frequency.min / options.driftScale, 
+								Mathf.Abs(driftMap))
 							: options.frequency.value,
 						options.octaves, 
 						options.lacunarity, 

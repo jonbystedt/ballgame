@@ -44,6 +44,8 @@ public class TerrainGenerator : MonoBehaviour
 	bool glassy2;
 	bool freakyFriday;
 	bool tigerStripes;
+	bool islands1;
+	bool islands2;
 	bool reverseHollowTaper;
 	float hollowFormation;
     float hollowMountains;
@@ -662,7 +664,11 @@ public class TerrainGenerator : MonoBehaviour
 
 				}
 				// islands
-				else if (caveValue < islandBreakPoint)
+				else if (
+							(islands1 && !islands2 && glassValue < islandBreakPoint) ||
+							(!islands1 && islands2 && glassValue > islandBreakPoint) ||
+							(!islands1 && !islands2 && caveValue < islandBreakPoint)
+						)
 				{
 					// rocks
 					if (patternStripeColorBreakPoint > stripeValue - glassIncrease2) 
@@ -940,7 +946,7 @@ public class TerrainGenerator : MonoBehaviour
 		glassy1 = GameUtils.Seed > 0.98f ? true : false;
 		glassy2 = GameUtils.Seed > 0.98f ? true : false;
 
-		freakyFriday = GameUtils.Seed > 0.5f ? true : false;
+		freakyFriday = GameUtils.Seed > 0.8f ? true : false;
 
 		tigerStripes = GameUtils.Seed > 0.8f ? true : false;
 
@@ -966,6 +972,9 @@ public class TerrainGenerator : MonoBehaviour
 		{
 			striped = true;
 		}
+
+		islands1 = GameUtils.Seed < 0.333f ? true : false;
+		islands2 = GameUtils.Seed > 0.5f ? true : false;
 
 		patternAmount = GameUtils.Seed;
 	}
