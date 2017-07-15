@@ -72,7 +72,7 @@ public class InterpolatedNoise : MonoBehaviour
 				);
 
 				float driftMap = 0f;
-				if (options.drift != 0f && options.driftMapId != -1)
+				if (options.driftMapId != -1)
 				{
 
 					driftMap = NoiseGenerator.Sum
@@ -105,7 +105,7 @@ public class InterpolatedNoise : MonoBehaviour
 								options.frequency.value, 
 								driftMap > 0f 
 									? options.frequency.max * options.driftScale
-									: options.frequency.min / options.driftScale, 
+									: options.frequency.min, 
 								Mathf.Abs(driftMap))
 							: options.frequency.value,
 						options.octaves, 
@@ -141,7 +141,8 @@ public class InterpolatedNoise : MonoBehaviour
 
 		if (i.interpolates == null)
 		{
-			i.interpolates = new int[
+			i.interpolates = new int
+			[
 				(i.region.sizeX / i.sampleRate) * i.sampleRate, 
 				(i.region.sizeY / i.sampleRate) * i.sampleRate, 
 				(i.region.sizeZ / i.sampleRate) * i.sampleRate
@@ -257,7 +258,7 @@ public class InterpolatedNoise : MonoBehaviour
 								options.frequency.value, 
 								driftMap > 0f 
 									? options.frequency.max * options.driftScale
-									: options.frequency.min / options.driftScale, 
+									: options.frequency.min, 
 								Mathf.Abs(driftMap))
 							: options.frequency.value,
 						options.octaves, 

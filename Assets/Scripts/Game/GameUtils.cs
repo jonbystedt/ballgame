@@ -6,7 +6,7 @@ using Random = UnityEngine.Random;
 
 public static class GameUtils 
 {
-	public const int SEED_TABLE_SIZE = 128;
+	public const int SEED_TABLE_SIZE = 256;
 	public static float[] SeedTable = new float[SEED_TABLE_SIZE];
 
 	static int _seedCount = 0;
@@ -21,7 +21,9 @@ public static class GameUtils
 			}
 			// _totalSeeds++;
 			// Game.Log(_totalSeeds.ToString());
-			return SeedTable[_seedCount++];
+			//return SeedTable[_seedCount++];
+			_seedCount++;
+			return (float)Hash[_seedCount - 1] / 256f;
 		}
 		set
 		{

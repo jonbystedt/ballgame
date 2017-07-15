@@ -298,18 +298,6 @@ public class TerrainGenerator : MonoBehaviour
 					continue;
 				}
 
-				// carve out the tops of the mesas
-				if (ToWorldHeight(y) > WORLD_BLOCK_HEIGHT - terrainHeight)
-				{
-					chunk.SetBlock(localX, localY, localZ, Block.Air);
-					if (!air)
-					{
-						sampleSet.spawnMap.height[localX, localZ] = y;
-					}
-					air = true;
-					continue;
-				}
-
 				int caveValue = caves[localX, (i * Chunk.Size) + localY, localZ];
 				int stripeValue = stripes[localX, (i * Chunk.Size) + localY, localZ];
 				int glassValue = patterns[localX, (i * Chunk.Size) + localY, localZ];
@@ -499,6 +487,18 @@ public class TerrainGenerator : MonoBehaviour
 					}
 				}
 				// End of mountains
+
+				// carve out the tops of the mesas
+				if (ToWorldHeight(y) > WORLD_BLOCK_HEIGHT - Mathf.FloorToInt(terrainHeight + ((float)(mountainHeight - mountainBase) / 4f)))
+				{
+					chunk.SetBlock(localX, localY, localZ, Block.Air);
+					if (!air)
+					{
+						sampleSet.spawnMap.height[localX, localZ] = y;
+					}
+					air = true;
+					continue;
+				}
 
 				// formations
 				else if (caveValue > cloudChance && caveValue < cloudChance + ((NoiseConfig.cave.scale - cloudChance) * hollowFormation) 
@@ -953,8 +953,8 @@ public class TerrainGenerator : MonoBehaviour
 		reverseHollowTaper = GameUtils.Seed > 0.95 ? true : false;
 
         hollowFormation = GameUtils.Seed;
-		hollowMountains = Mathf.Pow(GameUtils.Seed * 0.1f, 14f);
-		hollowGlass = Mathf.Pow(GameUtils.Seed * 0.1f, 14f);
+		hollowMountains = Mathf.Pow(GameUtils.Seed * 0.1f, 12f);
+		hollowGlass = Mathf.Pow(GameUtils.Seed * 0.1f, 12f);
 
 		float stripedChance = GameUtils.Seed;
 		float patternedChance = GameUtils.Seed / 2f;

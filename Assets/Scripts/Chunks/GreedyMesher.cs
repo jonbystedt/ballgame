@@ -141,7 +141,7 @@ public class GreedyMesher : MonoBehaviour
 
 						if (!maskAssigned)
 						{
-							// if both blocks are something, or both or nothing assign 0 to the mask. this cannot be seen.
+							// if both blocks are something, or both are nothing assign 0 to the mask. this cannot be seen.
 							if ((front_block == Block.Null && back_block == Block.Null) || (front_block != Block.Null && back_block != Block.Null) )
 							{
 								mask[x[u], x[v]] = 0;

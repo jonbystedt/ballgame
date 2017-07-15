@@ -119,7 +119,7 @@ public class Config : MonoBehaviour
 					MaxSmallObjectCount = 60;
 					BlockSpawnChance = 0.05f;
 					ContactShadows = false;
-					GlobalFogEnabled = true;
+					GlobalFogEnabled = false;
 					ShadowsEnabled = false;
 					Outlines = true;
 					World.ChunkShadows = false;
@@ -139,7 +139,7 @@ public class Config : MonoBehaviour
 					MaxSmallObjectCount = 100;
 					BlockSpawnChance = 0.05f;
 					ContactShadows = true;
-					GlobalFogEnabled = true;
+					GlobalFogEnabled = false;
 					ShadowsEnabled = false;
 					Outlines = true;
 					World.ChunkShadows = false;
@@ -159,7 +159,7 @@ public class Config : MonoBehaviour
 					MaxSmallObjectCount = 200;
 					BlockSpawnChance = 0.05f;
 					ContactShadows = true;
-					GlobalFogEnabled = true;
+					GlobalFogEnabled = false;
 					ShadowsEnabled = true;
 					Outlines = true;
 					World.ChunkShadows = true;
@@ -180,7 +180,7 @@ public class Config : MonoBehaviour
 					MaxSmallObjectCount = 300;
 					BlockSpawnChance = 0.05f;
 					ContactShadows = true;
-					GlobalFogEnabled = true;
+					GlobalFogEnabled = false;
 					ShadowsEnabled = true;
 					Outlines = true;
 					World.ChunkShadows = true;
