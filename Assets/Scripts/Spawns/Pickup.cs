@@ -117,7 +117,7 @@ public class Pickup : SpawnedObject
 					);
 					//spawnColor = Tile.Colors[(x + y + z) % 64];
 					spawnColor = Color.Lerp(color, Tile.Inverse(Tile.Brighten(color, 0.5f)), (x * y * z) / (size * size * size));
-					PooledObject obj = World.Spawn.Object(spawn, spawnColor, mass, pos);
+					PooledObject obj = World.Spawn.Object(spawn, spawnColor, mass, pos, 0f);
 					if (obj != null)
 					{
 						column.spawns.Add(obj); 

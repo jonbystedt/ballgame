@@ -238,7 +238,7 @@ public class BouncyBall : SpawnedObject
 				color = Tile.Darken(color, 0.2f);
 			}
 
-			World.Spawn.Object(SpawnObject, color, transform.position);
+			World.Spawn.Object(SpawnObject, color, transform.position, Mathf.Lerp(0f, corruption, Random.value));
 			count--;
 
 			yield return null;
@@ -307,7 +307,7 @@ public class BouncyBall : SpawnedObject
 
 			StartCoroutine(RepeatThen(splits, 0.1f, () => 
 			{
-				PooledObject obj = World.Spawn.Object(spawn, newColors[count].ToColor(), mass, transform.position);
+				PooledObject obj = World.Spawn.Object(spawn, newColors[count].ToColor(), mass, transform.position, Mathf.Lerp(0f, corruption, Random.value));
 				count++;
 
 				if (obj != null)

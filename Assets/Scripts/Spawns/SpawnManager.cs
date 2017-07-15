@@ -173,7 +173,7 @@ public class SpawnManager : MonoBehaviour {
 		key = -1;
 	}
 
-	SpawnedObject SpawnPickup(PooledObject prefab, Color color, int key)
+	SpawnedObject SpawnPickup(PooledObject prefab, Color color, int key, float corruption)
 	{
 		Pickup pickup = prefab.GetPooledInstance<Pickup>();
 		if (pickup == null && SleptPickups.Count > 0)
@@ -256,7 +256,7 @@ public class SpawnManager : MonoBehaviour {
 		return (SpawnedObject)pickup;
 	}
 
-	SpawnedObject SpawnBall(PooledObject prefab, Color color, int key)
+	SpawnedObject SpawnBall(PooledObject prefab, Color color, int key, float corruption)
 	{
 		BouncyBall ball = prefab.GetPooledInstance<BouncyBall>();
 		if (ball == null && SleptBalls.Count > 0)
@@ -296,6 +296,11 @@ public class SpawnManager : MonoBehaviour {
 			ball.explodeAtMax = false;
 			ball.explodeAtMin = false;
 
+			if (corruption > 0.1f)
+			{
+				ball.emission = Tile.Brighten(color, 1f);
+			}
+
 			int note = Mathf.FloorToInt(Mathf.Lerp(0f, 6.999f, ball.hsvColor.h));
 			int note2 = Mathf.FloorToInt(Mathf.Lerp(0f, 23.999f, ball.hsvColor.h));
 			var playSound = ball.GetComponent<PlayHitSound>();
@@ -332,7 +337,7 @@ public class SpawnManager : MonoBehaviour {
 			ball.growthRate = 1.25f;
 			ball.shrinkRate = 0.95f;
 			ball.massIncrease = 1.01f;
-			ball.massDecrease = 0.8f;
+			ball.massDecrease = 0.98f;
 			ball.maxSize = 14f;
 			ball.minSize = 1.6f;
 			ball.explodeAtMax = true;
@@ -398,7 +403,7 @@ public class SpawnManager : MonoBehaviour {
 		return (SpawnedObject)ball;
 	}
 
-	public PooledObject Object(Spawns o, Color color, float mass, Vector3 pos)
+	public PooledObject Object(Spawns o, Color color, float mass, Vector3 pos, float corruption)
 	{
 		PooledObject prefab;
 		SpawnedObject spawnedObject = null;
@@ -411,11 +416,11 @@ public class SpawnManager : MonoBehaviour {
 
 			if (o == Spawns.Pickup || o == Spawns.SilverPickup || o == Spawns.BlackPickup)
 			{
-				spawnedObject = SpawnPickup(prefab, color, key);
+				spawnedObject = SpawnPickup(prefab, color, key, corruption);
 			}
 			else
 			{
-				spawnedObject = SpawnBall(prefab, color, key);
+				spawnedObject = SpawnBall(prefab, color, key, corruption);
 			}
 			if (spawnedObject == null)
 			{
@@ -430,9 +435,9 @@ public class SpawnManager : MonoBehaviour {
 		return spawnedObject.GetComponent<PooledObject>();
 	}
 
-	public PooledObject Object(Spawns o, Color color, Vector3 pos)
+	public PooledObject Object(Spawns o, Color color, Vector3 pos, float corruption)
 	{
-		return Object(o, color, 0f, pos);
+		return Object(o, color, 0f, pos, corruption);
 	}
 		
 	// Spawn with delay, add to list, set color, set mass
@@ -442,7 +447,7 @@ public class SpawnManager : MonoBehaviour {
 		{
 			StartCoroutine(Repeat(count, Config.SpawnDelay, () => 
 			{
-				PooledObject obj = Object(o, color, mass, pos);
+				PooledObject obj = Object(o, color, mass, pos, corruption);
 
 				if (obj != null)
 				{

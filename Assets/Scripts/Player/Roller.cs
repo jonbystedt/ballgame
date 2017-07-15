@@ -569,10 +569,13 @@ public class Roller : MonoBehaviour
 						continue;
 					}
 
-					PooledObject obj = World.Spawn.Object(
+					PooledObject obj = World.Spawn.Object
+					(
 						Spawns.Pickup, 
 						color, 
-						new Vector3(bashBlock.x + 0.25f * x, bashBlock.y + 0.25f * y, bashBlock.z + 0.25f * z));
+						new Vector3(bashBlock.x + 0.25f * x, bashBlock.y + 0.25f * y, bashBlock.z + 0.25f * z),
+						0f
+					);
 
 					if (obj != null)
 					{
