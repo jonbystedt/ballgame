@@ -869,20 +869,21 @@ public class TerrainGenerator : MonoBehaviour
 	// returns a value that moderates the chance of the 'pattern' sample carving holes in the mountains
 	float GetHollowValue(float hollowValue, int y)
 	{
-		float persistance = hollowPersistance;
+		return hollowValue;
+		// float persistance = hollowPersistance;
 
-		// persistance is the amount of the hollow value not affected by the linear fade below
-		// at values below beachHeight this value is reduced on a log curve to promote beaches
-		if (y < beachHeight - (Chunk.Size * (Config.WorldHeight - 1)))
-		{
-			persistance = persistance * log.Evaluate((float)(y + (Chunk.Size * (Config.WorldHeight - 1))) / (float)(beachHeight));
-		}
+		// // persistance is the amount of the hollow value not affected by the linear fade below
+		// // at values below beachHeight this value is reduced on a log curve to promote beaches
+		// if (y < beachHeight - (Chunk.Size * (Config.WorldHeight - 1)))
+		// {
+		// 	persistance = persistance * log.Evaluate((float)(y + (Chunk.Size * (Config.WorldHeight - 1))) / (float)(beachHeight));
+		// }
 
-		// the portion which does not persist varies from 0-max with world height
-		hollowValue = hollowValue * persistance 
-						+ Mathf.Lerp(0, hollowValue * (1f / persistance), (float)ToWorldHeight(y) / (float)WORLD_BLOCK_HEIGHT);
+		// // the portion which does not persist varies from 0-max with world height
+		// hollowValue = hollowValue * persistance 
+		// 				+ Mathf.Lerp(0, hollowValue * (1f / persistance), (float)ToWorldHeight(y) / (float)WORLD_BLOCK_HEIGHT);
 
-		return reverseHollowTaper ? 1f - hollowValue : hollowValue;
+		// return reverseHollowTaper ? 1f - hollowValue : hollowValue;
 	}
 
 	int GetModIndex(int colorIndex, int patternValue, int stripeValue, int max)

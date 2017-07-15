@@ -166,7 +166,11 @@ public class World : MonoBehaviour {
 		newChunk.transparentChunk = (PooledObject)newTransparentChunk;
 
 		newChunk.GetComponent<MeshRenderer>().material.mainTexture = TileFactory.stoneTexture;
-		newChunk.transparentChunk.GetComponent<MeshRenderer>().material.mainTexture = TileFactory.glassTexture;
+
+		var transMat = newChunk.transparentChunk.GetComponent<MeshRenderer>().material;
+		transMat.mainTexture = TileFactory.glassTexture;
+		transMat.SetFloat("_EmissionScaleUI", 1);
+		transMat.SetTexture("_EmissionMap", TileFactory.glassTexture);
 
 		newChunk.Initialize();
 
