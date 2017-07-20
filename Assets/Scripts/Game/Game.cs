@@ -18,8 +18,6 @@ public class Game : MonoBehaviour
 
 	public EdgeDetection edgeDetect;
 	HBAO hbao;
-	GlobalFog fog;
-	GlobalFog distanceFog;
 
 	public Camera mainCamera;
 	public Camera cosmosCamera;
@@ -339,8 +337,8 @@ public class Game : MonoBehaviour
 		hbao.enabled = Config.ContactShadows;
 
 		RenderSettings.fog = true;
-		fog = mainCamera.GetComponent<GlobalFog>();
-		fog.enabled = Config.GlobalFogEnabled;
+		// fog = mainCamera.GetComponent<GlobalFog>();
+		// fog.enabled = Config.GlobalFogEnabled;
 
 		//distanceFog = cosmosCamera.GetComponent<GlobalFog>();
 		//distanceFog.enabled = Config.GlobalFogEnabled;

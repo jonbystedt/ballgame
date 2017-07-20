@@ -3,7 +3,7 @@
 public enum Quality
 {
 	Low,
-	Normal,
+	Medium,
 	High,
 	Ultra
 }
@@ -114,9 +114,9 @@ public class Config : MonoBehaviour
 
 				if (value == Quality.Low)
 				{
-					MaxItemSpawns = 20;
+					MaxItemSpawns = 10;
 					MaxLargeObjectCount = 12;
-					MaxSmallObjectCount = 60;
+					MaxSmallObjectCount = 45;
 					BlockSpawnChance = 0.05f;
 					ContactShadows = false;
 					GlobalFogEnabled = false;
@@ -132,11 +132,11 @@ public class Config : MonoBehaviour
 					_instance.antialiasing.enabled = false;
 				}
 
-				if (value == Quality.Normal)
+				if (value == Quality.Medium)
 				{
-					MaxItemSpawns = 30;
-					MaxLargeObjectCount = 20;
-					MaxSmallObjectCount = 100;
+					MaxItemSpawns = 20;
+					MaxLargeObjectCount = 15;
+					MaxSmallObjectCount = 75;
 					BlockSpawnChance = 0.05f;
 					ContactShadows = true;
 					GlobalFogEnabled = false;
@@ -154,9 +154,9 @@ public class Config : MonoBehaviour
 
 				if (value == Quality.High)
 				{
-					MaxItemSpawns = 60;
-					MaxLargeObjectCount = 40;
-					MaxSmallObjectCount = 200;
+					MaxItemSpawns = 30;
+					MaxLargeObjectCount = 20;
+					MaxSmallObjectCount = 100;
 					BlockSpawnChance = 0.05f;
 					ContactShadows = true;
 					GlobalFogEnabled = false;
@@ -175,9 +175,9 @@ public class Config : MonoBehaviour
 
 				if (value == Quality.Ultra)
 				{
-					MaxItemSpawns = 100;
-					MaxLargeObjectCount = 60;
-					MaxSmallObjectCount = 300;
+					MaxItemSpawns = 50;
+					MaxLargeObjectCount = 30;
+					MaxSmallObjectCount = 150;
 					BlockSpawnChance = 0.05f;
 					ContactShadows = true;
 					GlobalFogEnabled = false;

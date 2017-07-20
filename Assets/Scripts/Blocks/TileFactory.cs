@@ -226,7 +226,7 @@ public class TileFactory : MonoBehaviour {
 	{
 		float valueCap = Random.Range(0.75f, 1.0f);
 		float saturationCap = Random.Range(0.75f, 1.0f);
-		float alphaCap = 0.8f;
+		float alphaCap = 0.7f;
 
 		// Randomized on hue only
 		Color seedColor = Random.ColorHSV(0f, 1f, saturationCap, saturationCap, valueCap, valueCap);
@@ -270,7 +270,7 @@ public class TileFactory : MonoBehaviour {
 		float valueEnd = valueCap;
 		float saturationStart = 0.0f;
 		float saturationEnd = saturationCap;
-		float alphaStart = 0.3f;//Random.Range(0.1f, 0.5f);
+		float alphaStart = 0.2f;//Random.Range(0.1f, 0.5f);
 		float alphaEnd = alphaCap;
 
 		if (type == GradientType.WarmCool || type == GradientType.SingleColor)

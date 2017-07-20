@@ -129,20 +129,30 @@ public class SpawnedObject : PooledObject {
 			new Vector2(Game.Player.transform.position.x, Game.Player.transform.position.z)
 			);
 
-		if (distance > Config.DespawnRadius * Chunk.Size && inRange)
-		{
-			Sleep();
-		}
-
 		if (distance < Config.DespawnRadius * Chunk.Size && !inRange)
 		{
 			WakeUp();
+			return;
 		}
 
 		// objects pooled while asleep are still sleeping
 		if (inRange && sleeping)
 		{
 			WakeUp();
+			return;
+		}
+
+		if (distance > Config.DespawnRadius * Chunk.Size && inRange)
+		{
+			Sleep();
+			return;
+		}
+
+		var column = World.GetColumn(World.GetChunkPosition(transform.position));
+		if (column == null)
+		{
+			Sleep();
+			return;
 		}
 		
 		// Actions
@@ -167,6 +177,12 @@ public class SpawnedObject : PooledObject {
 
 	protected void WakeUp()
 	{
+		var column = World.GetColumn(World.GetChunkPosition(transform.position));
+		if (column == null)
+		{
+			return;
+		}
+
 		_rigidbody.isKinematic = false;
 		_rigidbody.velocity = saveVelocity;
 		_rigidbody.angularVelocity = saveAngularVelocity;

@@ -105,7 +105,7 @@ public class SetOptions : MonoBehaviour {
 				interpolationSlider.value = 1f;
 				interpolationText.text = Config.Interpolation.ToString();
 			}
-			else if (Config.QualityLevel == Quality.Normal)
+			else if (Config.QualityLevel == Quality.Medium)
 			{
 				Config.Interpolation = InterpolationLevel.Normal;
 				interpolationSlider.value = 2f;

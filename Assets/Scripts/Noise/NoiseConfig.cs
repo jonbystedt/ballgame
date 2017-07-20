@@ -200,7 +200,7 @@ public static class NoiseConfig {
 				? Mathf.Pow(Seed, 2) 
 				: 0f,
 			Config.Noise.cave.drift 
-				? Mathf.Lerp(1f, Config.Noise.driftFactor, Mathf.Pow(Seed, 3))
+				? Mathf.Lerp(1f, Config.Noise.driftFactor, Mathf.Pow(Seed, 2))
 				: 0f,
 			optionCount++,
 			driftIndex
@@ -236,7 +236,7 @@ public static class NoiseConfig {
 				? Mathf.Pow(Seed, 2)
 				: 0f,
 			Config.Noise.pattern.drift 
-				? Mathf.Lerp(1f, Config.Noise.driftFactor, Mathf.Pow(Seed, 3))
+				? Mathf.Lerp(1f, Config.Noise.driftFactor, Mathf.Pow(Seed, 2))
 				: 0f,
 			optionCount++,
 			driftIndex
@@ -271,7 +271,7 @@ public static class NoiseConfig {
 				? Mathf.Pow(Seed, 3)
 				: 0f,
 			Config.Noise.stripe.drift 
-				? Mathf.Lerp(1f, Config.Noise.driftFactor, Mathf.Pow(Seed, 5))
+				? Mathf.Lerp(1f, Config.Noise.driftFactor, Mathf.Pow(Seed, 3))
 				: 0f,
 			optionCount++,
 			driftIndex

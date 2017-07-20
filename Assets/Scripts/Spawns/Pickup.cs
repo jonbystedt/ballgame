@@ -152,29 +152,21 @@ public class Pickup : SpawnedObject
 		{
 			ma.simulationSpeed = Mathf.Lerp(0.5f, 1f, forcePow);
 
-			var col = explosion.colorOverLifetime;
-			col.enabled = true;
-
-			var gradient = GetFireworksGradient(color.GetHashCode());
-			col.color = gradient;
-
 			ParticleSystem.EmitParams p = new ParticleSystem.EmitParams();
 			p.startLifetime = Mathf.Lerp(1f, 2f, impactForce);
-			p.startColor = gradient.Evaluate(0f);
+			p.startSize = 0.25f;
 
 			if (type == PickupType.Silver)
 			{
-				p.startSize = 0.25f;
-				explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(4f, 40f, forcePow)));
-				World.Spawn.Objects(Spawns.Pickup, Tile.Inverse(color), transform.position, 4, Config.SpawnDelay, 0f);
+				p.startColor = Tile.Brighten(Tile.Lighten(color, 0.75f), 1f);
 			}
 			else
 			{
-				p.startSize = 0.25f;
-				explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(4f, 40f, forcePow)));
-				World.Spawn.Objects(Spawns.Pickup, Tile.Inverse(color), transform.position, 4, Config.SpawnDelay, 0f);
+				p.startColor = Tile.Brighten(Tile.Lighten(color, 0.25f), 1f);
 			}
 
+			explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(4f, 40f, forcePow)));
+			World.Spawn.Objects(Spawns.Pickup, Tile.Inverse(color), transform.position, 4, Config.SpawnDelay, 0f);
 		}
 		else
 		{
@@ -183,7 +175,7 @@ public class Pickup : SpawnedObject
 			ParticleSystem.EmitParams p = new ParticleSystem.EmitParams();
 			p.startLifetime = Mathf.Lerp(1f, 2f, forcePow);
 			p.startSize = 0.25f;
-			p.startColor = color;
+			p.startColor = Tile.Brighten(color, 1f);
 
 			explosion.Emit(p, Mathf.FloorToInt(Mathf.Lerp(4f, 24f, forcePow)));
 		}
@@ -200,36 +192,5 @@ public class Pickup : SpawnedObject
 
 			Fireworks();
 		}
-	}
-
-	ParticleSystem.MinMaxGradient GetFireworksGradient(int key)
-	{
-		ParticleSystem.MinMaxGradient gradient;
-		if (World.Spawn.fireworksGradients.TryGetValue(key, out gradient))
-		{
-			return gradient;
-		}
-
-		Gradient grad = new Gradient();
-		Color startColor;
-		if (type == PickupType.Black)
-		{
-			startColor = Tile.Brighten(Tile.Lighten(color, 0.25f), 1f);
-		}
-		else
-		{
-			startColor = Tile.Lighten(color, 0.75f);
-		}
-		grad.SetKeys(
-			new GradientColorKey[] { new GradientColorKey(startColor, 0.0f), new GradientColorKey(Tile.Lighten(color, 0.3f), 0.2f), new GradientColorKey(Tile.Brighten(color, 1f), 1.0f)},
-			new GradientAlphaKey[] { new GradientAlphaKey(1.0f, 0.0f), new GradientAlphaKey(1.0f, 1.0f)}
-		);
-
-
-		gradient = new ParticleSystem.MinMaxGradient(grad);
-
-		World.Spawn.fireworksGradients.Add(key, gradient);
-
-		return gradient;
 	}
 }
