@@ -208,7 +208,7 @@ public class SpawnManager : MonoBehaviour {
 			pickup.hsvColor = new ColorHSV(color);
 
 			int note = Mathf.FloorToInt(Mathf.Lerp(0f, 6.999f, pickup.hsvColor.h));
-			int scoreNote = Mathf.FloorToInt(Mathf.Lerp(0f, 23.999f, pickup.hsvColor.h));
+			//int scoreNote = Mathf.FloorToInt(Mathf.Lerp(0f, 23.999f, pickup.hsvColor.h));
 			var playSound = pickup.GetComponent<PlayHitSound>();
 			playSound.worldHitSound = pickupOctave[(int)(scales[key][note])];
 			playSound.objectHitSound = pickupOctave[(int)(scales[key][note])];

@@ -65,7 +65,7 @@ namespace ProceduralToolkit.Examples
             swarmCount = Mathf.Min(65000/template.vertices.Count, swarmCount);
             // Optimization trick: in each frame we simulate only small percent of all boids
             maxSimulationSteps = Mathf.RoundToInt(swarmCount*simulationPercent);
-            int vertexCount = swarmCount*template.vertices.Count;
+            // int vertexCount = swarmCount*template.vertices.Count;
 
             // Paint template in random color
             template.colors.Clear();

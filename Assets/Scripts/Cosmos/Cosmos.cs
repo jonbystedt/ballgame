@@ -237,7 +237,7 @@ public class Cosmos : MonoBehaviour {
 			{
 				RenderSettings.fogDensity = Mathf.Lerp(Mathf.Lerp(
 					baseFog,
-					baseFog * 1.2f,
+					baseFog * 2.4f,
 					rain.RainIntensity
 				), RenderSettings.fogDensity, skyDelta);
 			} 
@@ -245,7 +245,7 @@ public class Cosmos : MonoBehaviour {
 			{
 				RenderSettings.fogDensity = Mathf.Lerp(Mathf.Lerp(
 					baseFog,
-					baseFog * 1.6f,
+					baseFog * 3.2f,
 					rain.RainIntensity
 				), RenderSettings.fogDensity, skyDelta);
 			}

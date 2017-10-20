@@ -40,7 +40,10 @@ public class Game : MonoBehaviour
 	private Text logMessage;
 	private Text dayText;
 	private Text clockText;
-	private Text positionText;
+	private Text chunkText;
+	private Text blockText;
+	private Text ballText;
+	private Text pickupText;
 	private Text nameText;
 
 	private StartGame startGame;
@@ -143,7 +146,7 @@ public class Game : MonoBehaviour
 		afterburner.SetActive(false);
 
 		clockText.text = "";
-		positionText.text = "";
+		chunkText.text = "";
 		dayText.text = "";
 		scoreText.text = "";
 		nameText.text = "";
@@ -168,9 +171,12 @@ public class Game : MonoBehaviour
 		logMessage = HUD.transform.Find("Log").GetComponent<Text>();
 		scoreText = HUD.transform.Find("Score").GetComponent<Text>();
 		nameText = HUD.transform.Find("Name").GetComponent<Text>();
-		dayText = HUD.transform.Find("FPS").GetComponent<Text>();
+		dayText = HUD.transform.Find("Day").GetComponent<Text>();
 		clockText = HUD.transform.Find("Clock").GetComponent<Text>();
-		positionText = HUD.transform.Find("Position").GetComponent<Text>();
+		chunkText = HUD.transform.Find("ChunkPosition").GetComponent<Text>();
+		blockText = HUD.transform.Find("BlockPosition").GetComponent<Text>();
+		ballText = HUD.transform.Find("Balls").GetComponent<Text>();
+		pickupText = HUD.transform.Find("Pickups").GetComponent<Text>();
 
 		startGame = HUD.transform.GetComponent<StartGame>();
 
@@ -184,6 +190,7 @@ public class Game : MonoBehaviour
 		RenderSettings.skybox.SetColor("_Tint", RenderSettings.fogColor);
 
 		StartCoroutine(GetRandomWord());
+
 		// float resolution = 1E9f / Stopwatch.Frequency;
 		//Game.Log(String.Format("The minimum measurable time on this system is: {0} nanoseconds", resolution.ToString()));
 	}
@@ -219,7 +226,10 @@ public class Game : MonoBehaviour
 			{
 				dayText.text = "";
 				clockText.text = "";
-				positionText.text = "";
+				chunkText.text = "";
+				blockText.text = "";
+				pickupText.text = "";
+				ballText.text = "";
 			}
 			else
 			{
@@ -247,7 +257,7 @@ public class Game : MonoBehaviour
 
 		if (ShowStats)
 		{
-			UpdatePosition(World.GetChunkPosition(player.transform.position));
+			UpdatePosition(new WorldPosition(player.transform.position));
 		}
 		
 		if (Config.MusicVolume > 0)
@@ -414,12 +424,12 @@ public class Game : MonoBehaviour
 
 		if (ShowStats)
 		{			
-			_instance.positionText.text = "X: " + pos.x.ToString() + ", Y: " + pos.y.ToString() + ", Z: " + pos.z.ToString();
+			_instance.chunkText.text = "X: " + pos.x.ToString() + ", Y: " + pos.y.ToString() + ", Z: " + pos.z.ToString();
 		}
 
 		// Track position for respawning
 		Column column = World.GetColumn(pos);
-		if (column != null && column.chunks[0] != null)
+		if (column != null)
 		{
 			SampleSet results;
 			InterpolatedNoise.Results.TryGetValue(column.region, out results);

@@ -28,7 +28,6 @@ public class Config : MonoBehaviour
 	int interpolationFactor = 1;
 
 	public Camera mainCamera;
-	public UnityStandardAssets.ImageEffects.Antialiasing antialiasing;
 
 	public int startChunksToLoad;
 	public int spawnRadius;
@@ -128,8 +127,6 @@ public class Config : MonoBehaviour
 					{
 						QualitySettings.SetQualityLevel(0);
 					}
-
-					_instance.antialiasing.enabled = false;
 				}
 
 				if (value == Quality.Medium)
@@ -148,8 +145,6 @@ public class Config : MonoBehaviour
 					{
 						QualitySettings.SetQualityLevel(1);
 					}
-
-					_instance.antialiasing.enabled = true;
 				}
 
 				if (value == Quality.High)
@@ -169,8 +164,6 @@ public class Config : MonoBehaviour
 					{
 						QualitySettings.SetQualityLevel(2);
 					}
-
-					_instance.antialiasing.enabled = true;
 				}
 
 				if (value == Quality.Ultra)
@@ -189,8 +182,6 @@ public class Config : MonoBehaviour
 					{
 						QualitySettings.SetQualityLevel(3);
 					}
-
-					_instance.antialiasing.enabled = true;
 				}
 			}
 

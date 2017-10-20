@@ -58,7 +58,13 @@ public class TileFactory : MonoBehaviour {
 	{
 		Texture2D texture;
 
-		texture = new Texture2D(Chunk.Size * TileSize * TileGridWidth, Chunk.Size * TileSize * TileGridHeight, TextureFormat.RGBA32, false);
+		texture = new Texture2D
+        (
+            Chunk.Size * TileSize * TileGridWidth, 
+            Chunk.Size * TileSize * TileGridHeight, 
+            TextureFormat.RGBA32, 
+            false
+        );
 
 		texture.name = name;
 		texture.wrapMode = TextureWrapMode.Repeat;
@@ -80,47 +86,101 @@ public class TileFactory : MonoBehaviour {
 				{
 					if (!transparent)
 					{
-						FillSwatchSolid(texture, xoffset + x * TileSize, yoffset + y * TileSize, Tile.Colors[i]);
-					}
-					else if (row < TileGridHeight / 2f && column < Mathf.FloorToInt(TileGridWidth / 8f))
-					{
-						//FillSwatchGrid(texture, xoffset + x * TileSize, yoffset + y * TileSize, 1, 4, Tile.colors[i]);
-						FillSwatchTransparent(texture, xoffset + x * TileSize, yoffset + y * TileSize, Tile.Colors[i]);
-					}
-					else if (row < TileGridHeight / 2f && column < 2 * Mathf.FloorToInt(TileGridWidth / 8f))
-					{
-						//FillSwatchGrid(texture, xoffset + x * TileSize, yoffset + y * TileSize, 1, 2, Tile.colors[i]);
-						FillSwatchTransparent(texture, xoffset + x * TileSize, yoffset + y * TileSize, Tile.Colors[i]);
-					}
-					else if (row < TileGridHeight / 2f && column < 3 * Mathf.FloorToInt(TileGridWidth / 8f))
-					{
-						//FillSwatchGrid(texture, xoffset + x * TileSize, yoffset + y * TileSize, 1, 1, Tile.colors[i]);
-						FillSwatchTransparent(texture, xoffset + x * TileSize, yoffset + y * TileSize, Tile.Colors[i]);
-					}
-					else if (row < TileGridHeight / 2f && column < 4 * Mathf.FloorToInt(TileGridWidth / 8f))
-					{
-						FillSwatchGrid(texture, xoffset + x * TileSize, yoffset + y * TileSize, 2, 2, Tile.Colors[i]);
-					}
-					else if (row < TileGridHeight / 2f && column < 5 * Mathf.FloorToInt(TileGridWidth / 8f))
-					{
-						FillSwatchGrid(texture, xoffset + x * TileSize, yoffset + y * TileSize, 1, 4, Tile.Colors[i]);
-					}
-					else if (row < TileGridHeight / 2f && column < 6 * Mathf.FloorToInt(TileGridWidth / 8f))
-					{
-						FillSwatchCheckerboard(texture, xoffset + x * TileSize, yoffset + y * TileSize, 1, Tile.Colors[i]);
-					}
-					else if (row < TileGridHeight / 2f && column < 7 * Mathf.FloorToInt(TileGridWidth / 8f))
-					{
-						FillSwatchCheckerboard(texture, xoffset + x * TileSize, yoffset + y * TileSize, 2, Tile.Colors[i]);
-					}
-					else if (row < TileGridHeight / 2f && column < 7 * Mathf.FloorToInt(TileGridWidth / 8f))
-					{
-						FillSwatchCheckerboard(texture, xoffset + x * TileSize, yoffset + y * TileSize, 4, Tile.Colors[i]);
+						FillSwatchSolid
+                        (
+                            texture, 
+                            xoffset + x * TileSize, 
+                            yoffset + y * TileSize, 
+                            Tile.Colors[i]
+                        );
 					}
 					else
-					{
-						FillSwatchTransparent(texture, xoffset + x * TileSize, yoffset + y * TileSize, Tile.Colors[i]);
-					}
+                    {
+                        int inc = Mathf.FloorToInt(TileGridWidth / TileSize);
+
+                        if (column < inc)
+                        {
+                            FillSwatchGrid
+                            (
+                                texture, 
+                                xoffset + x * TileSize, 
+                                yoffset + y * TileSize, 
+                                1, 
+                                4, 
+                                Tile.Colors[i]
+                            );
+                        }
+                        else if (column < 2 * inc)
+                        {
+                            FillSwatchGrid
+                            (
+                                texture, 
+                                xoffset + x * TileSize, 
+                                yoffset + y * TileSize, 
+                                1, 
+                                2, 
+                                Tile.Colors[i]
+                            );
+                        }
+                        else if (column < 3 * inc)
+                        {
+                            FillSwatchGrid
+                            (
+                                texture, 
+                                xoffset + x * TileSize, 
+                                yoffset + y * TileSize, 
+                                2, 
+                                1, 
+                                Tile.Colors[i]
+                            );
+                        }
+                        else if (column < 4 * inc)
+                        {
+                            FillSwatchGrid
+                            (
+                                texture, 
+                                xoffset + x * TileSize, 
+                                yoffset + y * TileSize, 
+                                2, 
+                                2, 
+                                Tile.Colors[i]
+                            );
+                        }
+                        // covers 2 columns
+                        else if (column < 6 * inc)
+                        {
+                            FillSwatchCheckerboard
+                            (
+                                texture, 
+                                xoffset + x * TileSize, 
+                                yoffset + y * TileSize, 
+                                1, 
+                                Tile.Colors[i]
+                            );
+                        }
+                        else if (column < 7 * inc)
+                        {
+                            FillSwatchCheckerboard
+                            (
+                                texture, 
+                                xoffset + x * TileSize, 
+                                yoffset + y * TileSize, 
+                                2, 
+                                Tile.Colors[i]
+                            );
+                        }
+                        else
+                        {
+                            FillSwatchCheckerboard
+                            (
+                                texture, 
+                                xoffset + x * TileSize, 
+                                yoffset + y * TileSize, 
+                                4, 
+                                Tile.Colors[i]
+                            );
+                        }
+                    }
 				}
 			}
 		}
@@ -151,10 +211,18 @@ public class TileFactory : MonoBehaviour {
 		}
 	}
 
-	static void FillSwatchGrid(Texture2D texture, int offsetX, int offsetY, int tile, int border, Color color)
+	static void FillSwatchGrid
+    (
+        Texture2D texture, 
+        int offsetX, 
+        int offsetY, 
+        int tile, 
+        int border, 
+        Color color
+    )
 	{
 		int gridSize = Mathf.FloorToInt(TileSize / (float)tile); 
-		Color opaque = new Color(color.r, color.g, color.b, 1f);
+		Color trans = new Color(color.r, color.g, color.b, 0f);
 
 		for (int ix = 0; ix < tile; ix++)
 		{
@@ -168,37 +236,47 @@ public class TileFactory : MonoBehaviour {
 					for (int y = yStart; y < yStart + gridSize; y++)
 					{
 
-						if (y < yStart + border
-							|| y >= yStart + gridSize - border - 1 
-							|| x < xStart + border
-							|| x >= xStart + gridSize - border - 1)
-						{
-							texture.SetPixel(x, y, opaque);
-						}
-						else
+						if 
+                        ( 
+                            y < yStart + border || 
+                            y >= yStart + gridSize - border - 1 || 
+                            x < xStart + border || 
+                            x >= xStart + gridSize - border - 1 
+                        )
 						{
 							texture.SetPixel(x, y, color);
 						}
-
+						else
+						{
+							texture.SetPixel(x, y, trans);
+						}
 					}	
 				}
 			}
 		}
 	}
 
-	public static void FillSwatchCheckerboard(Texture2D texture, int offsetX, int offsetY, int size, Color color)
+	public static void FillSwatchCheckerboard
+    (
+        Texture2D texture, 
+        int offsetX, 
+        int offsetY, 
+        int size, 
+        Color color
+    )
 	{
-		Color opaque = new Color(color.r, color.g, color.b, 1f);
+		Color trans = new Color(color.r, color.g, color.b, 0f);
+        int half = Mathf.FloorToInt(size / 2f);
 
 		for (int x = offsetX; x < offsetX + TileSize; x++)
 		{
 			for (int y = offsetY; y < offsetY + TileSize; y++)
 			{
-				if (x % 2 == 0)
+				if (x % size < half)
 				{
-					if (x % (size * 2) < size && y % (size * 2) >= size)
+					if (y % size < half)
 					{
-						texture.SetPixel(x, y, opaque);
+						texture.SetPixel(x, y, trans);
 					}
 					else
 					{
@@ -207,13 +285,13 @@ public class TileFactory : MonoBehaviour {
 				}
 				else
 				{
-					if (x % (size * 2) >= size && y % (size * 2) < size)
+					if (y % size < half)
 					{
-						texture.SetPixel(x, y, opaque);
+						texture.SetPixel(x, y, color);
 					}
 					else
 					{
-						texture.SetPixel(x, y, color);
+						texture.SetPixel(x, y, trans);
 					}
 				}
 
@@ -226,7 +304,6 @@ public class TileFactory : MonoBehaviour {
 	{
 		float valueCap = Random.Range(0.75f, 1.0f);
 		float saturationCap = Random.Range(0.75f, 1.0f);
-		float alphaCap = 0.7f;
 
 		// Randomized on hue only
 		Color seedColor = Random.ColorHSV(0f, 1f, saturationCap, saturationCap, valueCap, valueCap);
@@ -237,14 +314,14 @@ public class TileFactory : MonoBehaviour {
 		// ValueColor: a combination of the two
 		GradientType type = (GradientType)Random.Range(2,4);
 
-		GenerateGradients(type, seedColor, saturationCap, valueCap, alphaCap, 16).ToArray().CopyTo(Tile.Colors, 0);
+		GenerateGradients(type, seedColor, saturationCap, valueCap, 16).ToArray().CopyTo(Tile.Colors, 0);
 
 		valueCap = Random.Range(0.75f, 1.0f);
 		saturationCap = Random.Range(0.5f, 1.0f);
 		type = (GradientType)Random.Range(0,2);
 		seedColor = Tile.Inverse(Tile.Colors[16]);
 
-		GenerateGradients(type, seedColor, saturationCap, valueCap, alphaCap, 16).ToArray().CopyTo(Tile.Colors, 32);
+		GenerateGradients(type, seedColor, saturationCap, valueCap, 16).ToArray().CopyTo(Tile.Colors, 32);
 
 		//lightColor = Color.Lerp(Tile.colors[30], Color.white, 0.85f);
 		//darkColor = Color.Lerp(Tile.colors[1], Color.black, 0.85f);
@@ -260,7 +337,6 @@ public class TileFactory : MonoBehaviour {
 		Color seedColor, 
 		float saturationCap, 
 		float valueCap, 
-		float alphaCap, 
 		int size
 		)
 	{
@@ -270,8 +346,6 @@ public class TileFactory : MonoBehaviour {
 		float valueEnd = valueCap;
 		float saturationStart = 0.0f;
 		float saturationEnd = saturationCap;
-		float alphaStart = 0.2f;//Random.Range(0.1f, 0.5f);
-		float alphaEnd = alphaCap;
 
 		if (type == GradientType.WarmCool || type == GradientType.SingleColor)
 		{
@@ -374,7 +448,6 @@ public class TileFactory : MonoBehaviour {
 				color = Tile.Desaturate(color, desat);
 			}
 
-			color.a = Mathf.Lerp(alphaStart, alphaEnd, i / (float)(size - 1f));
 			gradients.Add(color);
 		}
 
@@ -415,8 +488,7 @@ public class TileFactory : MonoBehaviour {
 			{
 				color = Color.HSVToRGB(hue, s, Mathf.Lerp(valueStart, valueEnd, i / (float)(size - 1)));
 			}
- 
- 			color.a = Mathf.Lerp(alphaStart, alphaEnd, i / (float)(size - 1f));
+
 			gradients.Add(color);
 			
 		}

@@ -186,10 +186,7 @@ public class Chunk : PooledObject {
 
 			for (int i = 0; i < column.chunks.Count; i++)
 			{
-				if (column.chunks[i] != null)
-				{
-					World.DestroyChunkAt(column.chunks[i]);
-				}
+                World.DestroyChunkAt(column.chunks[i]);
 			}
 		}
 	}

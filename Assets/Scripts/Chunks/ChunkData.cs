@@ -23,7 +23,7 @@ public static class ChunkData
 		// limit how far away the blocks can be to achieve a circular loading pattern
 		float maxChunkRadius = Config.ChunkLoadRadius * 1.55f;
 		float maxSpawnRadius = Config.SpawnRadius * 1.55f;
-		float maxDeleteRadius = Config.ChunkDeleteRadius * 1.55f;
+		//float maxDeleteRadius = Config.ChunkDeleteRadius * 1.55f;
 
 		//sort 2d vectors by closeness to center
 		LoadOrder = chunkOffsets

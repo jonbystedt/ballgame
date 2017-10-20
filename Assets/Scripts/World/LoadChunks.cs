@@ -17,9 +17,6 @@ public class LoadChunks : MonoBehaviour
 
 	List<WorldPosition> updateList = new List<WorldPosition>();
 	List<WorldPosition> buildList = new List<WorldPosition>();
-	List<WorldPosition> deleteList = new List<WorldPosition>();
-
-	//List<WorldPosition> despawnList = new List<WorldPosition>();
 	List<WorldPosition> currentBuilds = new List<WorldPosition>();
 
 	WorldPosition playerChunkPos = new WorldPosition();
@@ -63,8 +60,6 @@ public class LoadChunks : MonoBehaviour
 
 		updateList = new List<WorldPosition>();
 		buildList = new List<WorldPosition>();
-		deleteList = new List<WorldPosition>();
-		//despawnList = new List<WorldPosition>();
 
 		noise.Clear();
 	}
@@ -80,10 +75,10 @@ public class LoadChunks : MonoBehaviour
 		playerChunkPos = World.GetChunkPosition(transform.position);
 
 		// Update the positional display
-		if (playerChunkPos != oldPosition)
-		{
-			Game.UpdatePosition(playerChunkPos);
-		}
+		//if (playerChunkPos != oldPosition)
+		//{
+		//	Game.UpdatePosition(playerChunkPos);
+		//}
 		
 		if (buildList.Count == 0 && updateList.Count == 0)
 		{	

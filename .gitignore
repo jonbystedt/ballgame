@@ -38,3 +38,25 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+/Assets/G-Audio
+/Assets/G-Audio
+/Assets/G-Audio/Editor/Inspectors/SubPulseInspector.cs.meta
+/Assets/G-Audio/Editor/Inspectors/SubPulseInspector.cs
+/Assets/G-Audio/Editor/Inspectors/SoundBankInspector.cs.meta
+/Assets/G-Audio/Editor/Inspectors/SoundBankInspector.cs
+/Assets/G-Audio/Editor/Inspectors/PulsedPatternInspector.cs.meta
+/Assets/G-Audio/Editor/Inspectors/PulsedPatternInspector.cs
+/Assets/G-Audio/Editor/Inspectors/PulseBaseInspector.cs.meta
+/Assets/G-Audio/Editor/Inspectors/PulseBaseInspector.cs
+/Assets/G-Audio/Editor/Inspectors/MasterPulseInspector.cs.meta
+/Assets/G-Audio/Editor/Inspectors/MasterPulseInspector.cs
+/Assets/G-Audio/Editor/Inspectors/GATSampleBankInspector.cs.meta
+/Assets/G-Audio/Editor/Inspectors/GATSampleBankInspector.cs
+/Assets/G-Audio/Editor/Inspectors/GATPlayerInspector.cs.meta
+/Assets/G-Audio/Editor/Inspectors/GATPlayerInspector.cs
+/Assets/G-Audio/Editor/Inspectors/GATManagerInspector.cs.meta
+/Assets/G-Audio/Editor/Inspectors/GATManagerInspector.cs
+/Assets/G-Audio/Editor/Inspectors/GATEnvelopeInspector.cs.meta
+/Assets/G-Audio/Editor/Inspectors/GATEnvelopeInspector.cs
+/Assets/G-Audio/Editor/Inspectors/GATBaseInspector.cs.meta
+/Assets/G-Audio/Editor/Inspectors/GATBaseInspector.cs

@@ -224,7 +224,7 @@ public class CameraOperator : MonoBehaviour
 	private void DoFreeBlockSearch(float startDistance)
 	{
 		float testDistance = startDistance;
-		bool lookingUp = (freeLookCamera.m_TiltAngle <= 0); // this is unused
+		//bool lookingUp = (freeLookCamera.m_TiltAngle <= 0); 
 
 		// Incremental search for a free location from the camera towards the player
 		do 
