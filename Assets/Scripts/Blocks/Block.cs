@@ -73,7 +73,7 @@ public class Block {
 		tileY = (3 - Mathf.FloorToInt(tileIndex / (float)TileFactory.TileGridWidth)) * Chunk.Size;
 	}
 
-	public virtual Vector2[] FaceUVs(Direction direction, int width, int height)
+	public virtual Vector2[] FaceUVs(Direction direction, int width, int height, Block.Type t)
 	{
 		Vector2[] UVs = new Vector2[4];
 		TileIndex tilePos = TexturePosition(direction);
@@ -84,15 +84,16 @@ public class Block {
 		int x2;
 		int y2;
 
-		int tileXBorder = 0;
-		int tileYBorder = 0;
-
 		// remove tile border artifacts
-		if (width > Mathf.FloorToInt(Chunk.Size*0.5f))
-			width = Mathf.FloorToInt(width*0.5f);
+        if (t == Type.rock)
+        {
+            if (width > Mathf.FloorToInt(Chunk.Size * 0.5f))
+                width = Mathf.FloorToInt(width * 0.5f);
 
-		if (height > Mathf.FloorToInt(Chunk.Size*0.5f))
-			height = Mathf.FloorToInt(height*0.5f);
+            if (height > Mathf.FloorToInt(Chunk.Size * 0.5f))
+                height = Mathf.FloorToInt(height * 0.5f);
+        }
+		
 
 		if (direction == Direction.up || direction == Direction.north || direction == Direction.west)
 		{
@@ -110,20 +111,20 @@ public class Block {
 		}
 
 		UVs[0] = new Vector2(
-			tileXSize * tilePos.x + (tileXSize * x2) + tileXSize - tileXBorder, 
-			tileYSize * tilePos.y + (tileYSize * y1) + tileYBorder
+			tileXSize * tilePos.x + (tileXSize * x2) + tileXSize, 
+			tileYSize * tilePos.y + (tileYSize * y1)
 		);
 		UVs[1] = new Vector2(
-			tileXSize * tilePos.x + (tileXSize * x2) + tileXSize - tileXBorder, 
-			tileYSize * tilePos.y + (tileYSize * y2) + tileYSize - tileYBorder
+			tileXSize * tilePos.x + (tileXSize * x2) + tileXSize, 
+			tileYSize * tilePos.y + (tileYSize * y2) + tileYSize
 		);
 		UVs[2] = new Vector2(
-			tileXSize * tilePos.x + (tileXSize * x1) + tileXBorder, 
-			tileYSize * tilePos.y + (tileYSize * y2) + tileYSize - tileYBorder
+			tileXSize * tilePos.x + (tileXSize * x1), 
+			tileYSize * tilePos.y + (tileYSize * y2) + tileYSize
 		);
 		UVs[3] = new Vector2(
-			tileXSize * tilePos.x + (tileXSize * x1) + tileXBorder, 
-			tileYSize * tilePos.y + (tileYSize * y1) + tileYBorder
+			tileXSize * tilePos.x + (tileXSize * x1), 
+			tileYSize * tilePos.y + (tileYSize * y1)
 		);
 
 		return UVs;

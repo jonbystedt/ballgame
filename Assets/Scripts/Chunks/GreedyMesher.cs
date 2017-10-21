@@ -74,7 +74,7 @@ public class GreedyMesher : MonoBehaviour
 							block = World.GetBlock(new World3(pos.x + x[0], pos.y + x[1], pos.z + x[2]));
 
 							Block.Type type = Blocks.GetType(block);
-							if ((!transparent && type == Block.Type.rock) || (transparent && type == Block.Type.glass))
+							if ((!transparent && type == Block.Type.rock) || (transparent && (type == Block.Type.glass || type == Block.Type.rock)))
 							{
 								front_block = block;
 							}
@@ -86,7 +86,7 @@ public class GreedyMesher : MonoBehaviour
 							block = World.GetBlock(new World3(pos.x + x[0] + q[0], pos.y + x[1] + q[1], pos.z + x[2] + q[2]));
 
 							Block.Type type = Blocks.GetType(block);
-							if ((!transparent && type == Block.Type.rock) || (transparent && type == Block.Type.glass))
+							if ((!transparent && type == Block.Type.rock) || (transparent && (type == Block.Type.glass || type == Block.Type.rock)))
 							{
 								back_block = block;
 							}
@@ -245,8 +245,18 @@ public class GreedyMesher : MonoBehaviour
 							meshData.AddVertex(new Vector3(x[0] + dv[0], x[1] + dv[1], x[2] + dv[2]));
 
 							meshData.AddQuadTriangles();
-
 							meshData.uv.AddRange(Blocks.GetFaceUVs((ushort)block, dir, width, height)); 
+
+                            if (transparent)
+                            {
+                                meshData.AddVertex(new Vector3(x[0] + dv[0], x[1] + dv[1], x[2] + dv[2]));
+                                meshData.AddVertex(new Vector3(x[0] + du[0] + dv[0], x[1] + du[1] + dv[1], x[2] + du[2] + dv[2]));
+                                meshData.AddVertex(new Vector3(x[0] + du[0], x[1] + du[1], x[2] + du[2]));
+                                meshData.AddVertex(new Vector3(x[0], x[1], x[2]));
+
+                                meshData.AddQuadTriangles();
+                                meshData.uv.AddRange(Blocks.GetFaceUVs((ushort)block, dir, width, height));
+                            }
 
 							// Clear this portion of the mask
 							for (int l = 0; l < height; l++)

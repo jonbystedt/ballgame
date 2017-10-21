@@ -33,7 +33,7 @@ public class MeshData {
 	public void AddTriangle(int tri)
 	{
 		triangles.Add(tri);
-		colliderTris.Add (tri - (vertices.Count - colliderVerts.Count));
+		colliderTris.Add(tri - (vertices.Count - colliderVerts.Count));
 	}
 
 	public void AddQuadTriangles()

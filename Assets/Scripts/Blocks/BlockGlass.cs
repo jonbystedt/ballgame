@@ -17,51 +17,7 @@ public class BlockGlass : Block {
 		transparent = true;	
 	}
 
-//	public override MeshData TransparentBlockData (Chunk chunk, int x, int y, int z, MeshData meshData)
-//	{
-//		meshData.useRenderDataForCol = true;
-//		Block block;
-//
-//		block = chunk.GetBlock (x, y + 1, z);
-//		if (!block.IsSolid(Direction.down) && !(block.transparent))
-//		{
-//			meshData = FaceDataUp(chunk, x, y, z, meshData);
-//		}
-//
-//		block = chunk.GetBlock(x, y - 1, z);
-//		if (!block.IsSolid(Direction.up) && !(block.transparent))
-//		{
-//			meshData = FaceDataDown(chunk, x, y, z, meshData);
-//		}
-//
-//		block = chunk.GetBlock(x, y, z + 1);
-//		if (!block.IsSolid(Direction.south) && !(block.transparent))
-//		{
-//			meshData = FaceDataNorth(chunk, x, y, z, meshData);
-//		}
-//
-//		block = chunk.GetBlock(x, y, z - 1);
-//		if (!block.IsSolid(Direction.north) && !(block.transparent))
-//		{
-//			meshData = FaceDataSouth(chunk, x, y, z, meshData);
-//		}
-//
-//		block = chunk.GetBlock(x + 1, y, z);
-//		if (!block.IsSolid(Direction.west) && !(block.transparent))
-//		{
-//			meshData = FaceDataEast(chunk, x, y, z, meshData);
-//		}
-//
-//		block = chunk.GetBlock(x - 1, y, z);
-//		if (!block.IsSolid(Direction.east) && !(block.transparent))
-//		{
-//			meshData = FaceDataWest(chunk, x, y, z, meshData);
-//		}
-//		
-//		return meshData;
-//	}
-
-	public override Vector2[] FaceUVs(Direction direction, int width, int height)
+	public override Vector2[] FaceUVs(Direction direction, int width, int height, Block.Type t)
 	{
 		Vector2[] UVs = new Vector2[4];
 		TileIndex tilePos = TexturePosition(direction);

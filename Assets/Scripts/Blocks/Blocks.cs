@@ -89,7 +89,7 @@ public static class Blocks {
 		BlockLookup.TryGetValue(blockId, out block);
 		if (block != null)
 		{
-			uvs = BlockLookup[blockId].FaceUVs(direction, width, height);
+			uvs = BlockLookup[blockId].FaceUVs(direction, width, height, GetType(blockId));
 			UVLookup.TryAdd(hash, uvs);
 		}
 		return uvs;

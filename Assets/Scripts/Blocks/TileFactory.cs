@@ -96,9 +96,9 @@ public class TileFactory : MonoBehaviour {
 					}
 					else
                     {
-                        int inc = Mathf.FloorToInt(TileGridWidth / TileSize);
+                        int type = i % 8;
 
-                        if (column < inc)
+                        if (type < 1)
                         {
                             FillSwatchGrid
                             (
@@ -110,7 +110,7 @@ public class TileFactory : MonoBehaviour {
                                 Tile.Colors[i]
                             );
                         }
-                        else if (column < 2 * inc)
+                        else if (type < 2)
                         {
                             FillSwatchGrid
                             (
@@ -122,7 +122,7 @@ public class TileFactory : MonoBehaviour {
                                 Tile.Colors[i]
                             );
                         }
-                        else if (column < 3 * inc)
+                        else if (type < 3)
                         {
                             FillSwatchGrid
                             (
@@ -134,7 +134,7 @@ public class TileFactory : MonoBehaviour {
                                 Tile.Colors[i]
                             );
                         }
-                        else if (column < 4 * inc)
+                        else if (type < 4)
                         {
                             FillSwatchGrid
                             (
@@ -147,18 +147,19 @@ public class TileFactory : MonoBehaviour {
                             );
                         }
                         // covers 2 columns
-                        else if (column < 6 * inc)
+                        else if (type < 6)
                         {
-                            FillSwatchCheckerboard
+                            FillSwatchGrid
                             (
-                                texture, 
-                                xoffset + x * TileSize, 
-                                yoffset + y * TileSize, 
-                                1, 
+                                texture,
+                                xoffset + x * TileSize,
+                                yoffset + y * TileSize,
+                                1,
+                                4,
                                 Tile.Colors[i]
                             );
                         }
-                        else if (column < 7 * inc)
+                        else if (type < 7)
                         {
                             FillSwatchCheckerboard
                             (
@@ -261,12 +262,12 @@ public class TileFactory : MonoBehaviour {
         Texture2D texture, 
         int offsetX, 
         int offsetY, 
-        int size, 
+        int half, 
         Color color
     )
 	{
 		Color trans = new Color(color.r, color.g, color.b, 0f);
-        int half = Mathf.FloorToInt(size / 2f);
+        int size = half * 2;
 
 		for (int x = offsetX; x < offsetX + TileSize; x++)
 		{

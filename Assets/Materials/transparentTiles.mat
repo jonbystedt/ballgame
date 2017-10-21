@@ -64,9 +64,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
+    - _AmbientLightMultiplier: 0.1
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
+    - _DirectionalLightMultiplier: 1
     - _DstBlend: 0
     - _GlossMapScale: 0.702
     - _Glossiness: 0.08
@@ -75,6 +77,7 @@ Material:
     - _Mode: 1
     - _OcclusionStrength: 1
     - _Parallax: 0.02
+    - _PointSpotLightMultiplier: 2
     - _Shininess: 0.142
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
@@ -85,4 +88,6 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Emission: {r: 0, g: 0, b: 0, a: 0}
     - _EmissionColor: {r: 0.7941176, g: 0.7941176, b: 0.7941176, a: 0}
+    - _EmissiveColor: {r: 0.09999997, g: 0.09999997, b: 0.09999997, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
+    - _TintColor: {r: 1, g: 1, b: 1, a: 1}
