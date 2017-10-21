@@ -17,7 +17,7 @@ public class BlockGlass : Block {
 		transparent = true;	
 	}
 
-	public override Vector2[] FaceUVs(Direction direction, int width, int height, Block.Type t)
+	public override Vector2[] FaceUVs(Direction direction, int width, int height)
 	{
 		Vector2[] UVs = new Vector2[4];
 		TileIndex tilePos = TexturePosition(direction);
@@ -30,18 +30,18 @@ public class BlockGlass : Block {
 
 		if (direction == Direction.up || direction == Direction.north || direction == Direction.west)
 		{
-			x1 = Mathf.FloorToInt((Chunk.Size - height) / 2f);
-			y1 = Mathf.FloorToInt((Chunk.Size - width) / 2f);
-			x2 = height + x1 - 1;
-			y2 = width + y1 - 1;
+            x1 = Chunk.HalfSize - Mathf.CeilToInt(height / 2f);
+            x2 = Chunk.HalfSize + Mathf.FloorToInt(height / 2f) - 1;
+            y1 = Chunk.HalfSize - Mathf.CeilToInt(width / 2f);
+            y2 = Chunk.HalfSize + Mathf.FloorToInt(width / 2f) - 1;
 		}
 		else
 		{
-			x1 = Mathf.FloorToInt((Chunk.Size - width) / 2f);
-			y1 = Mathf.FloorToInt((Chunk.Size - height) / 2f);
-			x2 = width + x1 - 1;
-			y2 = height + y1 - 1;
-		}
+            x1 = Chunk.HalfSize - Mathf.CeilToInt(width / 2f);
+            x2 = Chunk.HalfSize + Mathf.FloorToInt(width / 2f) - 1;
+            y1 = Chunk.HalfSize - Mathf.CeilToInt(height / 2f);
+            y2 = Chunk.HalfSize + Mathf.FloorToInt(height / 2f) - 1;
+        }
 
 		UVs[0] = new Vector2(
 			tileXSize * tilePos.x + (tileXSize * x2) + tileXSize, 
