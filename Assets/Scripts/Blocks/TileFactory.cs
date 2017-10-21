@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 public enum GradientType
 {
@@ -9,7 +10,8 @@ public enum GradientType
 	ValueColor
 }
 
-public class TileFactory : MonoBehaviour {
+public class TileFactory : MonoBehaviour
+{
 
 	static private Texture2D _stoneTexture;
 	static private Texture2D _glassTexture;
@@ -46,7 +48,9 @@ public class TileFactory : MonoBehaviour {
 
 	const int TILE_BORDER = 4;
 
-	public static void Clear()
+    static List<Action<Texture2D, int, int, Color>> cloudPaint = new List<Action<Texture2D, int, int, Color>>();
+
+    public static void Clear()
 	{
 		Destroy(_stoneTexture);
 		Destroy(_glassTexture);
@@ -54,11 +58,51 @@ public class TileFactory : MonoBehaviour {
 		_glassTexture = null;
 	}
 
-	public static Texture2D CreateTexture(int offset, string name, bool transparent)
-	{
-		Texture2D texture;
+    private static void AddPainters()
+    {
+        cloudPaint.Add((Texture2D tex, int xoff, int yoff, Color color) =>
+        {
+            FillSwatchGrid(tex, xoff, yoff, 1, 4, color);
+        });
+        cloudPaint.Add((Texture2D tex, int xoff, int yoff, Color color) =>
+        {
+            FillSwatchGrid(tex, xoff, yoff, 1, 2, color);
+        });
+        cloudPaint.Add((Texture2D tex, int xoff, int yoff, Color color) =>
+        {
+            FillSwatchGrid(tex, xoff, yoff, 2, 1, color);
+        });
+        cloudPaint.Add((Texture2D tex, int xoff, int yoff, Color color) =>
+        {
+            FillSwatchGrid(tex, xoff, yoff, 2, 2, color);
+        });
+        cloudPaint.Add((Texture2D tex, int xoff, int yoff, Color color) =>
+        {
+            FillSwatchGrid(tex, xoff, yoff, 1, 4, color);
+        });
+        cloudPaint.Add((Texture2D tex, int xoff, int yoff, Color color) =>
+        {
+            FillSwatchCheckerboard(tex, xoff, yoff, 1, color);
+        });
+        cloudPaint.Add((Texture2D tex, int xoff, int yoff, Color color) =>
+        {
+            FillSwatchCheckerboard(tex, xoff, yoff, 2, color);
+        });
+        cloudPaint.Add((Texture2D tex, int xoff, int yoff, Color color) =>
+        {
+            FillSwatchCheckerboard(tex, xoff, yoff, 4, color);
+        });
+    }
 
-		texture = new Texture2D
+
+    public static Texture2D CreateTexture(int offset, string name, bool transparent)
+	{
+        if (transparent && cloudPaint.Count == 0)
+        {
+            AddPainters();
+        }
+
+        Texture2D texture = new Texture2D
         (
             Chunk.Size * TileSize * TileGridWidth, 
             Chunk.Size * TileSize * TileGridHeight, 
@@ -96,91 +140,13 @@ public class TileFactory : MonoBehaviour {
 					}
 					else
                     {
-                        int type = i % 8;
-
-                        if (type < 1)
-                        {
-                            FillSwatchGrid
-                            (
-                                texture, 
-                                xoffset + x * TileSize, 
-                                yoffset + y * TileSize, 
-                                1, 
-                                4, 
-                                Tile.Colors[i]
-                            );
-                        }
-                        else if (type < 2)
-                        {
-                            FillSwatchGrid
-                            (
-                                texture, 
-                                xoffset + x * TileSize, 
-                                yoffset + y * TileSize, 
-                                1, 
-                                2, 
-                                Tile.Colors[i]
-                            );
-                        }
-                        else if (type < 3)
-                        {
-                            FillSwatchGrid
-                            (
-                                texture, 
-                                xoffset + x * TileSize, 
-                                yoffset + y * TileSize, 
-                                2, 
-                                1, 
-                                Tile.Colors[i]
-                            );
-                        }
-                        else if (type < 4)
-                        {
-                            FillSwatchGrid
-                            (
-                                texture, 
-                                xoffset + x * TileSize, 
-                                yoffset + y * TileSize, 
-                                2, 
-                                2, 
-                                Tile.Colors[i]
-                            );
-                        }
-                        // covers 2 columns
-                        else if (type < 6)
-                        {
-                            FillSwatchGrid
-                            (
-                                texture,
-                                xoffset + x * TileSize,
-                                yoffset + y * TileSize,
-                                1,
-                                4,
-                                Tile.Colors[i]
-                            );
-                        }
-                        else if (type < 7)
-                        {
-                            FillSwatchCheckerboard
-                            (
-                                texture, 
-                                xoffset + x * TileSize, 
-                                yoffset + y * TileSize, 
-                                2, 
-                                Tile.Colors[i]
-                            );
-                        }
-                        else
-                        {
-                            FillSwatchCheckerboard
-                            (
-                                texture, 
-                                xoffset + x * TileSize, 
-                                yoffset + y * TileSize, 
-                                4, 
-                                Tile.Colors[i]
-                            );
-                        }
+                        cloudPaint[i % 8]
+                        (
+                            texture,
+                            xoffset + x * TileSize,
+                            yoffset + y * TileSize,
+                            Tile.Colors[i]
+                        ); 
                     }
 				}
 			}
@@ -303,23 +269,23 @@ public class TileFactory : MonoBehaviour {
 	// Size should probably be divisible by two :)
 	public static void GenerateColorPalette()
 	{
-		float valueCap = Random.Range(0.75f, 1.0f);
-		float saturationCap = Random.Range(0.75f, 1.0f);
+		float valueCap = UnityEngine.Random.Range(0.75f, 1.0f);
+		float saturationCap = UnityEngine.Random.Range(0.75f, 1.0f);
 
 		// Randomized on hue only
-		Color seedColor = Random.ColorHSV(0f, 1f, saturationCap, saturationCap, valueCap, valueCap);
+		Color seedColor = UnityEngine.Random.ColorHSV(0f, 1f, saturationCap, saturationCap, valueCap, valueCap);
 
 		// SingleColor: a color with a smooth tone gradient
 		// WarmCool: a color and its complimentary opposites
 		// DarkLight: one color with dark and light tones
 		// ValueColor: a combination of the two
-		GradientType type = (GradientType)Random.Range(2,4);
+		GradientType type = (GradientType)UnityEngine.Random.Range(2,4);
 
 		GenerateGradients(type, seedColor, saturationCap, valueCap, 16).ToArray().CopyTo(Tile.Colors, 0);
 
-		valueCap = Random.Range(0.75f, 1.0f);
-		saturationCap = Random.Range(0.5f, 1.0f);
-		type = (GradientType)Random.Range(0,2);
+		valueCap = UnityEngine.Random.Range(0.75f, 1.0f);
+		saturationCap = UnityEngine.Random.Range(0.5f, 1.0f);
+		type = (GradientType)UnityEngine.Random.Range(0,2);
 		seedColor = Tile.Inverse(Tile.Colors[16]);
 
 		GenerateGradients(type, seedColor, saturationCap, valueCap, 16).ToArray().CopyTo(Tile.Colors, 32);
@@ -350,15 +316,15 @@ public class TileFactory : MonoBehaviour {
 
 		if (type == GradientType.WarmCool || type == GradientType.SingleColor)
 		{
-			valueStart = Random.Range(0.5f, 0.75f);
+			valueStart = UnityEngine.Random.Range(0.5f, 0.75f);
 			valueEnd = valueCap;
 			saturationStart = valueStart;
 			saturationEnd = saturationCap;
 		} 
 		else if (type == GradientType.DarkLight || type == GradientType.ValueColor)
 		{
-			valueStart = Random.Range(0f, 0.5f);
-			valueEnd = Random.Range(valueStart, 1f);
+			valueStart = UnityEngine.Random.Range(0f, 0.5f);
+			valueEnd = UnityEngine.Random.Range(valueStart, 1f);
 			saturationStart = valueStart - 0.25f;
 			saturationEnd = saturationCap;
 		}
@@ -370,11 +336,11 @@ public class TileFactory : MonoBehaviour {
 		Color.RGBToHSV(seedColor, out h, out s, out v);
 
 		//float hueRange = Random.Range(0f,0.25f);
-		float hueRange = Mathf.Lerp(0f, 1f, Random.value * Random.value * Random.value);
+		float hueRange = Mathf.Lerp(0f, 1f, UnityEngine.Random.value * UnityEngine.Random.value * UnityEngine.Random.value);
 		float hue;
-		float darkest = Random.value;
-		float lightest = Random.value;
-		float desaturateMax = Random.value;
+		float darkest = UnityEngine.Random.value;
+		float lightest = UnityEngine.Random.value;
+		float desaturateMax = UnityEngine.Random.value;
 		float dark;
 		float light;
 		float desat;
@@ -397,9 +363,9 @@ public class TileFactory : MonoBehaviour {
 			if (hue > 1) hue -= 1;
 			if (hue < 0) hue += 1;
 
-			coin = Random.value;
-			dark = Mathf.Lerp(0, darkest, Random.value);
-			light = Mathf.Lerp(0, lightest, Random.value);
+			coin = UnityEngine.Random.value;
+			dark = Mathf.Lerp(0, darkest, UnityEngine.Random.value);
+			light = Mathf.Lerp(0, lightest, UnityEngine.Random.value);
 
 			if (type == GradientType.WarmCool)
 			{
@@ -443,9 +409,9 @@ public class TileFactory : MonoBehaviour {
 			}
 
 			// desaturate world
-			if (Random.value < 0.75f)
+			if (UnityEngine.Random.value < 0.75f)
 			{
-				desat = Mathf.Lerp(0, desaturateMax, Random.value);
+				desat = Mathf.Lerp(0, desaturateMax, UnityEngine.Random.value);
 				color = Tile.Desaturate(color, desat);
 			}
 
@@ -456,7 +422,7 @@ public class TileFactory : MonoBehaviour {
 		if (type == GradientType.WarmCool || type == GradientType.ValueColor)
 		{
 			h = h + 0.5f;
-			h = h + Random.Range(0,0.25f) - 0.125f;
+			h = h + UnityEngine.Random.Range(0,0.25f) - 0.125f;
 			if (h > 1) h -= 1;
 		}
 
