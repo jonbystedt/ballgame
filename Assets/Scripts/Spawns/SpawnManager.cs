@@ -460,7 +460,7 @@ public class SpawnManager : MonoBehaviour {
 	// Spawn with delay, add to list, set color
 	public void Objects(Spawns o, Color color, Vector3 pos, int count, float delay, float corruption)
 	{
-		Column column = World.GetColumn(new WorldPosition(pos));
+		Column column = World.GetColumn(new World3(pos));
 		if (column != null && column.spawns != null)
 		{
 			Objects(o, color, 0f, pos, count, delay, column.spawns, corruption);
@@ -471,22 +471,22 @@ public class SpawnManager : MonoBehaviour {
 		Objects(o, color, 0f, pos, count, delay, spawns, corruption);
 	}
 
-	public void Objects(Spawns o, Color color, WorldPosition pos, float height, int count, float delay, List<PooledObject> spawns, float corruption)
+	public void Objects(Spawns o, Color color, World3 pos, float height, int count, float delay, List<PooledObject> spawns, float corruption)
 	{
 		Objects(o, color, new Vector3(pos.x, pos.y + height, pos.z), count, delay, spawns, corruption);
 	}
 
-	public void Objects(Spawns o, Color color, float mass, WorldPosition pos, float height, int count, float delay, List<PooledObject> spawns, float corruption)
+	public void Objects(Spawns o, Color color, float mass, World3 pos, float height, int count, float delay, List<PooledObject> spawns, float corruption)
 	{
 		Objects(o, color, mass, new Vector3(pos.x, pos.y + height, pos.z), count, delay, spawns, corruption);
 	}
 
-	public void SpawnColumn(WorldPosition pos, Region region, List<PooledObject> spawns)
+	public void SpawnColumn(World3 pos, Region region, List<PooledObject> spawns)
 	{
 		StartCoroutine(SpawnRoutine(pos, region, spawns));
 	}
 
-	IEnumerator SpawnRoutine(WorldPosition pos, Region region, List<PooledObject> spawns)
+	IEnumerator SpawnRoutine(World3 pos, Region region, List<PooledObject> spawns)
 	{
 		SampleSet sampleSet = InterpolatedNoise.Results[region];
 
@@ -524,7 +524,7 @@ public class SpawnManager : MonoBehaviour {
 							Spawns.Pickup, 
 							Tile.Colors[17 + (spawnValue % 32)],
 							weight,
-							new WorldPosition(pos.x + x, sampleSet.spawnMap.height[x, z], pos.z + z), 
+							new World3(pos.x + x, sampleSet.spawnMap.height[x, z], pos.z + z), 
 							0.5f, 
 							sampleSet.spawnMap.frequency[x, z],
 							1f,
@@ -546,7 +546,7 @@ public class SpawnManager : MonoBehaviour {
 							Spawns.BouncyBall, 
 							Tile.Colors[32 + (spawnValue % 32)],
 							weight,
-							new WorldPosition(pos.x + x, sampleSet.spawnMap.height[x, z], pos.z + z), 
+							new World3(pos.x + x, sampleSet.spawnMap.height[x, z], pos.z + z), 
 							1.5f,
 							sampleSet.spawnMap.frequency[x, z],
 							1f,
@@ -569,7 +569,7 @@ public class SpawnManager : MonoBehaviour {
 								Tile.Colors[spawnValue % 64],
 								0.35f
 							),
-							new WorldPosition(pos.x + x, sampleSet.spawnMap.height[x, z], pos.z + z), 
+							new World3(pos.x + x, sampleSet.spawnMap.height[x, z], pos.z + z), 
 							5f,
 							sampleSet.spawnMap.frequency[x, z],
 							1f,
@@ -592,7 +592,7 @@ public class SpawnManager : MonoBehaviour {
 								Tile.Colors[spawnValue % 64],
 								0.35f
 							), 
-							new WorldPosition(pos.x + x, sampleSet.spawnMap.height[x, z], pos.z + z), 
+							new World3(pos.x + x, sampleSet.spawnMap.height[x, z], pos.z + z), 
 							10f,
 							sampleSet.spawnMap.frequency[x, z],
 							1f,
@@ -611,7 +611,7 @@ public class SpawnManager : MonoBehaviour {
 						Spawn.Objects(
 							Spawns.Moon, 
 							Tile.Colors[16 + (spawnValue % 16)],
-							new WorldPosition(pos.x + x, sampleSet.spawnMap.height[x, z], pos.z + z), 
+							new World3(pos.x + x, sampleSet.spawnMap.height[x, z], pos.z + z), 
 							10f,
 							sampleSet.spawnMap.frequency[x, z],
 							1f,
@@ -628,7 +628,7 @@ public class SpawnManager : MonoBehaviour {
 						Spawn.Objects(
 							Spawns.DarkStar, 
 							Tile.Colors[spawnValue % 16],
-							new WorldPosition(pos.x + x, sampleSet.spawnMap.height[x, z], pos.z + z), 
+							new World3(pos.x + x, sampleSet.spawnMap.height[x, z], pos.z + z), 
 							10f,
 							sampleSet.spawnMap.frequency[x, z],
 							1f,

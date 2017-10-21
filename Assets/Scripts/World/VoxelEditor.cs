@@ -3,7 +3,7 @@ using System.Collections;
 
 public static class VoxelEditor 
 {
-	public static void SetBlock(WorldPosition pos, ushort block, bool playerHit)
+	public static void SetBlock(World3 pos, ushort block, bool playerHit)
 	{
 		ushort current = World.GetBlock(pos);
 
@@ -17,12 +17,12 @@ public static class VoxelEditor
 		}
 	}
 
-	public static void SetBlock(WorldPosition pos, ushort block)
+	public static void SetBlock(World3 pos, ushort block)
 	{
 		SetBlock(pos, block, true);
 	}
 
-	public static void SetSphere(WorldPosition pos, ushort block, int diameter)
+	public static void SetSphere(World3 pos, ushort block, int diameter)
 	{
 		int r = Mathf.FloorToInt(diameter / 2f);
 
@@ -34,7 +34,7 @@ public static class VoxelEditor
 				{
 					if (Mathf.FloorToInt(Mathf.Sqrt(x * x + y * y + z * z)) == r)
 					{
-						SetBlock(new WorldPosition(pos.x + x, pos.y + y, pos.z + z), block);
+						SetBlock(new World3(pos.x + x, pos.y + y, pos.z + z), block);
 					}
 				}
 			}
@@ -49,7 +49,7 @@ public static class VoxelEditor
 			{
 				for (int x = region.min.x; x < region.max.x + 1; x = x + region.sizeX)
 				{
-					SetBlock(new WorldPosition(x, y, z), block);
+					SetBlock(new World3(x, y, z), block);
 				}
 			}
 		}

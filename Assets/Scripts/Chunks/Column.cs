@@ -6,7 +6,7 @@ public class Column
 	public bool rendered;
 
 	public List<PooledObject> spawns;
-	public List<WorldPosition> chunks;
+	public List<World3> chunks;
 
 	public Region region;
 	
@@ -16,7 +16,7 @@ public class Column
 		spawned = false;
 		rendered = false;
 		spawns = new List<PooledObject>();
-		chunks = new List<WorldPosition>();
+		chunks = new List<World3>();
 
 		for(int i = 0; i < _chunks.Length; i++)
 		{
@@ -25,7 +25,7 @@ public class Column
 		}
 	}
 
-	public void SpawnColumn(WorldPosition pos, SpawnManager spawn)
+	public void SpawnColumn(World3 pos, SpawnManager spawn)
 	{
 		spawn.SpawnColumn(pos, region, spawns);
 		spawned = true;

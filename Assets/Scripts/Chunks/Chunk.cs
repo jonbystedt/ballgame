@@ -23,8 +23,8 @@ public class Chunk : PooledObject {
 	public bool surrounded = false;
 	public bool outofrange = false;
 
-	private WorldPosition _pos;
-	public WorldPosition pos 
+	private World3 _pos;
+	public World3 pos 
 	{
 		get { return _pos; }
 		set 
@@ -44,7 +44,7 @@ public class Chunk : PooledObject {
 	private Vector3 chunkCenter = Vector3.zero;
 	private Vector3 playerHPos = Vector3.zero;
 	private float chunkDistance;
-	private WorldPosition chunkPosition;
+	private World3 chunkPosition;
 
 	public static List<MeshData> MeshDataPool = new List<MeshData>();
 	private Block emptyBlock = new Block();
@@ -172,7 +172,7 @@ public class Chunk : PooledObject {
 		if (chunkDistance > Config.ChunkDeleteRadius * Chunk.Size)
 		{
 			World.Generator.RemoveResults(column.region);
-			World.Columns.Remove(new WorldPosition(column.chunks[0].x, 0, column.chunks[0].z).GetHashCode());
+			World.Columns.Remove(new World3(column.chunks[0].x, 0, column.chunks[0].z).GetHashCode());
 
 			if (column.spawns.Count > 0)
 			{
@@ -388,9 +388,9 @@ public class Chunk : PooledObject {
 		return new UIntVec3(blockX, blockY, blockZ);
 	}
 
-	public static WorldPosition BlockPosition(uint index)
+	public static World3 BlockPosition(uint index)
 	{
-		return new WorldPosition((Vector3)GetBlockDataPosition(index));
+		return new World3((Vector3)GetBlockDataPosition(index));
 	}
 
 }

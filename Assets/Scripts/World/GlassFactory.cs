@@ -14,7 +14,7 @@ public class GlassFactory : MonoBehaviour
 		template = MeshDraft.Plane();
 	}
 
-	public void SpawnPane(WorldPosition block, Block.Direction side, Color color)
+	public void SpawnPane(World3 block, Block.Direction side, Color color)
 	{
 		template.colors.Clear();
 

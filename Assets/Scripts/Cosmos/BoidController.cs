@@ -225,7 +225,7 @@ namespace ProceduralToolkit.Examples
                     {
                         Vector3 p = new Vector3(boid.position.x + x, boid.position.y + y, boid.position.z + z);
                         Vector3 pos = p + boid.velocity*Time.deltaTime*2f;
-                        WorldPosition worldPos = new WorldPosition(transform.TransformPoint(pos));
+                        World3 worldPos = new World3(transform.TransformPoint(pos));
                         ushort block = World.GetBlock(worldPos);
                         if ((block != Block.Air && block != Block.Null && worldPos.y < 16) || worldPos.y < -48)
                         {
@@ -247,7 +247,7 @@ namespace ProceduralToolkit.Examples
                     {
                         Vector3 p = new Vector3(boid.position.x + x, boid.position.y + y, boid.position.z + z);
                         Vector3 pos = p + boid.velocity;
-                        WorldPosition worldPos = new WorldPosition(transform.TransformPoint(pos));
+                        World3 worldPos = new World3(transform.TransformPoint(pos));
                         ushort block = World.GetBlock(worldPos);
                         if ((block != Block.Air && block != Block.Null && worldPos.y < 16) || worldPos.y < -48)
                         {

@@ -2,13 +2,13 @@
 
 public struct Region 
 {
-	public WorldPosition min;
-	public WorldPosition max;
+	public World3 min;
+	public World3 max;
 	public int sizeX;
 	public int sizeY;
 	public int sizeZ;
 
-	public Region(WorldPosition min, WorldPosition max)
+	public Region(World3 min, World3 max)
 	{
 		this.min = min;
 		this.max = max;

@@ -111,39 +111,39 @@ public class World : MonoBehaviour {
 		generator.initialized = false;
 	}
 
-	public static WorldPosition GetChunkPosition(Vector3 pos)
+	public static World3 GetChunkPosition(Vector3 pos)
 	{
-		return new WorldPosition(
+		return new World3(
 			Mathf.FloorToInt(pos.x / Chunk.Size) * Chunk.Size,
 			Mathf.FloorToInt(pos.y / Chunk.Size) * Chunk.Size,
 			Mathf.FloorToInt(pos.z / Chunk.Size) * Chunk.Size
 		);
 	}
 
-	public static WorldPosition GetChunkPosition(WorldPosition pos)
+	public static World3 GetChunkPosition(World3 pos)
 	{
 		return GetChunkPosition(new Vector3(pos.x, pos.y, pos.z));
 	}
 
-	public static WorldPosition GetBlockPosition(Vector3 pos)
+	public static World3 GetBlockPosition(Vector3 pos)
 	{
-		return new WorldPosition(
+		return new World3(
 			Mathf.FloorToInt(pos.x),
 			Mathf.FloorToInt(pos.y),
 			Mathf.FloorToInt(pos.z)
 		);
 	}
 
-	public static WorldPosition GetRoundedBlockPosition(Vector3 pos)
+	public static World3 GetRoundedBlockPosition(Vector3 pos)
 	{
-		return new WorldPosition(
+		return new World3(
 			Mathf.RoundToInt(pos.x),
 			Mathf.RoundToInt(pos.y),
 			Mathf.RoundToInt(pos.z)
 		);
 	}
 
-	public static Chunk GetChunk(WorldPosition pos)
+	public static Chunk GetChunk(World3 pos)
 	{
 		Chunk chunk = null;
 		Chunks.TryGetValue(pos.GetHashCode(), out chunk);
@@ -153,7 +153,7 @@ public class World : MonoBehaviour {
 
 	public static Chunk GetChunk(Vector3 pos)
 	{
-		WorldPosition worldPos = World.GetChunkPosition(pos);
+		World3 worldPos = World.GetChunkPosition(pos);
 
 		return GetChunk(worldPos);
 	}
@@ -183,7 +183,7 @@ public class World : MonoBehaviour {
 		Chunk newChunk = InstantiateChunk();
 
 		// Set the position of the chunk
-		WorldPosition pos = new WorldPosition(x, y, z);
+		World3 pos = new World3(x, y, z);
 		newChunk.transform.position = pos.ToVector3();
 		newChunk.transparentChunk.transform.position = pos.ToVector3();
 		newChunk.pos = pos;
@@ -196,7 +196,7 @@ public class World : MonoBehaviour {
 		bool columnBuilt = true;
 		for (int i = 1 - Config.WorldHeight; i < 1; i++)
 		{
-			WorldPosition chunkPos = new WorldPosition(pos.x, i * Chunk.Size, pos.z);
+			World3 chunkPos = new World3(pos.x, i * Chunk.Size, pos.z);
 
 			Chunk chunk;
 			if (Chunks.TryGetValue(chunkPos.GetHashCode(), out chunk))
@@ -214,7 +214,7 @@ public class World : MonoBehaviour {
 		if (columnBuilt)
 		{
 			// Does this column already exist?
-			WorldPosition columnLocation = new WorldPosition(columnChunks[0].pos.x, 0, columnChunks[0].pos.z);
+			World3 columnLocation = new World3(columnChunks[0].pos.x, 0, columnChunks[0].pos.z);
 			if (!Columns.ContainsKey(columnLocation.GetHashCode()))
 			{
 				// Initialize the generator if it isn't
@@ -232,7 +232,7 @@ public class World : MonoBehaviour {
 		}
 	}
 
-	public static void CreateChunk(WorldPosition pos)
+	public static void CreateChunk(World3 pos)
 	{
 		CreateChunk(pos.x, pos.y, pos.z);
 	}
@@ -240,13 +240,13 @@ public class World : MonoBehaviour {
 	public static void DestroyChunkAt(int x, int y, int z)
 	{
 		Chunk chunk = null;
-		if (Chunks.TryGetValue(new WorldPosition(x, y, z).GetHashCode(), out chunk))
+		if (Chunks.TryGetValue(new World3(x, y, z).GetHashCode(), out chunk))
 		{
 			DestroyChunk(chunk);
 		}
 	}
 
-	public static void DestroyChunkAt(WorldPosition pos)
+	public static void DestroyChunkAt(World3 pos)
 	{
 		Chunk chunk = null;
 		if (Chunks.TryGetValue(pos.GetHashCode(), out chunk))
@@ -277,12 +277,12 @@ public class World : MonoBehaviour {
 	static Column GetColumn(int x, int z)
 	{
 		Column column = null;
-		Columns.TryGetValue(new WorldPosition(x, 0, z).GetHashCode(), out column);
+		Columns.TryGetValue(new World3(x, 0, z).GetHashCode(), out column);
 
 		return column;
 	}
 
-	public static Column GetColumn(WorldPosition pos)
+	public static Column GetColumn(World3 pos)
 	{
 		pos = GetChunkPosition(pos);
 		return GetColumn(pos.x, pos.z);
@@ -291,7 +291,7 @@ public class World : MonoBehaviour {
 	public void SetColumnSpawned(int x, int z)
 	{
 		Column column;
-		if (Columns.TryGetValue(new WorldPosition(x, 0, z).GetHashCode(), out column))
+		if (Columns.TryGetValue(new World3(x, 0, z).GetHashCode(), out column))
 		{
 			column.spawned = true;
 		}
@@ -314,7 +314,7 @@ public class World : MonoBehaviour {
 		}
 	}
 
-	public static ushort GetBlock(WorldPosition pos)
+	public static ushort GetBlock(World3 pos)
 	{
 		return GetBlock(pos.x, pos.y, pos.z);
 	}
@@ -333,12 +333,12 @@ public class World : MonoBehaviour {
 			chunk.update = true;
 
 			// Check if adjacent chunks will need an update
-			UpdateIfEqual(x - chunk.pos.x, 0, new WorldPosition(x - 1, y, z), playerHit);
-			UpdateIfEqual(x - chunk.pos.x, Chunk.Size - 1, new WorldPosition(x + 1, y, z), playerHit);
-			UpdateIfEqual(y - chunk.pos.y, 0, new WorldPosition(x, y - 1, z), playerHit);
-			UpdateIfEqual(y - chunk.pos.y, Chunk.Size - 1, new WorldPosition(x, y + 1, z), playerHit);
-			UpdateIfEqual(z - chunk.pos.z, 0, new WorldPosition(x, y, z -1), playerHit);
-			UpdateIfEqual(z - chunk.pos.z, Chunk.Size - 1, new WorldPosition(x, y, z + 1), playerHit);
+			UpdateIfEqual(x - chunk.pos.x, 0, new World3(x - 1, y, z), playerHit);
+			UpdateIfEqual(x - chunk.pos.x, Chunk.Size - 1, new World3(x + 1, y, z), playerHit);
+			UpdateIfEqual(y - chunk.pos.y, 0, new World3(x, y - 1, z), playerHit);
+			UpdateIfEqual(y - chunk.pos.y, Chunk.Size - 1, new World3(x, y + 1, z), playerHit);
+			UpdateIfEqual(z - chunk.pos.z, 0, new World3(x, y, z -1), playerHit);
+			UpdateIfEqual(z - chunk.pos.z, Chunk.Size - 1, new World3(x, y, z + 1), playerHit);
 		}
 		else
 		{
@@ -346,12 +346,12 @@ public class World : MonoBehaviour {
 		}
 	}
 
-	public static void SetBlock(WorldPosition pos, ushort block, bool playerHit)
+	public static void SetBlock(World3 pos, ushort block, bool playerHit)
 	{
 		SetBlock(pos.x, pos.y, pos.x, block, playerHit);
 	}
 
-	public static void SetBlock(WorldPosition pos, ushort block)
+	public static void SetBlock(World3 pos, ushort block)
 	{
 		SetBlock(pos, block, false);
 	}
@@ -361,7 +361,7 @@ public class World : MonoBehaviour {
 		SetBlock(x, y, z, block, false);
 	}	
 
-	static void UpdateIfEqual(int value1, int value2, WorldPosition pos, bool playerHit)
+	static void UpdateIfEqual(int value1, int value2, World3 pos, bool playerHit)
 	{
 		if(value1 == value2)
 		{

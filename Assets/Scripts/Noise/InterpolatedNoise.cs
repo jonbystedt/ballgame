@@ -370,7 +370,7 @@ public class InterpolatedNoise : MonoBehaviour
 		{
 			int[,,] subset = new int[subRegion.sizeX, subRegion.sizeY, subRegion.sizeZ];
 
-			WorldPosition offset = new WorldPosition(
+			World3 offset = new World3(
 				subRegion.min.x - fullRegion.min.x, 
 				subRegion.min.y - fullRegion.min.y, 
 				subRegion.min.z - fullRegion.min.z

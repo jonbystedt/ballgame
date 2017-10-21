@@ -24,7 +24,7 @@ public class CameraOperator : MonoBehaviour
 		get { return firstPerson; }
 		set 
 		{ 
-			WorldPosition overhead = World.GetBlockPosition(
+			World3 overhead = World.GetBlockPosition(
 				new Vector3(
 					Game.Player.transform.position.x, 
 					Game.Player.transform.position.y + 1f, 
@@ -233,7 +233,7 @@ public class CameraOperator : MonoBehaviour
 			Vector3 forwardPos = cameraPosition - cameraDirection * (testDistance + 1f);
 
 			// Block at the forward position
-			WorldPosition testBlockPosForward = World.GetBlockPosition(forwardPos);
+			World3 testBlockPosForward = World.GetBlockPosition(forwardPos);
 			ushort tbForward = World.GetBlock(testBlockPosForward);
 			cameraForwardBlock = tbForward;
 
@@ -241,18 +241,18 @@ public class CameraOperator : MonoBehaviour
 			if (IsEmpty(tbForward))
 			{
 				// Block slightly above the forward position
-				WorldPosition testSpreadUp = World.GetBlockPosition(forwardPos + _camera.transform.up * 
+				World3 testSpreadUp = World.GetBlockPosition(forwardPos + _camera.transform.up * 
 					Mathf.Lerp(spread/3f, spread, freeLookCamera.m_TiltAngle / 15f));
 
 				// Block slightly below the forward position
-				WorldPosition testSpreadDown = World.GetBlockPosition(forwardPos - _camera.transform.up * 
+				World3 testSpreadDown = World.GetBlockPosition(forwardPos - _camera.transform.up * 
 					Mathf.Lerp(spread/3f, spread, freeLookCamera.m_TiltAngle / 15f));
 
 				// Block slightly left of the forward position
-				WorldPosition testSpreadLeft= World.GetBlockPosition(forwardPos - _camera.transform.right * spread);
+				World3 testSpreadLeft= World.GetBlockPosition(forwardPos - _camera.transform.right * spread);
 
 				// Block slightly right of the forward position
-				WorldPosition testSpreadRight = World.GetBlockPosition(forwardPos + _camera.transform.right * spread);
+				World3 testSpreadRight = World.GetBlockPosition(forwardPos + _camera.transform.right * spread);
 
 				ushort tbUp = World.GetBlock(testSpreadUp);
 				ushort tbDown = World.GetBlock(testSpreadDown);
@@ -271,19 +271,19 @@ public class CameraOperator : MonoBehaviour
 						break;
 					}
 					// Diagonals
-					WorldPosition testSpreadUpLeft = World.GetBlockPosition(
+					World3 testSpreadUpLeft = World.GetBlockPosition(
 						forwardPos + _camera.transform.up - _camera.transform.right * 
 						Mathf.Lerp(spread/3f, spread/2f, freeLookCamera.m_TiltAngle / 15f)
 						);
-					WorldPosition testSpreadUpRight = World.GetBlockPosition(
+					World3 testSpreadUpRight = World.GetBlockPosition(
 						forwardPos + _camera.transform.up + _camera.transform.right * 
 						Mathf.Lerp(spread/3f, spread/2f, freeLookCamera.m_TiltAngle / 15f)
 						);
-					WorldPosition testSpreadDownLeft = World.GetBlockPosition(
+					World3 testSpreadDownLeft = World.GetBlockPosition(
 						forwardPos - _camera.transform.up - _camera.transform.right * 
 						Mathf.Lerp(spread/3f, spread/2f, freeLookCamera.m_TiltAngle / 15f)
 						);
-					WorldPosition testSpreadDownRight = World.GetBlockPosition(
+					World3 testSpreadDownRight = World.GetBlockPosition(
 						forwardPos - _camera.transform.up + _camera.transform.right * 
 						Mathf.Lerp(spread/3f, spread/2f, freeLookCamera.m_TiltAngle / 15f)
 						);

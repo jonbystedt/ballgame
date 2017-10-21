@@ -15,14 +15,14 @@ public class LoadChunks : MonoBehaviour
 
 	bool pipelineActive = false;
 
-	List<WorldPosition> updateList = new List<WorldPosition>();
-	List<WorldPosition> buildList = new List<WorldPosition>();
-	List<WorldPosition> currentBuilds = new List<WorldPosition>();
+	List<World3> updateList = new List<World3>();
+	List<World3> buildList = new List<World3>();
+	List<World3> currentBuilds = new List<World3>();
 
-	WorldPosition playerChunkPos = new WorldPosition();
-	WorldPosition oldPosition = new WorldPosition();
-	WorldPosition center;
-	WorldPosition pos;
+	World3 playerChunkPos = new World3();
+	World3 oldPosition = new World3();
+	World3 center;
+	World3 pos;
 	Chunk testChunk;
 	float spawnTime;
 
@@ -58,8 +58,8 @@ public class LoadChunks : MonoBehaviour
 		progress = 0;
 		Game.ChunksLoaded = 0;
 
-		updateList = new List<WorldPosition>();
-		buildList = new List<WorldPosition>();
+		updateList = new List<World3>();
+		buildList = new List<World3>();
 
 		noise.Clear();
 	}
@@ -85,7 +85,7 @@ public class LoadChunks : MonoBehaviour
 			for (int i = 0; i < ChunkData.LoadOrder.Count(); i++)
 			{
 				//translate the player position and array position into chunk position
-				WorldPosition chunkPosition = new WorldPosition(
+				World3 chunkPosition = new World3(
 					ChunkData.LoadOrder[i].x * Chunk.Size + playerChunkPos.x, 
 					0, 
 					ChunkData.LoadOrder[i].z * Chunk.Size + playerChunkPos.z
@@ -117,7 +117,7 @@ public class LoadChunks : MonoBehaviour
 				{
 					for (int y = -3; y < 1; y++)
 					{
-						center = new WorldPosition(chunkPosition.x, y * Chunk.Size, chunkPosition.z);
+						center = new World3(chunkPosition.x, y * Chunk.Size, chunkPosition.z);
 						buildList.Insert(0, center);
 					}
 				}
@@ -125,7 +125,7 @@ public class LoadChunks : MonoBehaviour
 				// ring
 				for (int y = -3; y < 1; y++)
 				{
-					pos = new WorldPosition(chunkPosition.x, y * Chunk.Size, zMin);
+					pos = new World3(chunkPosition.x, y * Chunk.Size, zMin);
 					testChunk = World.GetChunk(pos);
 					if (testChunk == null)
 					{
@@ -134,7 +134,7 @@ public class LoadChunks : MonoBehaviour
 				}
 				for (int y = -3; y < 1; y++)
 				{
-					pos = new WorldPosition(xMax, y * Chunk.Size, chunkPosition.z);
+					pos = new World3(xMax, y * Chunk.Size, chunkPosition.z);
 					testChunk = World.GetChunk(pos);
 					if (testChunk == null)
 					{
@@ -144,7 +144,7 @@ public class LoadChunks : MonoBehaviour
 				}
 				for (int y = -3; y < 1; y++)
 				{
-					pos = new WorldPosition(chunkPosition.x, y * Chunk.Size, zMax);
+					pos = new World3(chunkPosition.x, y * Chunk.Size, zMax);
 					testChunk = World.GetChunk(pos);
 					if (testChunk == null)
 					{
@@ -153,7 +153,7 @@ public class LoadChunks : MonoBehaviour
 				}
 				for (int y = -3; y < 1; y++)
 				{
-					pos = new WorldPosition(xMin, y * Chunk.Size, chunkPosition.z);
+					pos = new World3(xMin, y * Chunk.Size, chunkPosition.z);
 					testChunk = World.GetChunk(pos);
 					if (testChunk == null)
 					{
@@ -164,7 +164,7 @@ public class LoadChunks : MonoBehaviour
 				// Finally, add the center to the update list to render it.
 				for (int y = -3; y < 1; y++)
 				{
-					center = new WorldPosition(chunkPosition.x, y * Chunk.Size, chunkPosition.z);
+					center = new World3(chunkPosition.x, y * Chunk.Size, chunkPosition.z);
 					updateList.Insert(0, center);
 				}
 					
@@ -212,7 +212,7 @@ public class LoadChunks : MonoBehaviour
 
 			for (int i = currentBuilds.Count - 1; i >= 0; i--)
 			{
-				WorldPosition pos = currentBuilds[i];
+				World3 pos = currentBuilds[i];
 
 				Chunk chunk = World.GetChunk(pos);
 
@@ -283,7 +283,7 @@ public class LoadChunks : MonoBehaviour
 		// check around
 		for (int xi = -1; xi <= 1; xi += 2)
 		{
-			WorldPosition pos = new WorldPosition(
+			World3 pos = new World3(
 				chunk.pos.x + (xi * Chunk.Size), 
 				chunk.pos.y, 
 				chunk.pos.z);
@@ -298,7 +298,7 @@ public class LoadChunks : MonoBehaviour
 
 		for (int zi = -1; zi <= 1; zi += 2)
 		{
-			WorldPosition pos = new WorldPosition(
+			World3 pos = new World3(
 				chunk.pos.x, 
 				chunk.pos.y, 
 				chunk.pos.z + (zi * Chunk.Size));
@@ -318,7 +318,7 @@ public class LoadChunks : MonoBehaviour
 		// check above and/or below
 		for (int yi = yStart; yi <= yEnd; yi++)
 		{
-				WorldPosition pos = new WorldPosition
+				World3 pos = new World3
 				(
 					chunk.pos.x, 
 					chunk.pos.y + (yi * Chunk.Size), 
@@ -348,7 +348,7 @@ public class LoadChunks : MonoBehaviour
 			for (int i = 0; i < ChunkData.SpawnOrder.Count(); i++)
 			{
 				//translate the player position and array position into chunk position
-				WorldPosition spawnPosition = new WorldPosition
+				World3 spawnPosition = new World3
 				(
 					ChunkData.SpawnOrder[i].x * Chunk.Size + playerChunkPos.x,
 					0, 
@@ -361,13 +361,13 @@ public class LoadChunks : MonoBehaviour
 					if (!column.spawned && column.rendered)
 					{
 						// Only spawn if the player is still around
-						WorldPosition currentPosition = World.GetChunkPosition(new Vector3
+						World3 currentPosition = World.GetChunkPosition(new Vector3
 						(
 							Game.Player.transform.position.x,
 							0,
 							Game.Player.transform.position.z
 						));
-						WorldPosition columnPosition = World.GetChunkPosition(new Vector3
+						World3 columnPosition = World.GetChunkPosition(new Vector3
 						(
 							column.region.min.x,
 							0,
@@ -392,7 +392,7 @@ public class LoadChunks : MonoBehaviour
 	// 	{
 	// 		foreach(Column column in World.Columns.Values)
 	// 		{
-	// 			despawnList.Add(new WorldPosition(column.chunks[0].x, 0, column.chunks[0].z));
+	// 			despawnList.Add(new World3(column.chunks[0].x, 0, column.chunks[0].z));
 	// 		}
 	// 	}
 	// 	else

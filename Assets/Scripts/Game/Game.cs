@@ -233,7 +233,7 @@ public class Game : MonoBehaviour
 			}
 			else
 			{
-				UpdatePosition(new WorldPosition(player.transform.position));
+				UpdatePosition(new World3(player.transform.position));
 			}
 		}
 
@@ -257,7 +257,7 @@ public class Game : MonoBehaviour
 
 		if (ShowStats)
 		{
-			UpdatePosition(new WorldPosition(player.transform.position));
+			UpdatePosition(new World3(player.transform.position));
 		}
 		
 		if (Config.MusicVolume > 0)
@@ -415,7 +415,7 @@ public class Game : MonoBehaviour
 		}
 	}
 
-	public static void UpdatePosition(WorldPosition pos)
+	public static void UpdatePosition(World3 pos)
 	{
 		if (!PlayerActive)
 		{

@@ -2,18 +2,18 @@
 using System;
 
 [Serializable]
-public struct WorldPosition
+public struct World3
 {
 	public int x, y, z;
 
-	public WorldPosition(int x, int y, int z)
+	public World3(int x, int y, int z)
 	{
 		this.x = x;
 		this.y = y;
 		this.z = z;
 	}
 
-	public WorldPosition(Vector3 gamePosition)
+	public World3(Vector3 gamePosition)
 	{
 		this.x = Mathf.FloorToInt(gamePosition.x);
 		this.y = Mathf.FloorToInt(gamePosition.y);
@@ -27,7 +27,7 @@ public struct WorldPosition
 
 	public override bool Equals(object obj)
 	{
-		if (!(obj is WorldPosition))
+		if (!(obj is World3))
 		{
 			return false;
 		}
@@ -35,17 +35,17 @@ public struct WorldPosition
 		return GetHashCode() == obj.GetHashCode();
 	}
 
-	public bool Equals(WorldPosition p)
+	public bool Equals(World3 p)
 	{
 		return GetHashCode() == p.GetHashCode();
 	}
 
-	public static bool operator == (WorldPosition a, WorldPosition b)
+	public static bool operator == (World3 a, World3 b)
 	{
 		return a.GetHashCode() == b.GetHashCode();
 	}
 
-	public static bool operator != (WorldPosition a, WorldPosition b)
+	public static bool operator != (World3 a, World3 b)
 	{
 		return !(a == b);
 	}

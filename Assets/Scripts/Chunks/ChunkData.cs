@@ -4,19 +4,19 @@ using System.Collections.Generic;
 
 public static class ChunkData
 {
-	public static WorldPosition[] LoadOrder;
-	public static WorldPosition[] SpawnOrder;
+	public static World3[] LoadOrder;
+	public static World3[] SpawnOrder;
 	
 	static ChunkData() {}
 
 	public static void SetLoadOrder()
 	{
-		var chunkOffsets = new List<WorldPosition>();
+		var chunkOffsets = new List<World3>();
 		for (int x = -Config.ChunkDeleteRadius; x <= Config.ChunkDeleteRadius; x++)
 		{
 			for (int z = -Config.ChunkDeleteRadius; z <= Config.ChunkDeleteRadius; z++)
 			{
-				chunkOffsets.Add(new WorldPosition(x, 0, z));
+				chunkOffsets.Add(new World3(x, 0, z));
 			}
 		}
 

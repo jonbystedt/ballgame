@@ -73,7 +73,7 @@ public static class Serialization
 		}
 	}
 
-	public static string FileName(WorldPosition chunkLocation)
+	public static string FileName(World3 chunkLocation)
 	{
 		fileName = chunkLocation.x + "," + chunkLocation.y + "," + chunkLocation.z + ".bin";
 		return fileName;

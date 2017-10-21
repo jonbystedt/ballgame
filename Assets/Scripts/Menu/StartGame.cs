@@ -126,7 +126,7 @@ public class StartGame : MonoBehaviour {
 
 	public void ExecuteStartGame()
 	{
-		// Column start = World.Columns[new WorldPosition(0,0,0).GetHashCode()];
+		// Column start = World.Columns[new World3(0,0,0).GetHashCode()];
 		// SampleSet results = InterpolatedNoise.Results[start.region];
 
 		//Game.Player.transform.position = new Vector3(start.region.min.x, results.spawnMap.height[0,0] + 1f, start.region.min.z);

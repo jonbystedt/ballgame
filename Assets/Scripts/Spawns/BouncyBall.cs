@@ -40,7 +40,7 @@ public class BouncyBall : SpawnedObject
 
 	public BouncyBall closest;
 
-	public WorldPosition lastBlockPosition;
+	public World3 lastBlockPosition;
 
 	private int pickupCount;
 	private int ballCount;
@@ -124,7 +124,7 @@ public class BouncyBall : SpawnedObject
 		}
 
 
-		WorldPosition blockPosition = World.GetBlockPosition(transform.position);
+		World3 blockPosition = World.GetBlockPosition(transform.position);
 		Vector3 d = closest.transform.position - transform.position;
 		float difference = hsvColor.h - closest.hsvColor.h;
 		if (difference > 0.5f)
@@ -197,7 +197,7 @@ public class BouncyBall : SpawnedObject
 	{
 		exploding = true;
 
-		// WorldPosition chunkPos = World.GetChunkPosition(transform.position);
+		// World3 chunkPos = World.GetChunkPosition(transform.position);
 
 		// // Add the spawns to the local column spawn list so that they can be managed.
 		// Column column = World.GetColumn(chunkPos);	

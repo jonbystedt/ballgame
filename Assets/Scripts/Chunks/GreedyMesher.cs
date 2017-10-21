@@ -9,7 +9,7 @@ public class GreedyMesher : MonoBehaviour
 	List<int[,]> MaskPool = new List<int[,]>();
 	List<int[]> Int3Pool = new List<int[]>();
 
-	public void Create(MeshData meshData, ushort[] blocks, WorldPosition pos, bool transparent)
+	public void Create(MeshData meshData, ushort[] blocks, World3 pos, bool transparent)
 	{
 		if (Config.Multithreaded)
 		{
@@ -21,7 +21,7 @@ public class GreedyMesher : MonoBehaviour
 		}
 	}
 
-	public void CreateCollider(MeshData meshData, ushort[] blocks, WorldPosition pos)
+	public void CreateCollider(MeshData meshData, ushort[] blocks, World3 pos)
 	{
 		if (Config.Multithreaded)
 		{
@@ -34,7 +34,7 @@ public class GreedyMesher : MonoBehaviour
 		
 	}
 
-	IEnumerator CreateMeshData(MeshData meshData, ushort[] blocks, WorldPosition pos,  bool transparent)
+	IEnumerator CreateMeshData(MeshData meshData, ushort[] blocks, World3 pos,  bool transparent)
 	{
 		// int[,] mask = GetMask();
 		// int[] x = GetInt3();
@@ -71,7 +71,7 @@ public class GreedyMesher : MonoBehaviour
 						if (x[axis] == -1)
 						{
 							ushort block = Block.Null;
-							block = World.GetBlock(new WorldPosition(pos.x + x[0], pos.y + x[1], pos.z + x[2]));
+							block = World.GetBlock(new World3(pos.x + x[0], pos.y + x[1], pos.z + x[2]));
 
 							Block.Type type = Blocks.GetType(block);
 							if ((!transparent && type == Block.Type.rock) || (transparent && type == Block.Type.glass))
@@ -83,7 +83,7 @@ public class GreedyMesher : MonoBehaviour
 						if (x[axis] == Chunk.Size - 1)
 						{
 							ushort block = Block.Null;
-							block = World.GetBlock(new WorldPosition(pos.x + x[0] + q[0], pos.y + x[1] + q[1], pos.z + x[2] + q[2]));
+							block = World.GetBlock(new World3(pos.x + x[0] + q[0], pos.y + x[1] + q[1], pos.z + x[2] + q[2]));
 
 							Block.Type type = Blocks.GetType(block);
 							if ((!transparent && type == Block.Type.rock) || (transparent && type == Block.Type.glass))
@@ -286,7 +286,7 @@ public class GreedyMesher : MonoBehaviour
 	}
 
 	// This is basically the same as above, but doesn't track block types to create an optimized collision mesh
-	IEnumerator CreateCollisionMeshData(MeshData meshData, ushort[] blocks, WorldPosition pos)
+	IEnumerator CreateCollisionMeshData(MeshData meshData, ushort[] blocks, World3 pos)
 	{
 		// int[,] mask = GetMask();
 		// int[] x = GetInt3();
@@ -323,7 +323,7 @@ public class GreedyMesher : MonoBehaviour
 						// Edge cases. Grab a block from the world to check visibility
 						if (x[axis] == -1)
 						{		
-							block = World.GetBlock(new WorldPosition(pos.x + x[0], pos.y + x[1], pos.z + x[2]));
+							block = World.GetBlock(new World3(pos.x + x[0], pos.y + x[1], pos.z + x[2]));
 
 							if (block != Block.Null && block != Block.Air)
 							{
@@ -333,7 +333,7 @@ public class GreedyMesher : MonoBehaviour
 
 						if (x[axis] == Chunk.Size - 1)
 						{
-							block = World.GetBlock(new WorldPosition(pos.x + x[0] + q[0], pos.y + x[1] + q[1], pos.z + x[2] + q[2]));
+							block = World.GetBlock(new World3(pos.x + x[0] + q[0], pos.y + x[1] + q[1], pos.z + x[2] + q[2]));
 
 							if (block != Block.Null && block != Block.Air)
 							{

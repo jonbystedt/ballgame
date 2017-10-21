@@ -30,7 +30,7 @@ public struct Direction
 
 public static class WorldUtils 
 {
-	public static Direction GetDirection(WorldPosition pos1, WorldPosition pos2)
+	public static Direction GetDirection(World3 pos1, World3 pos2)
 	{
 		Direction rLoc = new Direction();
 
@@ -74,9 +74,9 @@ public static class WorldUtils
 
 	}
 
-	public static WorldPosition PositionOnPlane(WorldPosition pos, Direction rLoc, int x, int y)
+	public static World3 PositionOnPlane(World3 pos, Direction rLoc, int x, int y)
 	{
-		WorldPosition planePos = new WorldPosition();
+		World3 planePos = new World3();
 
 		switch(rLoc.direction) 
 		{

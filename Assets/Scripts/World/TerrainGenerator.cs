@@ -68,8 +68,8 @@ public class TerrainGenerator : MonoBehaviour
 		SampleSet sampleSet = GetSampleSet();
 
 		Region sampleRegion = new Region(
-			new WorldPosition(column[0].pos.x, column.Min(chunk => chunk.pos.y), column[0].pos.z),
-			new WorldPosition(
+			new World3(column[0].pos.x, column.Min(chunk => chunk.pos.y), column[0].pos.z),
+			new World3(
 				column[0].pos.x + Chunk.Size - 1, 
 				column.Max(chunk => chunk.pos.y) + Chunk.Size - 1, 
 				column[0].pos.z + Chunk.Size - 1)
@@ -740,7 +740,7 @@ public class TerrainGenerator : MonoBehaviour
 	}
 
 
-	void PopulateSpawns(SampleSet sampleSet, WorldPosition pos)
+	void PopulateSpawns(SampleSet sampleSet, World3 pos)
 	{
 		for (int x = pos.x; x < pos.x + Chunk.Size; x++)
 		{

@@ -367,7 +367,7 @@ public class Roller : MonoBehaviour
 		// 	Vector3 camForward = Vector3.Scale(Game.MainCamera.transform.forward, new Vector3(1, 0, 1)).normalized;
 		// 	Vector3 editLocation = transform.position + camForward;
 
-		// 	WorldPosition editBlock = World.GetBlockPosition(editLocation);
+		// 	World3 editBlock = World.GetBlockPosition(editLocation);
 
 		// 	ushort block = World.GetBlock(editBlock);
 
@@ -389,7 +389,7 @@ public class Roller : MonoBehaviour
 							gameObject.transform.position.y + y, 
 							gameObject.transform.position.z + z);
 
-						WorldPosition editBlock = World.GetBlockPosition(editLocation);
+						World3 editBlock = World.GetBlockPosition(editLocation);
 
 						ushort block = World.GetBlock(editBlock);
 
@@ -472,11 +472,11 @@ public class Roller : MonoBehaviour
 		{
 			int blockPosY = Mathf.FloorToInt(pos.y);
 			float offset = pos.y - ((float)blockPosY + 0.5f);
-			WorldPosition b_pos;
+			World3 b_pos;
 			
 			if (!jumping)
 			{
-				b_pos = new WorldPosition(
+				b_pos = new World3(
 					Mathf.FloorToInt(pos.x + normal.x), 
 					Mathf.FloorToInt(pos.y - offset + normal.y), 
 					Mathf.FloorToInt(pos.z + normal.z)
@@ -484,7 +484,7 @@ public class Roller : MonoBehaviour
 			}
 			else
 			{
-				b_pos = new WorldPosition(
+				b_pos = new World3(
 					Mathf.FloorToInt(pos.x + normal.x), 
 					Mathf.FloorToInt(pos.y - offset + normal.y), 
 					Mathf.FloorToInt(pos.z + normal.z)
@@ -555,7 +555,7 @@ public class Roller : MonoBehaviour
 		return hit;
 	}
 
-	void SpawnPickupsFromBlock(WorldPosition bashBlock, Color color)
+	void SpawnPickupsFromBlock(World3 bashBlock, Color color)
 	{
 		// Spawn a cube of pickups to replace the block
 		for (int x = 1; x < 4; x += 2)
