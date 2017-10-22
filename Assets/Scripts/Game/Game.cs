@@ -481,6 +481,11 @@ public class Game : MonoBehaviour
 		_instance.logMessage.text = message;
 	}
 
+    public static void LogAppend(string message)
+    {
+        Game.Log(_instance.logMessage.text + " " + message);
+    }
+
 	public static void PlaySong()
 	{
 		if (!_instance.startGame.playMusic.playing)
