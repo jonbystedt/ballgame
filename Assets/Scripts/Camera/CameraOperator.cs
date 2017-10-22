@@ -209,13 +209,13 @@ public class CameraOperator : MonoBehaviour
 			solidRenderer.enabled = false;
 		}
 		else if (cameraDistance <= 6f) {
-			playerRenderer.enabled = true;
+			playerRenderer.enabled = false;
 			outlineRenderer.enabled = true;
 			solidRenderer.enabled = false;
 		}
 		else
 		{
-			playerRenderer.enabled = true;
+			playerRenderer.enabled = false;
 			outlineRenderer.enabled = true;
 			solidRenderer.enabled = true;
 		}			
