@@ -59,10 +59,10 @@ public class Pickup : SpawnedObject
 		Vector3 force = NoiseGenerator.SumWithDerivative(
 			NoiseGenerator.Value3D, 
 			World.GetBlockPosition(transform.position).ToVector3(), 
-			Config.WorldConfig.terrain.terrain.frequency.value,
-            Config.WorldConfig.terrain.terrain.octaves,
-            Config.WorldConfig.terrain.terrain.lacunarity,
-            Config.WorldConfig.terrain.terrain.persistance
+			Config.Instance.terrain.hills.frequency.value,
+            Config.Instance.terrain.hills.octaves,
+            Config.Instance.terrain.hills.lacunarity,
+            Config.Instance.terrain.hills.persistance
 		);
 
 		// Rotate force by hue

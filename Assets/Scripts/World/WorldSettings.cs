@@ -3,7 +3,7 @@
 [Serializable]
 public class TerrainSettings
 {
-    public NoiseOptions terrain { get; set; }
+    public NoiseOptions hills { get; set; }
     public NoiseOptions mountain { get; set; }
     public NoiseOptions cave { get; set; }
     public NoiseOptions pattern { get; set; }
@@ -11,7 +11,32 @@ public class TerrainSettings
 
     public NoiseOptions[] driftMaps { get; set; }
 
+    public NoiseType hillType { get; set; }
+    public NoiseType mountainType { get; set; }
+    public NoiseType caveType { get; set; }
+    public NoiseType patternType { get; set; }
+    public NoiseType stripeType { get; set; }
+    public NoiseType driftMapType { get; set; }
+
     public string flags { get; set; }
+
+    public int beachHeight { get; set; }
+    public float beachPersist { get; set; }
+    public int cloudEase { get; set; }
+
+    public int caveBreak { get; set; }
+    public int patternBreak { get; set; }
+    public int stripeBreak { get; set; }
+    public int patternStripeBreak { get; set; }
+    public int cloudBreak { get; set; }
+    public int islandBreak { get; set; }
+    public int trans1 { get; set; }
+    public int trans2 { get; set; }
+    public int modScale { get; set; }
+
+    public float stretch { get; set; }
+    public float squish { get; set; }
+    public float patternAmount { get; set; }
 }
 
 [Serializable]
@@ -37,6 +62,9 @@ public class EnvironmentSettings
     public NoiseOptions lightning { get; set; }
     public NoiseOptions key { get; set; }
     public BoidSettings boids { get; set; }
+
+    public int rainBreak { get; set; }
+    public int lightningBreak { get; set; }
 
     public EnvironmentSettings()
     {

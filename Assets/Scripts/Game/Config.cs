@@ -60,7 +60,7 @@ public class Config : MonoBehaviour
 	// Serializable game configuration object
 	public static GameConfig Settings;
 	public static NoiseSettings Noise;
-    public static WorldSettings WorldConfig;
+    public static WorldSettings Instance;
 
 	public static int WorldSize
 	{

@@ -55,41 +55,38 @@ public class NoiseOptions
 
 public static class NoiseConfig
 {
-	// Intensity will never be below this number.
-	public static int spawnIntensityBase = -20;
-	public static int rainBreakValue = 650;
-	public static int lightningBreakValue = 750;
-
-	public static NoiseType terrainType;
-	public static NoiseType mountainType;
 	public static NoiseMethod caveMethod;
 	public static NoiseMethod patternMethod;
 	public static NoiseMethod stripeMethod;
 	public static NoiseMethod driftMapMethod;
 
-	public static float Seed { get { return GameUtils.Seed; }}
+    public static NoiseOptions[] options;
+
+    static float Seed { get { return GameUtils.Seed; }}
 
 	static int optionCount = 0;
 	static float copyChance = 0.5f;
 
-	public static NoiseOptions[] options;
-	static List<NoiseOptions> opts = new List<NoiseOptions>();
+    static int rainBreakValue = 650;
+    static int lightningBreakValue = 750;
+
+    static List<NoiseOptions> opts = new List<NoiseOptions>();
     static List<NoiseOptions> drifts = new List<NoiseOptions>();
 
     public static void Initialize()
 	{
-        Config.WorldConfig = new WorldSettings();
+        Config.Instance = new WorldSettings();
 
 		opts = new List<NoiseOptions>();
         drifts = new List<NoiseOptions>();
         optionCount = 0;
 
 		float s = Seed;
-		rainBreakValue = rainBreakValue + Mathf.FloorToInt(s * s * 350);
-		lightningBreakValue = lightningBreakValue + Mathf.FloorToInt(s * s * 250);
+		Config.Instance.environment.rainBreak = rainBreakValue + Mathf.FloorToInt(s * s * 350);
+		Config.Instance.environment.lightningBreak = lightningBreakValue + Mathf.FloorToInt(s * s * 250);
 
 		int driftIndex = GetDriftIndex(Config.Noise.terrain.drift);
-		Config.WorldConfig.terrain.terrain = new NoiseOptions
+		Config.Instance.terrain.hills = new NoiseOptions
 		(
 			new ValueRange(
 				Config.Noise.terrain.frequency.low, 
@@ -122,10 +119,10 @@ public static class NoiseConfig
 			driftIndex
 		); 
 
-		opts.Add(Config.WorldConfig.terrain.terrain);
+		opts.Add(Config.Instance.terrain.hills);
 
 		driftIndex = GetDriftIndex(Config.Noise.mountain.drift);
-		Config.WorldConfig.terrain.mountain = new NoiseOptions
+		Config.Instance.terrain.mountain = new NoiseOptions
 		(
 			new ValueRange(
 				Config.Noise.mountain.frequency.low, 
@@ -162,10 +159,10 @@ public static class NoiseConfig
 			driftIndex
 		); 
 
-		opts.Add(Config.WorldConfig.terrain.mountain);
+		opts.Add(Config.Instance.terrain.mountain);
 
 		driftIndex = GetDriftIndex(Config.Noise.cave.drift);
-        Config.WorldConfig.terrain.cave = new NoiseOptions
+        Config.Instance.terrain.cave = new NoiseOptions
 		(
 			new ValueRange(
 				Config.Noise.cave.frequency.low, 
@@ -198,10 +195,10 @@ public static class NoiseConfig
 			driftIndex
 		);
 
-		opts.Add(Config.WorldConfig.terrain.cave);
+		opts.Add(Config.Instance.terrain.cave);
 
 		driftIndex = GetDriftIndex(Config.Noise.pattern.drift);
-        Config.WorldConfig.terrain.pattern = new NoiseOptions
+        Config.Instance.terrain.pattern = new NoiseOptions
 		(
 			new ValueRange(
 				Config.Noise.pattern.frequency.low, 
@@ -234,10 +231,10 @@ public static class NoiseConfig
 			driftIndex
 		);
 
-		opts.Add(Config.WorldConfig.terrain.pattern);
+		opts.Add(Config.Instance.terrain.pattern);
 
 		driftIndex = GetDriftIndex(Config.Noise.stripe.drift);
-        Config.WorldConfig.terrain.stripe = new NoiseOptions
+        Config.Instance.terrain.stripe = new NoiseOptions
 		(
 			new ValueRange(
 				Config.Noise.stripe.frequency.low, 
@@ -269,10 +266,10 @@ public static class NoiseConfig
 			driftIndex
 		);
 
-		opts.Add(Config.WorldConfig.terrain.stripe);
+		opts.Add(Config.Instance.terrain.stripe);
 
 		driftIndex = GetDriftIndex(true);
-        Config.WorldConfig.spawns.type = new NoiseOptions
+        Config.Instance.spawns.type = new NoiseOptions
 		(
 			new ValueRange(0.008f, 0.05f, 2f), 
 			GameUtils.IntLerp(1, 2, Seed),
@@ -285,10 +282,10 @@ public static class NoiseConfig
 			driftIndex
 		);
 
-		opts.Add(Config.WorldConfig.spawns.type);
+		opts.Add(Config.Instance.spawns.type);
 
 		driftIndex = GetDriftIndex(true);
-		Config.WorldConfig.spawns.frequency = new NoiseOptions
+		Config.Instance.spawns.frequency = new NoiseOptions
 		(
 			new ValueRange(0.04f, 0.2f), 
 			GameUtils.IntLerp(1, 2, Seed),
@@ -301,10 +298,10 @@ public static class NoiseConfig
 			driftIndex
 		);
 
-		opts.Add(Config.WorldConfig.spawns.frequency);
+		opts.Add(Config.Instance.spawns.frequency);
 
 		driftIndex = GetDriftIndex(true);
-		Config.WorldConfig.spawns.intensity = new NoiseOptions
+		Config.Instance.spawns.intensity = new NoiseOptions
 		(
 			new ValueRange(0.004f, 0.05f, 2f), 
 			GameUtils.IntLerp(1, 2, Seed) + 2,
@@ -317,9 +314,9 @@ public static class NoiseConfig
 			driftIndex
 		);
 
-		opts.Add(Config.WorldConfig.spawns.intensity);
+		opts.Add(Config.Instance.spawns.intensity);
 
-		Config.WorldConfig.environment.rain = new NoiseOptions
+		Config.Instance.environment.rain = new NoiseOptions
 		(
 			new ValueRange(0.001f, 0.002f),
 			GameUtils.IntLerp(1, 4, Seed),
@@ -332,14 +329,14 @@ public static class NoiseConfig
 			-1
 		);
 
-		opts.Add(Config.WorldConfig.environment.rain);
+		opts.Add(Config.Instance.environment.rain);
 
-		Config.WorldConfig.environment.lightning = new NoiseOptions
+		Config.Instance.environment.lightning = new NoiseOptions
 		(
-			Config.WorldConfig.environment.rain.frequency,
-            Config.WorldConfig.environment.rain.octaves,
-            Config.WorldConfig.environment.rain.lacunarity + Mathf.Lerp(0.01f, 0.0025f, Seed),
-            Config.WorldConfig.environment.rain.persistance + Mathf.Lerp(0.01f, 0.0025f, Seed),
+			Config.Instance.environment.rain.frequency,
+            Config.Instance.environment.rain.octaves,
+            Config.Instance.environment.rain.lacunarity + Mathf.Lerp(0.01f, 0.0025f, Seed),
+            Config.Instance.environment.rain.persistance + Mathf.Lerp(0.01f, 0.0025f, Seed),
 			1000,
 			0f,
 			0f,
@@ -347,9 +344,9 @@ public static class NoiseConfig
 			-1
 		);
 
-		opts.Add(Config.WorldConfig.environment.lightning);
+		opts.Add(Config.Instance.environment.lightning);
 		
-		Config.WorldConfig.environment.boids.interaction = new NoiseOptions
+		Config.Instance.environment.boids.interaction = new NoiseOptions
 		(
 			new ValueRange(0.0002f, 0.01f),
 			1,
@@ -362,10 +359,10 @@ public static class NoiseConfig
 			-1
 		);
 
-		opts.Add(Config.WorldConfig.environment.boids.interaction);
+		opts.Add(Config.Instance.environment.boids.interaction);
 
 
-        Config.WorldConfig.environment.boids.distance = new NoiseOptions
+        Config.Instance.environment.boids.distance = new NoiseOptions
 		(
 			new ValueRange(0.0002f, 0.01f),
 			1,
@@ -378,9 +375,9 @@ public static class NoiseConfig
 			-1
 		);
 		
-		opts.Add(Config.WorldConfig.environment.boids.distance);
+		opts.Add(Config.Instance.environment.boids.distance);
 
-        Config.WorldConfig.environment.boids.alignment = new NoiseOptions
+        Config.Instance.environment.boids.alignment = new NoiseOptions
 		(
 			new ValueRange(0.0002f, 0.01f),
 			1,
@@ -393,9 +390,9 @@ public static class NoiseConfig
 			-1
 		);
 
-		opts.Add(Config.WorldConfig.environment.boids.alignment);
+		opts.Add(Config.Instance.environment.boids.alignment);
 
-        Config.WorldConfig.environment.key = new NoiseOptions(
+        Config.Instance.environment.key = new NoiseOptions(
 			new ValueRange(0.0002f, 0.01f),
 			2,
 			Mathf.Lerp(0f, 2f, Seed),
@@ -407,31 +404,35 @@ public static class NoiseConfig
 			-1
 		);
 
-		opts.Add(Config.WorldConfig.environment.key);
+		opts.Add(Config.Instance.environment.key);
 		options = opts.ToArray();
 
-        Config.WorldConfig.terrain.driftMaps = drifts.ToArray();
+        Config.Instance.terrain.driftMaps = drifts.ToArray();
 
 		// Noise Methods
 		int index = GameUtils.IntLerp(0, Config.Noise.caveTypes.Length - 1, Seed);
-		caveMethod = NoiseGenerator.noiseMethods[(int)Config.Noise.caveTypes[index]][2];
+        Config.Instance.terrain.caveType = Config.Noise.caveTypes[index];
+        caveMethod = NoiseGenerator.noiseMethods[(int)Config.Instance.terrain.caveType][2];
 
 		index = GameUtils.IntLerp(0, Config.Noise.patternTypes.Length - 1, Seed);
-		patternMethod = NoiseGenerator.noiseMethods[(int)Config.Noise.patternTypes[index]][2];
+        Config.Instance.terrain.patternType = Config.Noise.patternTypes[index];
+        patternMethod = NoiseGenerator.noiseMethods[(int)Config.Instance.terrain.patternType][2];
 
 		index = GameUtils.IntLerp(0, Config.Noise.stripeTypes.Length - 1, Seed);
-		stripeMethod = NoiseGenerator.noiseMethods[(int)Config.Noise.stripeTypes[index]][2];
+        Config.Instance.terrain.stripeType = Config.Noise.stripeTypes[index];
+        stripeMethod = NoiseGenerator.noiseMethods[(int)Config.Instance.terrain.stripeType][2];
 
 		index = GameUtils.IntLerp(0, Config.Noise.terrainTypes.Length - 1, Seed);
-		terrainType = Config.Noise.terrainTypes[index];
+		Config.Instance.terrain.hillType = Config.Noise.terrainTypes[index];
 
 		index = GameUtils.IntLerp(0, Config.Noise.mountainTypes.Length - 1, Seed);
-		mountainType = Config.Noise.mountainTypes[index];
+        Config.Instance.terrain.mountainType = Config.Noise.mountainTypes[index];
 
 		index = GameUtils.IntLerp(0, Config.Noise.driftMapTypes.Length - 1, Seed);
-		driftMapMethod = NoiseGenerator.noiseMethods[(int)Config.Noise.driftMapTypes[index]][1];
+        Config.Instance.terrain.driftMapType = Config.Noise.driftMapTypes[index];
+        driftMapMethod = NoiseGenerator.noiseMethods[(int)Config.Instance.terrain.driftMapType][1];
 
-        Config.WorldConfig.terrain.terrain.scale = GameUtils.IntLerp
+        Config.Instance.terrain.hills.scale = GameUtils.IntLerp
         (
             Config.Noise.terrainScale.low, 
             Config.Noise.terrainScale.high, 

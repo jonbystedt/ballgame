@@ -414,7 +414,7 @@ public class SpawnManager : MonoBehaviour {
 				key = TerrainGenerator.GetNoise2D
                 (
                     pos,
-                    Config.WorldConfig.environment.key, 
+                    Config.Instance.environment.key, 
                     NoiseType.SimplexValue
                 );
 			}
@@ -495,7 +495,7 @@ public class SpawnManager : MonoBehaviour {
 	{
 		SampleSet sampleSet = InterpolatedNoise.Results[region];
 
-		int totalRange = Config.WorldConfig.spawns.type.scale;
+		int totalRange = Config.Instance.spawns.type.scale;
 		int floor = Mathf.FloorToInt(Mathf.Lerp(
             0f, 
             totalRange / 5f, 
@@ -520,7 +520,7 @@ public class SpawnManager : MonoBehaviour {
 
                     intensity = Mathf.Pow
                     (
-                        sampleSet.spawnMap.intensity[x, z] / (float)Config.WorldConfig.spawns.intensity.scale, 
+                        sampleSet.spawnMap.intensity[x, z] / (float)Config.Instance.spawns.intensity.scale, 
                         power
                     );
 					exclusion = Mathf.FloorToInt(Mathf.Lerp(totalRange - floor, 0, intensity));

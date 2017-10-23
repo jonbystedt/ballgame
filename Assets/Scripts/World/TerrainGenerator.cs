@@ -15,30 +15,11 @@ public class TerrainGenerator : MonoBehaviour
 	public int mountainBase;
 	public InterpolatedNoise generator;
 
-	private List<SampleSet> SampleSetPool = new List<SampleSet>(); // TODO: Find expected size
+	private List<SampleSet> SampleSetPool = new List<SampleSet>(); 
 
-	int beachHeight;
-	int cloudEasing;
-	float beachPersistance;
-	int pBP; // patternBreakPoint
-	int sBP; // stripeBreakPoint
-	int psBP; // patternStripeBreakPoint
-	int modScale = 16;
     int numModFlags = 16;
     int numGlassFlags = 4;
     int numIslandFlags = 4;
-
-	int caveBreakPoint = 512;
-	int cloudBreakPoint;
-	int islandBreakPoint;
-
-	int gI1; // glass increase 1
-	int gI2; // glass increase 2
-
-	float patternAmount;
-
-	float stretchFactor;
-	float squishFactor;
 
 	float hollowFormation;
     float hollowMountains;
@@ -107,14 +88,14 @@ public class TerrainGenerator : MonoBehaviour
 	{
 		SampleRegion caves = new SampleRegion
         (
-            Config.WorldConfig.terrain.cave.id, 
+            Config.Instance.terrain.cave.id, 
             NoiseConfig.caveMethod, 
             Config.SampleRate,
             new Vector3(1,1,1)
         );
 		SampleRegion patterns = new SampleRegion
         (
-            Config.WorldConfig.terrain.pattern.id, 
+            Config.Instance.terrain.pattern.id, 
             NoiseConfig.patternMethod, 
             Config.SampleRate, 
             new Vector3(1,1,1)
@@ -125,20 +106,20 @@ public class TerrainGenerator : MonoBehaviour
 		{
 			stripes= new SampleRegion
 			(
-				Config.WorldConfig.terrain.stripe.id, 
+				Config.Instance.terrain.stripe.id, 
 				NoiseConfig.stripeMethod, 
 				Mathf.CeilToInt(Config.SampleRate / 2f), 
-				new Vector3(1f / stretchFactor, squishFactor, 1f / stretchFactor)
+				new Vector3(1f / Config.Instance.terrain.stretch, Config.Instance.terrain.squish, 1f / Config.Instance.terrain.stretch)
 			);
 		}
 		else
 		{
 			stripes = new SampleRegion
 			(
-                Config.WorldConfig.terrain.stripe.id, 
+                Config.Instance.terrain.stripe.id, 
 				NoiseConfig.stripeMethod, 
 				Mathf.CeilToInt(Config.SampleRate / 2f), 
-				new Vector3(squishFactor, 1f / stretchFactor, squishFactor)
+				new Vector3(Config.Instance.terrain.squish, 1f / Config.Instance.terrain.stretch, Config.Instance.terrain.squish)
 			);
 		}
 
@@ -271,30 +252,30 @@ public class TerrainGenerator : MonoBehaviour
 		int terrainHeight = GetNoise3D
         (
             new Vector3(x, 0, z), 
-            Config.WorldConfig.terrain.terrain, 
-            NoiseConfig.terrainType
+            Config.Instance.terrain.hills, 
+            Config.Instance.terrain.hillType
         );
 
         // Adjust mountain scale to terrain height to avoid overflow
-		int oldScale = Config.WorldConfig.terrain.mountain.scale;
+		int oldScale = Config.Instance.terrain.mountain.scale;
 
 		if (Flags.Get(NoiseFlags.TigerStripes))
 		{
-            Config.WorldConfig.terrain.mountain.scale = Config.WorldConfig.terrain.mountain.scale - terrainHeight;
+            Config.Instance.terrain.mountain.scale = Config.Instance.terrain.mountain.scale - terrainHeight;
 		}
-		else if (Config.WorldConfig.terrain.mountain.scale + terrainHeight > Config.WorldHeight * Chunk.Size)
+		else if (Config.Instance.terrain.mountain.scale + terrainHeight > Config.WorldHeight * Chunk.Size)
 		{
-            Config.WorldConfig.terrain.mountain.scale = (Config.WorldHeight * Chunk.Size) - terrainHeight;
+            Config.Instance.terrain.mountain.scale = (Config.WorldHeight * Chunk.Size) - terrainHeight;
 		}
 
 		int mountainHeight = mountainBase + GetNoise3D
         (
             new Vector3(x, 0, z), 
-            Config.WorldConfig.terrain.mountain, 
-            NoiseConfig.mountainType
+            Config.Instance.terrain.mountain, 
+            Config.Instance.terrain.mountainType
         );
 
-        Config.WorldConfig.terrain.mountain.scale = oldScale;
+        Config.Instance.terrain.mountain.scale = oldScale;
 
 		int mesaHeight = WORLD_BLOCK_HEIGHT - Mathf.FloorToInt((float)terrainHeight * 0.25f + ((float)(mountainHeight - mountainBase) * 0.1f));
 
@@ -324,10 +305,10 @@ public class TerrainGenerator : MonoBehaviour
 				int gV = patterns[localX, (i * Chunk.Size) + localY, localZ];
 
 				// Taper clouds towards ceiling				
-				int clC = GetCloudChance(cloudBreakPoint, y);
+				int clC = GetCloudChance(Config.Instance.terrain.cloudBreak, y);
 
 				// Slope gently out towards open space at bottom
-				int cvC = GetCaveChance(caveBreakPoint, y);
+				int cvC = GetCaveChance(Config.Instance.terrain.caveBreak, y);
 
 				// Mountains are more likely to become hollow towards the top
 				float hMV = GetHollowValue(hollowMountains, y);
@@ -337,7 +318,7 @@ public class TerrainGenerator : MonoBehaviour
 				int mI;
 
 				bool beach = false;
-				if (y <= beachHeight)
+				if (y <= Config.Instance.terrain.beachHeight)
 				{
 					beach = true;
 				}
@@ -346,11 +327,11 @@ public class TerrainGenerator : MonoBehaviour
 				if (y <= mountainHeight && cvC < cV)
 				{
 					// glass or rock? if the value of the 3D 'glass' noisemap is greater than the breakpoint this is potentially rock
-                    if (pBP < gV) 
+                    if (Config.Instance.terrain.patternBreak < gV) 
 					{
 
 						// but if the value of the 'glass' noisemap is greater than the 'hollow' cutoff this is air
-						if (gV > Config.WorldConfig.terrain.pattern.scale - Mathf.FloorToInt((hMV * (float)Config.WorldConfig.terrain.pattern.scale)))
+						if (gV > Config.Instance.terrain.pattern.scale - Mathf.FloorToInt((hMV * (float)Config.Instance.terrain.pattern.scale)))
 						{
 							chunk.SetBlock(localX, localY, localZ, Block.Air);
 							if (!air)
@@ -360,9 +341,14 @@ public class TerrainGenerator : MonoBehaviour
 							air = true;
 						}
 						// two distinct rock stripes provided by the 3D noisemap 'stripes'
-						else if (sV > sBP  && (cvC < cV || beach)) 
+						else if (sV > Config.Instance.terrain.stripeBreak && (cvC < cV || beach)) 
 						{
-							cI = Mathf.FloorToInt(Mathf.Lerp(17, 32, sV / (float)(Config.WorldConfig.terrain.stripe.scale - sBP)));
+							cI = Mathf.FloorToInt(Mathf.Lerp
+                            (
+                                17, 
+                                32, 
+                                sV / (float)(Config.Instance.terrain.stripe.scale - Config.Instance.terrain.stripeBreak)
+                            ));
 
 							if (Flags.Get(NoiseFlags.ModPattern6))
 							{
@@ -374,7 +360,12 @@ public class TerrainGenerator : MonoBehaviour
 						} 
 						else if (cvC < cV || beach)
 						{
-							cI = Mathf.FloorToInt(Mathf.Lerp(0, 16, sV / (float)sBP));
+							cI = Mathf.FloorToInt(Mathf.Lerp
+                            (
+                                0, 
+                                16, 
+                                sV / (float)Config.Instance.terrain.stripeBreak)
+                            );
 
 							if (Flags.Get(NoiseFlags.ModPattern7))
 							{
@@ -389,7 +380,7 @@ public class TerrainGenerator : MonoBehaviour
                     else 
 					{
 						// If we are less than the corresponding 'hollow' value this is air
-						if (gV < Config.WorldConfig.terrain.pattern.scale * hGV) 
+						if (gV < Config.Instance.terrain.pattern.scale * hGV) 
 						{
 							chunk.SetBlock(localX, localY, localZ, Block.Air);
 							if (!air)
@@ -403,15 +394,15 @@ public class TerrainGenerator : MonoBehaviour
 						// *** special glass section ***
 						else if (Flags.Get(NoiseFlags.Glass2) && (cvC < cV || beach))
 						{
-							if (psBP > sV) 
+							if (Config.Instance.terrain.patternStripeBreak > sV) 
 							{
-								cI = Mathf.FloorToInt(Mathf.Lerp(0, 16, sV / (float)sBP));
+								cI = Mathf.FloorToInt(Mathf.Lerp(0, 16, sV / (float)Config.Instance.terrain.stripeBreak));
 
 								if (Flags.Get(NoiseFlags.ModPattern8))
 								{
 									cI = GetModIndex(cI, gV, sV, 16);
 								}
-								if (modScale % (Mathf.Abs(y) + 1) < cI) 
+								if (Config.Instance.terrain.modScale % (Mathf.Abs(y) + 1) < cI) 
 								{
 									chunk.SetBlock(localX, localY, localZ, Blocks.Glass(cI));
 								}
@@ -425,9 +416,14 @@ public class TerrainGenerator : MonoBehaviour
 							else 
 							{
 								// glass stripes
-								if (sV > sBP)
+								if (sV > Config.Instance.terrain.stripeBreak)
 								{
-									cI = Mathf.FloorToInt(Mathf.Lerp(0, 16, sV / (float)(Config.WorldConfig.terrain.stripe.scale - psBP)));
+									cI = Mathf.FloorToInt(Mathf.Lerp
+                                    (
+                                        0, 
+                                        16, 
+                                        sV / (float)(Config.Instance.terrain.stripe.scale - Config.Instance.terrain.patternStripeBreak)
+                                    ));
 
 									if (Flags.Get(NoiseFlags.ModPattern9))
 									{
@@ -439,7 +435,12 @@ public class TerrainGenerator : MonoBehaviour
 								}
 								else
 								{
-									cI = Mathf.FloorToInt(Mathf.Lerp(17, 32, sV / (float)(Config.WorldConfig.terrain.stripe.scale - psBP)));
+									cI = Mathf.FloorToInt(Mathf.Lerp
+                                    (
+                                        17, 
+                                        32, 
+                                        sV / (float)(Config.Instance.terrain.stripe.scale - Config.Instance.terrain.patternStripeBreak)
+                                    ));
 
 									if (Flags.Get(NoiseFlags.ModPattern10))
 									{
@@ -455,9 +456,9 @@ public class TerrainGenerator : MonoBehaviour
 						// *** end special glass section ***
 						else if (cvC < cV || beach)
 						{
-							if (psBP > sV) 
+							if (Config.Instance.terrain.patternStripeBreak > sV) 
 							{
-								cI = Mathf.FloorToInt(Mathf.Lerp(0, 16, sV / (float)sBP));
+								cI = Mathf.FloorToInt(Mathf.Lerp(0, 16, sV / (float)Config.Instance.terrain.stripeBreak));
 
 								if (Flags.Get(NoiseFlags.ModPattern11))
 								{
@@ -470,15 +471,20 @@ public class TerrainGenerator : MonoBehaviour
 							else 
 							{
 								// glass stripes
-								if (sV > sBP)
+								if (sV > Config.Instance.terrain.stripeBreak)
 								{
-									cI = Mathf.FloorToInt(Mathf.Lerp(0, 16, sV / (float)(Config.WorldConfig.terrain.stripe.scale - psBP)));
+									cI = Mathf.FloorToInt(Mathf.Lerp
+                                    (
+                                        0, 
+                                        16, 
+                                        sV / (float)(Config.Instance.terrain.stripe.scale - Config.Instance.terrain.patternStripeBreak)
+                                    ));
 
 									if (Flags.Get(NoiseFlags.ModPattern12))
 									{
 										cI = GetModIndex(cI, gV, sV, 16);
 									}
-									if (modScale % (Mathf.Abs(y) + 1) < cI) 
+									if (Config.Instance.terrain.modScale % (Mathf.Abs(y) + 1) < cI) 
 									{
 										chunk.SetBlock(localX, localY, localZ, Blocks.Glass(cI));
 									}
@@ -491,7 +497,12 @@ public class TerrainGenerator : MonoBehaviour
 								}
 								else
 								{
-									cI = Mathf.FloorToInt(Mathf.Lerp(17, 32, sV / (float)(Config.WorldConfig.terrain.stripe.scale - psBP)));
+									cI = Mathf.FloorToInt(Mathf.Lerp
+                                    (
+                                        17,
+                                        32, 
+                                        sV / (float)(Config.Instance.terrain.stripe.scale - Config.Instance.terrain.patternStripeBreak)
+                                    ));
 
 									if (Flags.Get(NoiseFlags.ModPattern1))
 									{
@@ -522,16 +533,27 @@ public class TerrainGenerator : MonoBehaviour
 				}
 
 				// formations
-				else if (cV > clC && cV < clC + ((Config.WorldConfig.terrain.cave.scale - clC) * hollowFormation) 
-					&& gV > clC - ((Config.WorldConfig.terrain.pattern.scale - clC)))
-				{
+				else if (cV > clC 
+                        && cV < clC + ((Config.Instance.terrain.cave.scale - clC) * hollowFormation) 
+					    && gV > clC - ((Config.Instance.terrain.pattern.scale - clC)))
+			    {
 					// two colors
-					if (sV > sBP - gI1) 
+					if (sV > Config.Instance.terrain.stripeBreak - Config.Instance.terrain.trans1) 
 					{
 						// repeating or smooth patterns
 						mI = (GetModIndex(0, gV, sV, 16) + gV) % 48;
 
-						cI = (Mathf.FloorToInt(Mathf.Lerp(0, 16, (sV - sBP - gI1) / (float)(Config.WorldConfig.terrain.stripe.scale - sBP - gI1))) + gV) % 48;
+						cI = (Mathf.FloorToInt(Mathf.Lerp
+                        (
+                            0, 
+                            16, 
+                            (sV 
+                            - Config.Instance.terrain.stripeBreak 
+                            - Config.Instance.terrain.trans1) 
+                            / (float)(Config.Instance.terrain.stripe.scale 
+                            - Config.Instance.terrain.stripeBreak 
+                            - Config.Instance.terrain.trans1)
+                        )) + gV) % 48;
 							
 						// pattern with glass
 						if (cV > gV)
@@ -548,7 +570,7 @@ public class TerrainGenerator : MonoBehaviour
 							}
 							else if (Flags.Get(NoiseFlags.Patterned))
 							{
-								if (cV * patternAmount > gV)
+								if (cV * Config.Instance.terrain.patternAmount > gV)
 								{
 									if (Flags.Get(NoiseFlags.Glass1))
 									{
@@ -584,7 +606,7 @@ public class TerrainGenerator : MonoBehaviour
 							}
 							else if (Flags.Get(NoiseFlags.Striped))
 							{
-								if (sV > sBP)
+								if (sV > Config.Instance.terrain.stripeBreak)
 								{
 									if (Flags.Get(NoiseFlags.Glass1))
 									{
@@ -622,7 +644,7 @@ public class TerrainGenerator : MonoBehaviour
 						}
 						else
 						{
-							if (modScale % (Mathf.Abs(y) + 1) < cI) 
+							if (Config.Instance.terrain.modScale % (Mathf.Abs(y) + 1) < cI) 
 							{
 								chunk.SetBlock
                                 (
@@ -650,14 +672,24 @@ public class TerrainGenerator : MonoBehaviour
 					{
 						// repeating or smooth patterns
 						mI = GetModIndex(17, gV, sV, 32);
-						//modIndex = Mathf.FloorToInt(Mathf.Lerp(17, 32, (float)(glassValue % ((stripeValue % modScale) + 2)) /  ((float)(stripeValue % modScale) + 2f) ));
-						cI = Mathf.FloorToInt(Mathf.Lerp(17, 32, (sV - sBP - gI1) / (float)(Config.WorldConfig.terrain.stripe.scale - sBP - gI1)));
+						
+						cI = Mathf.FloorToInt(Mathf.Lerp
+                        (
+                            17, 
+                            32, 
+                            (sV 
+                            - Config.Instance.terrain.stripeBreak 
+                            - Config.Instance.terrain.trans1) 
+                            / (float)(Config.Instance.terrain.stripe.scale 
+                            - Config.Instance.terrain.stripeBreak 
+                            - Config.Instance.terrain.trans1)
+                        ));
 
 						// pattern with glass
 						if (cV > gV)
 						{
 							// stripe
-							if (psBP > sV)
+							if (Config.Instance.terrain.patternStripeBreak > sV)
 							{
 								if (Flags.Get(NoiseFlags.Solid))
 								{
@@ -671,7 +703,7 @@ public class TerrainGenerator : MonoBehaviour
 								}
 								else if (Flags.Get(NoiseFlags.Patterned))
 								{
-									if (cV * patternAmount > gV)
+									if (cV * Config.Instance.terrain.patternAmount > gV)
 									{
 										if (Flags.Get(NoiseFlags.Glass1))
 										{
@@ -707,7 +739,7 @@ public class TerrainGenerator : MonoBehaviour
 								}
 								else if (Flags.Get(NoiseFlags.Striped))
 								{
-									if (sV > sBP)
+									if (sV > Config.Instance.terrain.stripeBreak)
 									{
 										if (Flags.Get(NoiseFlags.Glass1))
 										{
@@ -744,7 +776,7 @@ public class TerrainGenerator : MonoBehaviour
 							}
 							else
 							{
-								if (modScale % (Mathf.Abs(y) + 1) < cI) 
+								if (Config.Instance.terrain.modScale % (Mathf.Abs(y) + 1) < cI) 
 								{
 									chunk.SetBlock
                                     (
@@ -771,9 +803,9 @@ public class TerrainGenerator : MonoBehaviour
 						else
 						{
 							// other stripes
-							if (sBP > sV)
+							if (Config.Instance.terrain.stripeBreak > sV)
 							{
-								if (modScale % y < cI) 
+								if (Config.Instance.terrain.modScale % y < cI) 
 								{
 									chunk.SetBlock(localX, localY, localZ, Blocks.Glass(cI));
 								}
@@ -794,14 +826,20 @@ public class TerrainGenerator : MonoBehaviour
 
 				}
 				// islands
-				else if ((Flags.Get(NoiseFlags.Islands1) && !Flags.Get(NoiseFlags.Islands2) && gV < islandBreakPoint) ||
-					    (!Flags.Get(NoiseFlags.Islands1) && Flags.Get(NoiseFlags.Islands2) && gV > islandBreakPoint) ||
-						(!Flags.Get(NoiseFlags.Islands1) && !Flags.Get(NoiseFlags.Islands2) && cV < islandBreakPoint))
+				else if ((Flags.Get(NoiseFlags.Islands1) && !Flags.Get(NoiseFlags.Islands2) && gV < Config.Instance.terrain.islandBreak) ||
+					    (!Flags.Get(NoiseFlags.Islands1) && Flags.Get(NoiseFlags.Islands2) && gV > Config.Instance.terrain.islandBreak) ||
+						(!Flags.Get(NoiseFlags.Islands1) && !Flags.Get(NoiseFlags.Islands2) && cV < Config.Instance.terrain.islandBreak))
 				{
 					// rocks
-					if (psBP > sV - gI2) 
+					if (Config.Instance.terrain.patternStripeBreak > sV - Config.Instance.terrain.trans2) 
 					{
-						cI = Mathf.FloorToInt(Mathf.Lerp(0, 16, (sV - gI2) / (float)psBP));
+						cI = Mathf.FloorToInt(Mathf.Lerp
+                        (
+                            0, 
+                            16, 
+                            (sV - Config.Instance.terrain.trans2) 
+                            / (float)Config.Instance.terrain.patternStripeBreak)
+                        );
 						chunk.SetBlock (localX, localY, localZ, Blocks.Rock(cI));
 						air = false;
 					} 
@@ -809,7 +847,7 @@ public class TerrainGenerator : MonoBehaviour
 					else 
 					{
 						// in stripes with rock
-						if (sV > sBP)
+						if (sV > Config.Instance.terrain.stripeBreak)
 						{
 							if (Flags.Get(NoiseFlags.ModPattern3))
 							{
@@ -817,9 +855,16 @@ public class TerrainGenerator : MonoBehaviour
 							}
 							else
 							{
-								cI = Mathf.FloorToInt(Mathf.Lerp(0, 16, (sV - sBP) / (float)(Config.WorldConfig.terrain.stripe.scale - sBP)));
+								cI = Mathf.FloorToInt(Mathf.Lerp
+                                (
+                                    0, 
+                                    16, 
+                                    (sV - Config.Instance.terrain.stripeBreak) 
+                                    / (float)(Config.Instance.terrain.stripe.scale 
+                                    - Config.Instance.terrain.stripeBreak)
+                                 ));
 							}
-							if (modScale % (Mathf.Abs(y) + 1) < cI) 
+							if (Config.Instance.terrain.modScale % (Mathf.Abs(y) + 1) < cI) 
 							{
 								chunk.SetBlock(localX, localY, localZ, Blocks.Glass(cI));
 							}
@@ -838,7 +883,7 @@ public class TerrainGenerator : MonoBehaviour
 							}
 							else
 							{
-								cI = Mathf.FloorToInt(Mathf.Lerp(17, 32, sV / (float)sBP));
+								cI = Mathf.FloorToInt(Mathf.Lerp(17, 32, sV / (float)Config.Instance.terrain.stripeBreak));
 							}
 
 							chunk.SetBlock (localX, localY, localZ, Blocks.Rock(cI));
@@ -873,15 +918,15 @@ public class TerrainGenerator : MonoBehaviour
 			{
 				// Value controls the type of item (if any) that can spawn at this location
 				sampleSet.spawnMap.value[x - pos.x, z - pos.z] = //Chunk.NoSpawn;
-					GetNoise2D(new Vector3(pos.x + x, pos.z + z, 0), Config.WorldConfig.spawns.type, NoiseType.SimplexValue);
+					GetNoise2D(new Vector3(pos.x + x, pos.z + z, 0), Config.Instance.spawns.type, NoiseType.SimplexValue);
 
 				// Frequency is a base control on how many of the item will spawn
-				int frequency = GetNoise2D(new Vector3(pos.x + x, pos.z + z, 0), Config.WorldConfig.spawns.frequency, NoiseType.SimplexValue);
+				int frequency = GetNoise2D(new Vector3(pos.x + x, pos.z + z, 0), Config.Instance.spawns.frequency, NoiseType.SimplexValue);
 
 				// And intensity controls how 'intense' the spawning action is at this location
 				int intensity = GetNoise2D(
 						new Vector3(pos.x + x, pos.z + z, 0),
-                        Config.WorldConfig.spawns.intensity, 
+                        Config.Instance.spawns.intensity, 
 						NoiseType.SimplexValue
 					);
 
@@ -970,10 +1015,10 @@ public class TerrainGenerator : MonoBehaviour
 	int GetCaveChance(int caveChance, int y)
 	{
 		// encourage the floor to slope out by lessening the cave chance along a bilinear curve below beachHeight
-		if (y < floor + beachHeight + 1)
+		if (y < floor + Config.Instance.terrain.beachHeight + 1)
 		{
-			caveChance -= Mathf.FloorToInt(caveChance * beachPersistance 
-						* bilinear.Evaluate((float)(floor - y + beachHeight + 1) / (float)beachHeight));
+			caveChance -= Mathf.FloorToInt(caveChance * Config.Instance.terrain.beachPersist
+                        * bilinear.Evaluate((float)(floor - y + Config.Instance.terrain.beachHeight + 1) / (float)Config.Instance.terrain.beachHeight));
 		}
 
 		return caveChance;
@@ -984,11 +1029,11 @@ public class TerrainGenerator : MonoBehaviour
 	{
 		// taper formations using a log curve at the top of the world
 		// the height of the taper is controlled by cloudEasing
-		if (y >= Chunk.Size - cloudEasing)
+		if (y >= Chunk.Size - Config.Instance.terrain.cloudEase)
 		{
-			int heightFromBreak = ToWorldHeight(y) - WORLD_BLOCK_HEIGHT + cloudEasing;
-			cloudChance += Mathf.FloorToInt((Config.WorldConfig.terrain.cave.scale - cloudChance) 
-							* log.Evaluate((float)heightFromBreak / (float)cloudEasing));
+			int heightFromBreak = ToWorldHeight(y) - WORLD_BLOCK_HEIGHT + Config.Instance.terrain.cloudEase;
+			cloudChance += Mathf.FloorToInt((Config.Instance.terrain.cave.scale - cloudChance) 
+							* log.Evaluate((float)heightFromBreak / (float)Config.Instance.terrain.cloudEase));
 		}
 
 		return cloudChance;
@@ -1021,8 +1066,8 @@ public class TerrainGenerator : MonoBehaviour
 			(
 				0, 
 				16, 
-				patternValue % ((stripeValue % modScale) + 2f) 
-					/  (float)(Mathf.Abs(stripeValue % modScale) + 2f) 
+				patternValue % ((stripeValue % Config.Instance.terrain.modScale) + 2f) 
+					/  (float)(Mathf.Abs(stripeValue % Config.Instance.terrain.modScale) + 2f) 
 			)
 		);
 
@@ -1042,30 +1087,30 @@ public class TerrainGenerator : MonoBehaviour
 	void SetupFlags()
 	{
 		floor = ((Config.WorldHeight - 1) * -Chunk.Size);
-		mountainBase = floor + 64 - Config.WorldConfig.terrain.mountain.scale;
+		mountainBase = floor + 64 - Config.Instance.terrain.mountain.scale;
 
-		beachHeight = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.beachHeight.low, Config.Noise.beachHeight.high, GameUtils.Seed));
-		beachPersistance = 0.5f + (GameUtils.Seed * 0.5f);
-		cloudEasing = 16 + Mathf.FloorToInt(Mathf.Lerp(Config.Noise.cloudEasing.low, Config.Noise.cloudEasing.high, Mathf.Pow(GameUtils.Seed, 2)));
+		Config.Instance.terrain.beachHeight = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.beachHeight.low, Config.Noise.beachHeight.high, GameUtils.Seed));
+		Config.Instance.terrain.beachPersist = 0.5f + (GameUtils.Seed * 0.5f);
+		Config.Instance.terrain.cloudEase = 16 + Mathf.FloorToInt(Mathf.Lerp(Config.Noise.cloudEasing.low, Config.Noise.cloudEasing.high, Mathf.Pow(GameUtils.Seed, 2)));
 		hollowPersistance = Mathf.Pow(GameUtils.Seed, 10);
 
-		caveBreakPoint = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.caveBreak.low, Config.Noise.caveBreak.high, GameUtils.Seed));
-		pBP = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.patternBreak.low, Config.Noise.patternBreak.high, GameUtils.Seed));
-		sBP = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.stripeBreak.low, Config.Noise.stripeBreak.high, GameUtils.Seed));
-		psBP = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.patternStripeBreak.low, Config.Noise.patternStripeBreak.high, GameUtils.Seed));
+		Config.Instance.terrain.caveBreak = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.caveBreak.low, Config.Noise.caveBreak.high, GameUtils.Seed));
+		Config.Instance.terrain.patternBreak = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.patternBreak.low, Config.Noise.patternBreak.high, GameUtils.Seed));
+		Config.Instance.terrain.stripeBreak = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.stripeBreak.low, Config.Noise.stripeBreak.high, GameUtils.Seed));
+		Config.Instance.terrain.patternStripeBreak = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.patternStripeBreak.low, Config.Noise.patternStripeBreak.high, GameUtils.Seed));
 
-		cloudBreakPoint = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.cloudBreak.low, Config.Noise.cloudBreak.high, GameUtils.Seed));
-		islandBreakPoint = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.islandBreak.low, Config.Noise.islandBreak.high, Mathf.Pow(GameUtils.Seed, 2)));
+		Config.Instance.terrain.cloudBreak = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.cloudBreak.low, Config.Noise.cloudBreak.high, GameUtils.Seed));
+		Config.Instance.terrain.islandBreak = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.islandBreak.low, Config.Noise.islandBreak.high, Mathf.Pow(GameUtils.Seed, 2)));
 
-		gI1 = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.glass1.low, Config.Noise.glass1.high, Mathf.Pow(GameUtils.Seed, 10)));
-		gI2 = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.glass2.low, Config.Noise.glass2.high, Mathf.Pow(GameUtils.Seed, 10)));
+		Config.Instance.terrain.trans1 = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.glass1.low, Config.Noise.glass1.high, Mathf.Pow(GameUtils.Seed, 10)));
+		Config.Instance.terrain.trans2 = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.glass2.low, Config.Noise.glass2.high, Mathf.Pow(GameUtils.Seed, 10)));
 
 		Flags.Set(NoiseFlags.FlipStripes, GameUtils.Seed > 0.95f ? true : false);
 
-		modScale = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.modScale.low, Config.Noise.modScale.high, Mathf.Pow(GameUtils.Seed,2)));
+		Config.Instance.terrain.modScale = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.modScale.low, Config.Noise.modScale.high, Mathf.Pow(GameUtils.Seed,2)));
 
-		stretchFactor = Mathf.Lerp(Config.Noise.stretch.low, Config.Noise.stretch.high, Mathf.Pow(GameUtils.Seed,2));
-		squishFactor = Mathf.Lerp(Config.Noise.squish.low, Config.Noise.squish.high, Mathf.Pow(GameUtils.Seed,2));
+        Config.Instance.terrain.stretch = Mathf.Lerp(Config.Noise.stretch.low, Config.Noise.stretch.high, Mathf.Pow(GameUtils.Seed,2));
+        Config.Instance.terrain.squish = Mathf.Lerp(Config.Noise.squish.low, Config.Noise.squish.high, Mathf.Pow(GameUtils.Seed,2));
 
 		for (int i = 1; i <= numModFlags; i++)
 		{
@@ -1109,9 +1154,9 @@ public class TerrainGenerator : MonoBehaviour
 			Flags.Set(NoiseFlags.Striped, true);
 		}
 
-		patternAmount = GameUtils.Seed;
+        Config.Instance.terrain.patternAmount = GameUtils.Seed;
 
         Game.LogAppend(Flags.ToHex());
-        Config.WorldConfig.terrain.flags = Flags.ToHex();
+        Config.Instance.terrain.flags = Flags.ToHex();
 	}
 }

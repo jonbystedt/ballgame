@@ -232,7 +232,7 @@ public class BouncyBall : SpawnedObject
                 TerrainGenerator.GetNoise3D
                 (
                     transform.position,
-                    Config.WorldConfig.terrain.pattern, 
+                    Config.Instance.terrain.pattern, 
                     NoiseType.SimplexValue
                 ) % 64
             ];
