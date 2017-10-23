@@ -411,7 +411,12 @@ public class SpawnManager : MonoBehaviour {
 		{
 			if (key == -1) 
 			{
-				key = TerrainGenerator.GetNoise2D(pos, NoiseConfig.worldKey, NoiseType.SimplexValue);
+				key = TerrainGenerator.GetNoise2D
+                (
+                    pos,
+                    Config.WorldConfig.environment.key, 
+                    NoiseType.SimplexValue
+                );
 			}
 
 			if (o == Spawns.Pickup || o == Spawns.SilverPickup || o == Spawns.BlackPickup)
@@ -490,8 +495,12 @@ public class SpawnManager : MonoBehaviour {
 	{
 		SampleSet sampleSet = InterpolatedNoise.Results[region];
 
-		int totalRange = NoiseConfig.spawnTypes.scale;
-		int floor = Mathf.FloorToInt(Mathf.Lerp(0f, totalRange / 5f, Config.SpawnIntensity / 100f));
+		int totalRange = Config.WorldConfig.spawns.type.scale;
+		int floor = Mathf.FloorToInt(Mathf.Lerp(
+            0f, 
+            totalRange / 5f, 
+            Config.SpawnIntensity / 100f
+        ));
 		int exclusion = 0;
 		int range;
 		int upper;
@@ -509,7 +518,11 @@ public class SpawnManager : MonoBehaviour {
 				if (spawnValue != Chunk.NoSpawn)
 				{
 
-                    intensity = Mathf.Pow(sampleSet.spawnMap.intensity[x, z] / (float)NoiseConfig.spawnIntensity.scale, power);
+                    intensity = Mathf.Pow
+                    (
+                        sampleSet.spawnMap.intensity[x, z] / (float)Config.WorldConfig.spawns.intensity.scale, 
+                        power
+                    );
 					exclusion = Mathf.FloorToInt(Mathf.Lerp(totalRange - floor, 0, intensity));
 					range = totalRange - exclusion;
 

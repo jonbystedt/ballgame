@@ -227,7 +227,15 @@ public class BouncyBall : SpawnedObject
 
 		while (count > 0)
 		{
-			Color color = Tile.Colors[TerrainGenerator.GetNoise3D(transform.position,NoiseConfig.pattern, NoiseType.SimplexValue) % 64];
+			Color color = Tile.Colors
+            [
+                TerrainGenerator.GetNoise3D
+                (
+                    transform.position,
+                    Config.WorldConfig.terrain.pattern, 
+                    NoiseType.SimplexValue
+                ) % 64
+            ];
 
 			if (type == BallType.Moon)
 			{

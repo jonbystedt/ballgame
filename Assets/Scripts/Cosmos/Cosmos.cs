@@ -127,13 +127,25 @@ public class Cosmos : MonoBehaviour {
 	void HandleWeather()
 	{
 		CurrentTime = (days * (24 * 60)) + (hours24 * 60) + minutes;
-		float rainChance = TerrainGenerator.GetNoise1D(new Vector3(CurrentTime,0,0), NoiseConfig.rainIntensity, NoiseType.Simplex);
-		float lightningChance = TerrainGenerator.GetNoise1D(new Vector3(CurrentTime,0,0), NoiseConfig.lightningIntensity, NoiseType.Simplex);
+
+		float rainChance = TerrainGenerator.GetNoise1D
+        (
+            new Vector3(CurrentTime,0,0), 
+            Config.WorldConfig.environment.rain, 
+            NoiseType.Simplex
+        );
+		float lightningChance = TerrainGenerator.GetNoise1D
+        (
+            new Vector3(CurrentTime,0,0), 
+            Config.WorldConfig.environment.lightning, 
+            NoiseType.Simplex
+        );
+
 		float percentChance;
 
 		if (rainChance > NoiseConfig.rainBreakValue)
 		{
-			percentChance = (rainChance - NoiseConfig.rainBreakValue) / (NoiseConfig.rainIntensity.scale - NoiseConfig.rainBreakValue);
+			percentChance = (rainChance - NoiseConfig.rainBreakValue) / (Config.WorldConfig.environment.rain.scale - NoiseConfig.rainBreakValue);
 			rain.RainIntensity = Mathf.Lerp(rain.RainIntensity, percentChance, skyDelta);
 		}
 		else
@@ -144,7 +156,7 @@ public class Cosmos : MonoBehaviour {
 		if (lightningChance > NoiseConfig.lightningBreakValue)
 		{
 			percentChance 
-				= (lightningChance - NoiseConfig.lightningBreakValue) / (NoiseConfig.lightningIntensity.scale - NoiseConfig.lightningBreakValue);
+				= (lightningChance - NoiseConfig.lightningBreakValue) / (Config.WorldConfig.environment.lightning.scale - NoiseConfig.lightningBreakValue);
 
 			lightningController.LightningIntervalTimeRange.Minimum
 				= Mathf.Lerp(15, 1, percentChance);

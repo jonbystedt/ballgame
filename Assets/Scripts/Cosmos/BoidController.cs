@@ -294,9 +294,24 @@ namespace ProceduralToolkit.Examples
                 return;
             }
 
-            interactionRadius = (float)TerrainGenerator.GetNoise1D(new Vector3(Cosmos.CurrentTime,0,0), NoiseConfig.boidInteraction, NoiseType.Value) + 10f;
-            alignmentCoefficient = (float)TerrainGenerator.GetNoise1D(new Vector3(Cosmos.CurrentTime,0,0), NoiseConfig.boidAlignment, NoiseType.Value) + 20f;
-            separationDistance  = (float)TerrainGenerator.GetNoise1D(new Vector3(Cosmos.CurrentTime,0,0), NoiseConfig.boidDistance, NoiseType.Value) + 5f;
+            interactionRadius = (float)TerrainGenerator.GetNoise1D
+            (
+                new Vector3(Cosmos.CurrentTime,0,0),
+                Config.WorldConfig.environment.boids.interaction, 
+                NoiseType.Value
+            ) + 10f;
+            alignmentCoefficient = (float)TerrainGenerator.GetNoise1D
+            (
+                new Vector3(Cosmos.CurrentTime,0,0),
+                Config.WorldConfig.environment.boids.alignment, 
+                NoiseType.Value
+            ) + 20f;
+            separationDistance  = (float)TerrainGenerator.GetNoise1D
+            (
+                new Vector3(Cosmos.CurrentTime,0,0),
+                Config.WorldConfig.environment.boids.distance, 
+                NoiseType.Value
+            ) + 5f;
 
             for (int i = 0; i < boids.Count; i++)
             {

@@ -24,6 +24,9 @@ public class TerrainGenerator : MonoBehaviour
 	int sBP; // stripeBreakPoint
 	int psBP; // patternStripeBreakPoint
 	int modScale = 16;
+    int numModFlags = 16;
+    int numGlassFlags = 4;
+    int numIslandFlags = 4;
 
 	int caveBreakPoint = 512;
 	int cloudBreakPoint;
@@ -31,22 +34,12 @@ public class TerrainGenerator : MonoBehaviour
 
 	int gI1; // glass increase 1
 	int gI2; // glass increase 2
-	bool solid;
-	bool striped;
-	bool patterned;
+
 	float patternAmount;
 
 	float stretchFactor;
 	float squishFactor;
-	bool flipStripes;
-	bool[] modPatterns = new bool[12];
-	bool glassy1;
-	bool glassy2;
-	bool freakyFriday;
-	bool tigerStripes;
-	bool islands1;
-	bool islands2;
-	bool reverseHollowTaper;
+
 	float hollowFormation;
     float hollowMountains;
     float hollowGlass;
@@ -112,15 +105,27 @@ public class TerrainGenerator : MonoBehaviour
 
 	SampleSet CreateNewSampleSet()
 	{
-		SampleRegion caves = new SampleRegion(NoiseConfig.cave.id, NoiseConfig.caveMethod, Config.SampleRate, new Vector3(1,1,1));
-		SampleRegion patterns = new SampleRegion(NoiseConfig.pattern.id, NoiseConfig.patternMethod, Config.SampleRate, new Vector3(1,1,1));
+		SampleRegion caves = new SampleRegion
+        (
+            Config.WorldConfig.terrain.cave.id, 
+            NoiseConfig.caveMethod, 
+            Config.SampleRate,
+            new Vector3(1,1,1)
+        );
+		SampleRegion patterns = new SampleRegion
+        (
+            Config.WorldConfig.terrain.pattern.id, 
+            NoiseConfig.patternMethod, 
+            Config.SampleRate, 
+            new Vector3(1,1,1)
+        );
 		SampleRegion stripes;
 
-		if (!flipStripes)
+		if (!Flags.Get(NoiseFlags.FlipStripes))
 		{
 			stripes= new SampleRegion
 			(
-				NoiseConfig.stripe.id, 
+				Config.WorldConfig.terrain.stripe.id, 
 				NoiseConfig.stripeMethod, 
 				Mathf.CeilToInt(Config.SampleRate / 2f), 
 				new Vector3(1f / stretchFactor, squishFactor, 1f / stretchFactor)
@@ -130,7 +135,7 @@ public class TerrainGenerator : MonoBehaviour
 		{
 			stripes = new SampleRegion
 			(
-				NoiseConfig.stripe.id, 
+                Config.WorldConfig.terrain.stripe.id, 
 				NoiseConfig.stripeMethod, 
 				Mathf.CeilToInt(Config.SampleRate / 2f), 
 				new Vector3(squishFactor, 1f / stretchFactor, squishFactor)
@@ -247,7 +252,11 @@ public class TerrainGenerator : MonoBehaviour
 		int[,,] patterns;
 		int[,,] stripes;
 
-		if (!freakyFriday)
+        int localX = x - column[0].pos.x;
+        int localZ = z - column[0].pos.z;
+
+        // Swap patterns for stripes if flag set
+        if (!Flags.Get(NoiseFlags.FreakyFriday))
 		{
 			patterns = sampleSet.results["patterns"].interpolates;
 			stripes = sampleSet.results["stripes"].interpolates;
@@ -258,24 +267,34 @@ public class TerrainGenerator : MonoBehaviour
 			patterns = sampleSet.results["stripes"].interpolates;
 		}
 
-		int localX = x - column[0].pos.x;	
-		int localZ = z - column[0].pos.z;
+        // Find height of terrain at this spot
+		int terrainHeight = GetNoise3D
+        (
+            new Vector3(x, 0, z), 
+            Config.WorldConfig.terrain.terrain, 
+            NoiseConfig.terrainType
+        );
 
-		int terrainHeight = GetNoise3D(new Vector3(x, 0, z), NoiseConfig.terrain, NoiseConfig.terrainType);
+        // Adjust mountain scale to terrain height to avoid overflow
+		int oldScale = Config.WorldConfig.terrain.mountain.scale;
 
-		int oldScale = NoiseConfig.mountain.scale;
-
-		if (tigerStripes)
+		if (Flags.Get(NoiseFlags.TigerStripes))
 		{
-			NoiseConfig.mountain.scale = NoiseConfig.mountain.scale - terrainHeight;
+            Config.WorldConfig.terrain.mountain.scale = Config.WorldConfig.terrain.mountain.scale - terrainHeight;
 		}
-		else if (NoiseConfig.mountain.scale + terrainHeight > Config.WorldHeight * Chunk.Size)
+		else if (Config.WorldConfig.terrain.mountain.scale + terrainHeight > Config.WorldHeight * Chunk.Size)
 		{
-			NoiseConfig.mountain.scale = (Config.WorldHeight * Chunk.Size) - terrainHeight;
+            Config.WorldConfig.terrain.mountain.scale = (Config.WorldHeight * Chunk.Size) - terrainHeight;
 		}
 
-		int mountainHeight = mountainBase + GetNoise3D(new Vector3(x, 0, z), NoiseConfig.mountain, NoiseConfig.mountainType);
-		NoiseConfig.mountain.scale = oldScale;
+		int mountainHeight = mountainBase + GetNoise3D
+        (
+            new Vector3(x, 0, z), 
+            Config.WorldConfig.terrain.mountain, 
+            NoiseConfig.mountainType
+        );
+
+        Config.WorldConfig.terrain.mountain.scale = oldScale;
 
 		int mesaHeight = WORLD_BLOCK_HEIGHT - Mathf.FloorToInt((float)terrainHeight * 0.25f + ((float)(mountainHeight - mountainBase) * 0.1f));
 
@@ -331,9 +350,9 @@ public class TerrainGenerator : MonoBehaviour
 					{
 
 						// but if the value of the 'glass' noisemap is greater than the 'hollow' cutoff this is air
-						if (gV > NoiseConfig.pattern.scale - Mathf.FloorToInt((hMV * (float)NoiseConfig.pattern.scale)))
+						if (gV > Config.WorldConfig.terrain.pattern.scale - Mathf.FloorToInt((hMV * (float)Config.WorldConfig.terrain.pattern.scale)))
 						{
-							chunk.SetBlock (localX, localY, localZ, Block.Air);
+							chunk.SetBlock(localX, localY, localZ, Block.Air);
 							if (!air)
 							{
 								sampleSet.spawnMap.height[localX, localZ] = y;
@@ -343,9 +362,9 @@ public class TerrainGenerator : MonoBehaviour
 						// two distinct rock stripes provided by the 3D noisemap 'stripes'
 						else if (sV > sBP  && (cvC < cV || beach)) 
 						{
-							cI = Mathf.FloorToInt(Mathf.Lerp(17, 32, sV / (float)(NoiseConfig.stripe.scale - sBP)));
+							cI = Mathf.FloorToInt(Mathf.Lerp(17, 32, sV / (float)(Config.WorldConfig.terrain.stripe.scale - sBP)));
 
-							if (modPatterns[5])
+							if (Flags.Get(NoiseFlags.ModPattern6))
 							{
 								cI = GetModIndex(cI, cV, sV, 32);
 							}
@@ -357,7 +376,7 @@ public class TerrainGenerator : MonoBehaviour
 						{
 							cI = Mathf.FloorToInt(Mathf.Lerp(0, 16, sV / (float)sBP));
 
-							if (modPatterns[6])
+							if (Flags.Get(NoiseFlags.ModPattern7))
 							{
 								cI = GetModIndex(cI, gV, sV, 16);
 							}
@@ -370,7 +389,7 @@ public class TerrainGenerator : MonoBehaviour
                     else 
 					{
 						// If we are less than the corresponding 'hollow' value this is air
-						if (gV < NoiseConfig.pattern.scale * hGV) 
+						if (gV < Config.WorldConfig.terrain.pattern.scale * hGV) 
 						{
 							chunk.SetBlock(localX, localY, localZ, Block.Air);
 							if (!air)
@@ -382,13 +401,13 @@ public class TerrainGenerator : MonoBehaviour
 						// glass sections
 						// have rock stripes
 						// *** special glass section ***
-						else if (glassy2 && (cvC < cV || beach))
+						else if (Flags.Get(NoiseFlags.Glass2) && (cvC < cV || beach))
 						{
 							if (psBP > sV) 
 							{
 								cI = Mathf.FloorToInt(Mathf.Lerp(0, 16, sV / (float)sBP));
 
-								if (modPatterns[7])
+								if (Flags.Get(NoiseFlags.ModPattern8))
 								{
 									cI = GetModIndex(cI, gV, sV, 16);
 								}
@@ -408,9 +427,9 @@ public class TerrainGenerator : MonoBehaviour
 								// glass stripes
 								if (sV > sBP)
 								{
-									cI = Mathf.FloorToInt(Mathf.Lerp(0, 16, sV / (float)(NoiseConfig.stripe.scale - psBP)));
+									cI = Mathf.FloorToInt(Mathf.Lerp(0, 16, sV / (float)(Config.WorldConfig.terrain.stripe.scale - psBP)));
 
-									if (modPatterns[8])
+									if (Flags.Get(NoiseFlags.ModPattern9))
 									{
 										cI = GetModIndex(cI, cV, sV, 16);
 									}
@@ -420,14 +439,14 @@ public class TerrainGenerator : MonoBehaviour
 								}
 								else
 								{
-									cI = Mathf.FloorToInt(Mathf.Lerp(17, 32, sV / (float)(NoiseConfig.stripe.scale - psBP)));
+									cI = Mathf.FloorToInt(Mathf.Lerp(17, 32, sV / (float)(Config.WorldConfig.terrain.stripe.scale - psBP)));
 
-									if (modPatterns[9])
+									if (Flags.Get(NoiseFlags.ModPattern10))
 									{
 										cI = GetModIndex(cI, cV, sV, 32);
 									}
 
-									chunk.SetBlock (localX, localY, localZ, Blocks.Rock(cI));
+									chunk.SetBlock(localX, localY, localZ, Blocks.Rock(cI));
 									air = false;
 								}
 
@@ -440,12 +459,12 @@ public class TerrainGenerator : MonoBehaviour
 							{
 								cI = Mathf.FloorToInt(Mathf.Lerp(0, 16, sV / (float)sBP));
 
-								if (modPatterns[10])
+								if (Flags.Get(NoiseFlags.ModPattern11))
 								{
 									cI = GetModIndex(cI, cV, sV, 16);
 								}
 								
-								chunk.SetBlock (localX, localY, localZ, Blocks.Rock(cI));
+								chunk.SetBlock(localX, localY, localZ, Blocks.Rock(cI));
 								air = false;
 							} 
 							else 
@@ -453,9 +472,9 @@ public class TerrainGenerator : MonoBehaviour
 								// glass stripes
 								if (sV > sBP)
 								{
-									cI = Mathf.FloorToInt(Mathf.Lerp(0, 16, sV / (float)(NoiseConfig.stripe.scale - psBP)));
+									cI = Mathf.FloorToInt(Mathf.Lerp(0, 16, sV / (float)(Config.WorldConfig.terrain.stripe.scale - psBP)));
 
-									if (modPatterns[11])
+									if (Flags.Get(NoiseFlags.ModPattern12))
 									{
 										cI = GetModIndex(cI, gV, sV, 16);
 									}
@@ -472,14 +491,14 @@ public class TerrainGenerator : MonoBehaviour
 								}
 								else
 								{
-									cI = Mathf.FloorToInt(Mathf.Lerp(17, 32, sV / (float)(NoiseConfig.stripe.scale - psBP)));
+									cI = Mathf.FloorToInt(Mathf.Lerp(17, 32, sV / (float)(Config.WorldConfig.terrain.stripe.scale - psBP)));
 
-									if (modPatterns[0])
+									if (Flags.Get(NoiseFlags.ModPattern1))
 									{
 										cI = GetModIndex(cI, gV, sV, 32);
 									}
 									
-									chunk.SetBlock (localX, localY, localZ, Blocks.Rock(cI));
+									chunk.SetBlock(localX, localY, localZ, Blocks.Rock(cI));
 									air = false;
 								}
 
@@ -503,8 +522,8 @@ public class TerrainGenerator : MonoBehaviour
 				}
 
 				// formations
-				else if (cV > clC && cV < clC + ((NoiseConfig.cave.scale - clC) * hollowFormation) 
-					&& gV > clC - ((NoiseConfig.pattern.scale - clC)))
+				else if (cV > clC && cV < clC + ((Config.WorldConfig.terrain.cave.scale - clC) * hollowFormation) 
+					&& gV > clC - ((Config.WorldConfig.terrain.pattern.scale - clC)))
 				{
 					// two colors
 					if (sV > sBP - gI1) 
@@ -512,49 +531,91 @@ public class TerrainGenerator : MonoBehaviour
 						// repeating or smooth patterns
 						mI = (GetModIndex(0, gV, sV, 16) + gV) % 48;
 
-						cI = (Mathf.FloorToInt(Mathf.Lerp(0, 16, (sV - sBP - gI1) / (float)(NoiseConfig.stripe.scale - sBP - gI1))) + gV) % 48;
+						cI = (Mathf.FloorToInt(Mathf.Lerp(0, 16, (sV - sBP - gI1) / (float)(Config.WorldConfig.terrain.stripe.scale - sBP - gI1))) + gV) % 48;
 							
 						// pattern with glass
 						if (cV > gV)
 						{
-							if (solid)
+							if (Flags.Get(NoiseFlags.Solid))
 							{
-								chunk.SetBlock(localX, localY, localZ, Blocks.Rock(modPatterns[1] ? mI : cI));
+								chunk.SetBlock
+                                (
+                                    localX, 
+                                    localY, 
+                                    localZ, 
+                                    Blocks.Rock(Flags.Get(NoiseFlags.ModPattern2) ? mI : cI)
+                                );
 							}
-							else if (patterned)
+							else if (Flags.Get(NoiseFlags.Patterned))
 							{
 								if (cV * patternAmount > gV)
 								{
-									if (glassy1)
+									if (Flags.Get(NoiseFlags.Glass1))
 									{
-										chunk.SetBlock(localX, localY, localZ, Blocks.Glass((modPatterns[1] ? mI : cI) + 16));
+										chunk.SetBlock
+                                        (
+                                            localX, 
+                                            localY, 
+                                            localZ, 
+                                            Blocks.Glass((Flags.Get(NoiseFlags.ModPattern2) ? mI : cI) + 16)
+                                        );
 									}
 									else
 									{
-										chunk.SetBlock(localX, localY, localZ, Blocks.Rock((modPatterns[1] ? mI : cI) + 16));
+										chunk.SetBlock
+                                        (
+                                            localX, 
+                                            localY, 
+                                            localZ,
+                                            Blocks.Rock((Flags.Get(NoiseFlags.ModPattern2) ? mI : cI) + 16)
+                                        );
 									}
 								}
 								else
 								{
-									chunk.SetBlock(localX, localY, localZ, Blocks.Rock((modPatterns[2] ? mI : cI)));
+									chunk.SetBlock
+                                    (
+                                        localX, 
+                                        localY, 
+                                        localZ, 
+                                        Blocks.Rock(Flags.Get(NoiseFlags.ModPattern3) ? mI : cI)
+                                    );
 								}
 							}
-							else if (striped)
+							else if (Flags.Get(NoiseFlags.Striped))
 							{
 								if (sV > sBP)
 								{
-									if (glassy1)
+									if (Flags.Get(NoiseFlags.Glass1))
 									{
-										chunk.SetBlock(localX, localY, localZ, Blocks.Glass((modPatterns[1] ? mI : cI) + 16));
+										chunk.SetBlock
+                                        (
+                                            localX, 
+                                            localY, 
+                                            localZ, 
+                                            Blocks.Glass((Flags.Get(NoiseFlags.ModPattern2) ? mI : cI) + 16)
+                                        );
 									}
 									else
 									{
-										chunk.SetBlock(localX, localY, localZ, Blocks.Rock((modPatterns[1] ? mI : cI) + 16));
+										chunk.SetBlock
+                                        (
+                                            localX, 
+                                            localY, 
+                                            localZ, 
+                                            Blocks.Rock((Flags.Get(NoiseFlags.ModPattern2) ? mI : cI) + 16)
+                                        );
 									}
 								}
 								else
 								{
-									chunk.SetBlock(localX, localY, localZ, Blocks.Rock(modPatterns[2] ? mI : cI));
+									chunk.SetBlock
+                                    (
+                                        localX, 
+                                        localY, 
+                                        localZ, 
+                                        Blocks.Rock(Flags.Get(NoiseFlags.ModPattern3) ? mI : cI)
+                                    );
 								}
 							}
 
@@ -563,11 +624,23 @@ public class TerrainGenerator : MonoBehaviour
 						{
 							if (modScale % (Mathf.Abs(y) + 1) < cI) 
 							{
-								chunk.SetBlock(localX, localY, localZ, Blocks.Glass(modPatterns[1] ? mI : cI));
+								chunk.SetBlock
+                                (
+                                    localX, 
+                                    localY, 
+                                    localZ, 
+                                    Blocks.Glass(Flags.Get(NoiseFlags.ModPattern2) ? mI : cI)
+                                );
 							}
 							else
 							{
-								chunk.SetBlock(localX, localY, localZ, Blocks.Rock(modPatterns[1] ? mI : cI));
+								chunk.SetBlock
+                                (
+                                    localX, 
+                                    localY, 
+                                    localZ, 
+                                    Blocks.Rock(Flags.Get(NoiseFlags.ModPattern2) ? mI : cI)
+                                );
 							}
 						}
 
@@ -578,7 +651,7 @@ public class TerrainGenerator : MonoBehaviour
 						// repeating or smooth patterns
 						mI = GetModIndex(17, gV, sV, 32);
 						//modIndex = Mathf.FloorToInt(Mathf.Lerp(17, 32, (float)(glassValue % ((stripeValue % modScale) + 2)) /  ((float)(stripeValue % modScale) + 2f) ));
-						cI = Mathf.FloorToInt(Mathf.Lerp(17, 32, (sV - sBP - gI1) / (float)(NoiseConfig.stripe.scale - sBP - gI1)));
+						cI = Mathf.FloorToInt(Mathf.Lerp(17, 32, (sV - sBP - gI1) / (float)(Config.WorldConfig.terrain.stripe.scale - sBP - gI1)));
 
 						// pattern with glass
 						if (cV > gV)
@@ -586,44 +659,86 @@ public class TerrainGenerator : MonoBehaviour
 							// stripe
 							if (psBP > sV)
 							{
-								if (solid)
+								if (Flags.Get(NoiseFlags.Solid))
 								{
-									chunk.SetBlock(localX, localY, localZ, Blocks.Rock(modPatterns[4] ? mI : cI));
+									chunk.SetBlock
+                                    (
+                                        localX, 
+                                        localY, 
+                                        localZ, 
+                                        Blocks.Rock(Flags.Get(NoiseFlags.ModPattern5) ? mI : cI)
+                                    );
 								}
-								else if (patterned)
+								else if (Flags.Get(NoiseFlags.Patterned))
 								{
 									if (cV * patternAmount > gV)
 									{
-										if (glassy1)
+										if (Flags.Get(NoiseFlags.Glass1))
 										{
-											chunk.SetBlock(localX, localY, localZ, Blocks.Glass((modPatterns[4] ? mI : cI) - 16));
+											chunk.SetBlock
+                                            (
+                                                localX, 
+                                                localY, 
+                                                localZ, 
+                                                Blocks.Glass((Flags.Get(NoiseFlags.ModPattern5) ? mI : cI) - 16)
+                                            );
 										}
 										else
 										{
-											chunk.SetBlock(localX, localY, localZ, Blocks.Rock((modPatterns[4] ? mI : cI) - 16));
+											chunk.SetBlock
+                                            (
+                                                localX, 
+                                                localY, 
+                                                localZ,
+                                                Blocks.Rock((Flags.Get(NoiseFlags.ModPattern5) ? mI : cI) - 16)
+                                            );
 										}
 									}
 									else
 									{
-										chunk.SetBlock(localX, localY, localZ, Blocks.Rock(modPatterns[3] ? mI : cI));
+										chunk.SetBlock
+                                        (
+                                            localX, 
+                                            localY, 
+                                            localZ, 
+                                            Blocks.Rock(Flags.Get(NoiseFlags.ModPattern4) ? mI : cI)
+                                        );
 									}
 								}
-								else if (striped)
+								else if (Flags.Get(NoiseFlags.Striped))
 								{
 									if (sV > sBP)
 									{
-										if (glassy1)
+										if (Flags.Get(NoiseFlags.Glass1))
 										{
-											chunk.SetBlock(localX, localY, localZ, Blocks.Glass((modPatterns[4] ? mI : cI) - 16));
+											chunk.SetBlock
+                                            (
+                                                localX, 
+                                                localY, 
+                                                localZ, 
+                                                Blocks.Glass((Flags.Get(NoiseFlags.ModPattern5) ? mI : cI) - 16)
+                                            );
 										}
 										else
 										{
-											chunk.SetBlock(localX, localY, localZ, Blocks.Rock((modPatterns[4] ? mI : cI) - 16));
+											chunk.SetBlock
+                                            (
+                                                localX, 
+                                                localY, 
+                                                localZ, 
+                                                Blocks.Rock((Flags.Get(NoiseFlags.ModPattern5) ? mI : cI) - 16)
+                                            );
 										}
 									}
 									else
 									{
-										chunk.SetBlock(localX, localY, localZ, Blocks.Rock((modPatterns[3] ? mI : cI)));
+										chunk.SetBlock
+                                        (
+                                            localX, 
+                                            localY, 
+                                            localZ, 
+                                            Blocks.Rock((Flags.Get(NoiseFlags.ModPattern4) ? mI : cI))
+                                        );
 									}
 								}
 							}
@@ -631,11 +746,23 @@ public class TerrainGenerator : MonoBehaviour
 							{
 								if (modScale % (Mathf.Abs(y) + 1) < cI) 
 								{
-									chunk.SetBlock(localX, localY, localZ, Blocks.Glass((modPatterns[4] ? mI : cI)));
+									chunk.SetBlock
+                                    (
+                                        localX, 
+                                        localY, 
+                                        localZ, 
+                                        Blocks.Glass((Flags.Get(NoiseFlags.ModPattern5) ? mI : cI))
+                                    );
 								}
 								else
 								{
-									chunk.SetBlock(localX, localY, localZ, Blocks.Rock((modPatterns[4] ? mI : cI)));
+									chunk.SetBlock
+                                    (
+                                        localX, 
+                                        localY, 
+                                        localZ, 
+                                        Blocks.Rock((Flags.Get(NoiseFlags.ModPattern5) ? mI : cI))
+                                    );
 								}
 								
 							}
@@ -667,11 +794,9 @@ public class TerrainGenerator : MonoBehaviour
 
 				}
 				// islands
-				else if (
-							(islands1 && !islands2 && gV < islandBreakPoint) ||
-							(!islands1 && islands2 && gV > islandBreakPoint) ||
-							(!islands1 && !islands2 && cV < islandBreakPoint)
-						)
+				else if ((Flags.Get(NoiseFlags.Islands1) && !Flags.Get(NoiseFlags.Islands2) && gV < islandBreakPoint) ||
+					    (!Flags.Get(NoiseFlags.Islands1) && Flags.Get(NoiseFlags.Islands2) && gV > islandBreakPoint) ||
+						(!Flags.Get(NoiseFlags.Islands1) && !Flags.Get(NoiseFlags.Islands2) && cV < islandBreakPoint))
 				{
 					// rocks
 					if (psBP > sV - gI2) 
@@ -686,28 +811,28 @@ public class TerrainGenerator : MonoBehaviour
 						// in stripes with rock
 						if (sV > sBP)
 						{
-							if (modPatterns[2])
+							if (Flags.Get(NoiseFlags.ModPattern3))
 							{
 								cI = Mathf.FloorToInt(Mathf.Lerp(0, 16, ((cV - clC) % ((sV % 16) + 1)) / ((sV % 16) + 1f)));
 							}
 							else
 							{
-								cI = Mathf.FloorToInt(Mathf.Lerp(0, 16, (sV - sBP) / (float)(NoiseConfig.stripe.scale - sBP)));
+								cI = Mathf.FloorToInt(Mathf.Lerp(0, 16, (sV - sBP) / (float)(Config.WorldConfig.terrain.stripe.scale - sBP)));
 							}
 							if (modScale % (Mathf.Abs(y) + 1) < cI) 
 							{
-								chunk.SetBlock (localX, localY, localZ, Blocks.Glass(cI));
+								chunk.SetBlock(localX, localY, localZ, Blocks.Glass(cI));
 							}
 							else
 							{
-								chunk.SetBlock (localX, localY, localZ, Blocks.Rock(cI));
+								chunk.SetBlock(localX, localY, localZ, Blocks.Rock(cI));
 							}
 							
 							air = false;
 						}
 						else
 						{
-							if (modPatterns[2])
+							if (Flags.Get(NoiseFlags.ModPattern3))
 							{
 								cI = Mathf.FloorToInt(Mathf.Lerp(17, 32, ((cV - clC) % ((sV % 16) + 1)) / ((sV % 16) + 1f)));
 							}
@@ -748,15 +873,15 @@ public class TerrainGenerator : MonoBehaviour
 			{
 				// Value controls the type of item (if any) that can spawn at this location
 				sampleSet.spawnMap.value[x - pos.x, z - pos.z] = //Chunk.NoSpawn;
-					GetNoise2D(new Vector3(pos.x + x, pos.z + z, 0), NoiseConfig.spawnTypes, NoiseType.SimplexValue);
+					GetNoise2D(new Vector3(pos.x + x, pos.z + z, 0), Config.WorldConfig.spawns.type, NoiseType.SimplexValue);
 
 				// Frequency is a base control on how many of the item will spawn
-				int frequency = GetNoise2D(new Vector3(pos.x + x, pos.z + z, 0), NoiseConfig.spawnFrequency, NoiseType.SimplexValue);
+				int frequency = GetNoise2D(new Vector3(pos.x + x, pos.z + z, 0), Config.WorldConfig.spawns.frequency, NoiseType.SimplexValue);
 
 				// And intensity controls how 'intense' the spawning action is at this location
 				int intensity = GetNoise2D(
-						new Vector3(pos.x + x, pos.z + z, 0), 
-						NoiseConfig.spawnIntensity, 
+						new Vector3(pos.x + x, pos.z + z, 0),
+                        Config.WorldConfig.spawns.intensity, 
 						NoiseType.SimplexValue
 					);
 
@@ -862,7 +987,7 @@ public class TerrainGenerator : MonoBehaviour
 		if (y >= Chunk.Size - cloudEasing)
 		{
 			int heightFromBreak = ToWorldHeight(y) - WORLD_BLOCK_HEIGHT + cloudEasing;
-			cloudChance += Mathf.FloorToInt((NoiseConfig.cave.scale - cloudChance) 
+			cloudChance += Mathf.FloorToInt((Config.WorldConfig.terrain.cave.scale - cloudChance) 
 							* log.Evaluate((float)heightFromBreak / (float)cloudEasing));
 		}
 
@@ -917,7 +1042,7 @@ public class TerrainGenerator : MonoBehaviour
 	void SetupFlags()
 	{
 		floor = ((Config.WorldHeight - 1) * -Chunk.Size);
-		mountainBase = floor + 64 - NoiseConfig.mountain.scale;
+		mountainBase = floor + 64 - Config.WorldConfig.terrain.mountain.scale;
 
 		beachHeight = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.beachHeight.low, Config.Noise.beachHeight.high, GameUtils.Seed));
 		beachPersistance = 0.5f + (GameUtils.Seed * 0.5f);
@@ -935,26 +1060,33 @@ public class TerrainGenerator : MonoBehaviour
 		gI1 = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.glass1.low, Config.Noise.glass1.high, Mathf.Pow(GameUtils.Seed, 10)));
 		gI2 = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.glass2.low, Config.Noise.glass2.high, Mathf.Pow(GameUtils.Seed, 10)));
 
-		flipStripes = GameUtils.Seed > 0.95f ? true : false;
+		Flags.Set(NoiseFlags.FlipStripes, GameUtils.Seed > 0.95f ? true : false);
 
 		modScale = Mathf.FloorToInt(Mathf.Lerp(Config.Noise.modScale.low, Config.Noise.modScale.high, Mathf.Pow(GameUtils.Seed,2)));
 
 		stretchFactor = Mathf.Lerp(Config.Noise.stretch.low, Config.Noise.stretch.high, Mathf.Pow(GameUtils.Seed,2));
 		squishFactor = Mathf.Lerp(Config.Noise.squish.low, Config.Noise.squish.high, Mathf.Pow(GameUtils.Seed,2));
 
-		for (int i = 0; i < modPatterns.Length; i++)
+		for (int i = 1; i <= numModFlags; i++)
 		{
-			modPatterns[i] = GameUtils.Seed > 0.9f ? true : false;
+			Flags.Set("ModPattern" + i.ToString(), GameUtils.Seed > 0.9f ? true : false);
 		}
 
-		glassy1 = GameUtils.Seed > 0.98f ? true : false;
-		glassy2 = GameUtils.Seed > 0.98f ? true : false;
+        for (int i = 1; i <= numGlassFlags; i++)
+        {
+            Flags.Set("Glass" + i.ToString(), GameUtils.Seed > 0.95f ? true : false);
+        }
 
-		freakyFriday = GameUtils.Seed > 0.8f ? true : false;
+        for (int i = 1; i <= numIslandFlags; i++)
+        {
+            Flags.Set("Islands" + i.ToString(), GameUtils.Seed > 0.5f ? true : false);
+        }
 
-		tigerStripes = GameUtils.Seed > 0.8f ? true : false;
+        Flags.Set(NoiseFlags.FreakyFriday, GameUtils.Seed > 0.8f ? true : false);
 
-		reverseHollowTaper = GameUtils.Seed > 0.95 ? true : false;
+		Flags.Set(NoiseFlags.TigerStripes, GameUtils.Seed > 0.8f ? true : false);
+
+		Flags.Set(NoiseFlags.ReverseHollow, GameUtils.Seed > 0.95 ? true : false);
 
         hollowFormation = GameUtils.Seed;
 		hollowMountains = Mathf.Pow(GameUtils.Seed * 0.1f, 12f);
@@ -966,20 +1098,20 @@ public class TerrainGenerator : MonoBehaviour
 
 		if (solidChance > patternedChance && solidChance > stripedChance)
 		{
-			solid = true;
+			Flags.Set(NoiseFlags.Solid, true);
 		} 
 		else if (patternedChance > solidChance && patternedChance > stripedChance)
 		{
-			patterned = true;
+			Flags.Set(NoiseFlags.Patterned, true);
 		}
 		else
 		{
-			striped = true;
+			Flags.Set(NoiseFlags.Striped, true);
 		}
 
-		islands1 = GameUtils.Seed < 0.333f ? true : false;
-		islands2 = GameUtils.Seed > 0.5f ? true : false;
-
 		patternAmount = GameUtils.Seed;
+
+        Game.LogAppend(Flags.ToHex());
+        Config.WorldConfig.terrain.flags = Flags.ToHex();
 	}
 }

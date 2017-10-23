@@ -316,8 +316,6 @@ public class TileFactory : MonoBehaviour
 
         int swaps = Mathf.FloorToInt(Mathf.Lerp(0, 17, UnityEngine.Random.value * 0.5f));
 
-        Game.LogAppend(type.ToString());
-
 		if (type == GradientType.WarmCool || type == GradientType.SingleColor)
 		{
 			valueStart = UnityEngine.Random.Range(0.5f, 0.75f);
