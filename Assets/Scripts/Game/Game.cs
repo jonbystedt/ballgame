@@ -29,6 +29,7 @@ public class Game : MonoBehaviour
 
 	private Vector3 lastGoodPosition;
 	private Vector3 cameraPosition;
+    private Vector3 _playerMovement;
 
 	private bool playerActive = false;
 	private bool showStats = false;
@@ -64,7 +65,7 @@ public class Game : MonoBehaviour
 		set { _instance.chunksLoaded = value; }
 	}
 
-	public static bool PlayerActive
+	public static bool Active
 	{
 		get { return _instance.playerActive; }
 		set 
@@ -118,6 +119,12 @@ public class Game : MonoBehaviour
 		set { _instance.cameraPosition = value; }
 	}
 
+    public static Vector3 PlayerMovement
+    {
+        get { return _instance._playerMovement;  }
+        set { _instance._playerMovement = value; }
+    }
+
 	public static Camera MainCamera
 	{
 		get { return _instance.mainCamera; }
@@ -133,7 +140,7 @@ public class Game : MonoBehaviour
 
 		player.transform.position = new Vector3(0f, -3f, 10f);
 		player.GetComponent<Rigidbody>().isKinematic = true;
-		PlayerActive = false;
+		Active = false;
 		boids.StopBoids();
 		boids.StartBoids();
 
@@ -277,7 +284,7 @@ public class Game : MonoBehaviour
 			player.GetComponent<Rigidbody>().isKinematic = false;
 			player.transform.position = new Vector3(-0.5f, 32f, -0.5f);
 			player.GetComponent<Roller>().asleep = true;
-			PlayerActive = true;
+			Active = true;
 			CameraOp.FirstPerson = true;
 
 			if (Config.MusicVolume > 0) 
@@ -401,7 +408,7 @@ public class Game : MonoBehaviour
 
 	public static void UpdateClock(string time)
 	{
-		if (PlayerActive)
+		if (Active)
 		{
 			_instance.clockText.text = time;
 		}
@@ -409,7 +416,7 @@ public class Game : MonoBehaviour
 
 	public static void UpdateDay(string day)
 	{
-		if (PlayerActive && _instance.dayText.text != day)
+		if (Active && _instance.dayText.text != day)
 		{
 			_instance.dayText.text = day;
 		}
@@ -417,7 +424,7 @@ public class Game : MonoBehaviour
 
 	public static void UpdatePosition(World3 pos)
 	{
-		if (!PlayerActive)
+		if (!Active)
 		{
 			return;
 		}

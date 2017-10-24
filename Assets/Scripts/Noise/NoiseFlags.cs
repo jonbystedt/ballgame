@@ -47,7 +47,6 @@ static class Flags
     {
         if (val)
         {
-            Game.LogAppend(mask.ToString());
             _flags |= mask;
         }
         else

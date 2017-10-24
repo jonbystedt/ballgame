@@ -360,7 +360,7 @@ public class BouncyBall : SpawnedObject
 				break;
 			}
 
-			if (!Game.PlayerActive)
+			if (!Game.Active)
 			{
 				yield return null;
 			}
@@ -387,7 +387,7 @@ public class BouncyBall : SpawnedObject
 				break;
 			}
 
-			if (!Game.PlayerActive)
+			if (!Game.Active)
 			{
 				yield return null;
 			}

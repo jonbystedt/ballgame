@@ -34,7 +34,7 @@ namespace UnityStandardAssets.Cameras
 
         private void FixedUpdate()
         {
-            if (!Game.PlayerActive)
+            if (!Game.Active)
             {
                 return;
             }
@@ -53,7 +53,7 @@ namespace UnityStandardAssets.Cameras
 
         private void LateUpdate()
         {
-            if (!Game.PlayerActive)
+            if (!Game.Active)
             {
                 return;
             }
@@ -72,7 +72,7 @@ namespace UnityStandardAssets.Cameras
 
         public void ManualUpdate()
         {
-            if (!Game.PlayerActive)
+            if (!Game.Active)
             {
                 return;
             }

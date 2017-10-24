@@ -1067,7 +1067,7 @@ public class TerrainGenerator : MonoBehaviour
 				0, 
 				16, 
 				patternValue % ((stripeValue % Config.Instance.terrain.modScale) + 2f) 
-					/  (float)(Mathf.Abs(stripeValue % Config.Instance.terrain.modScale) + 2f) 
+			    / (float)(Mathf.Abs(stripeValue % Config.Instance.terrain.modScale) + 2f) 
 			)
 		);
 
@@ -1156,7 +1156,6 @@ public class TerrainGenerator : MonoBehaviour
 
         Config.Instance.terrain.patternAmount = GameUtils.Seed;
 
-        Game.LogAppend(Flags.ToHex());
         Config.Instance.terrain.flags = Flags.ToHex();
 	}
 }

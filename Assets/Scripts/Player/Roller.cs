@@ -73,9 +73,10 @@ public class Roller : MonoBehaviour
 			_rigidbody.drag = 10f;
 			_rigidbody.angularDrag = 2f;
 			
-			movePower = 200000f;
-			jumpPower = 4000f;
-			boostPower = 2f;	
+			movePower = 100000f;
+			jumpPower = 10000f;
+			boostPower = 2f;
+            hoverTime = 0.25f;
 		}
 		else
 		{
@@ -86,6 +87,7 @@ public class Roller : MonoBehaviour
 			movePower = 70000f;
 			jumpPower = 3500f;
 			boostPower = 2f;
+            hoverTime = 0.75f;
 		}
 		
 	}
@@ -189,6 +191,8 @@ public class Roller : MonoBehaviour
 		{
 			ApplyGravity(moveDirection);
 		}
+
+        Game.PlayerMovement = moveDirection;
 	}
 
 	void HitGround()
@@ -275,7 +279,15 @@ public class Roller : MonoBehaviour
 			// ...add force in upwards. boost jump
 			if (boosting)
 			{
-				float multiplier = Mathf.Lerp(20f, 10f, Mathf.Clamp01((moveDirection.x + moveDirection.y) / 5f));
+                float multiplier;
+                if (!Game.CameraOp.FirstPerson)
+                {
+                    multiplier = Mathf.Lerp(20f, 10f, Mathf.Clamp01((moveDirection.x + moveDirection.y) / 5f));
+                }
+                else
+                {
+                    multiplier = Mathf.Lerp(10f, 5f, Mathf.Clamp01((moveDirection.x + moveDirection.y) / 5f));
+                }
 				_rigidbody.AddForce(moveDirection * movePower * airResistance + Vector3.up * jumpPower*multiplier, ForceMode.Impulse);
 			}
 			// regular jump

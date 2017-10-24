@@ -45,7 +45,7 @@ public class ModifiedFreeLookCam : PivotBasedCameraRig
 
 	protected void Update()
 	{
-		if (!Game.PlayerActive)
+		if (!Game.Active)
 		{
 			return;
 		}

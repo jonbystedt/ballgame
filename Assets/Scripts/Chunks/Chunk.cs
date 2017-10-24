@@ -195,7 +195,7 @@ public class Chunk : PooledObject {
 	{
 		for (;;)
 		{
-			if (Game.PlayerActive)
+			if (Game.Active)
 			{
 				callback();
 				break;

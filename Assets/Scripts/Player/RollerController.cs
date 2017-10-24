@@ -15,19 +15,14 @@ public class RollerController : MonoBehaviour
 	private Vector3 camForward;
 
 	// holding down boost, or not landed jump
-	private bool jumping; 
-	private bool jumpEnd;
-	private bool boosting;
-	private bool boostEnd;
+	private bool jumping;
+    private bool boosting;
 	private bool create;
 	private bool pound;
 
 	Rigidbody _rigidbody;
 	Collider _collider;
 	Vector3 lastPosition;
-	float nextBashFrame = 0f;
-	float bashInterval = 3f;
-
 
 	private void Awake()
 	{
@@ -44,7 +39,7 @@ public class RollerController : MonoBehaviour
 
 	void Update()
 	{
-		if (!Game.PlayerActive)
+		if (!Game.Active)
 		{
 			return;
 		}
@@ -128,7 +123,7 @@ public class RollerController : MonoBehaviour
 
 	void FixedUpdate()
 	{
-        if (!Game.PlayerActive)
+        if (!Game.Active)
         {
             return;
         }

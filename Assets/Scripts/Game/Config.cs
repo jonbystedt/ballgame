@@ -121,7 +121,7 @@ public class Config : MonoBehaviour
 					ContactShadows = false;
 					GlobalFogEnabled = false;
 					ShadowsEnabled = false;
-					Outlines = true;
+					Outlines = false;
 					World.ChunkShadows = false;
 					
 					if (QualitySettings.GetQualityLevel() != 0)
@@ -139,7 +139,7 @@ public class Config : MonoBehaviour
 					ContactShadows = true;
 					GlobalFogEnabled = false;
 					ShadowsEnabled = false;
-					Outlines = true;
+					Outlines = false;
 					World.ChunkShadows = false;
 
 					if (QualitySettings.GetQualityLevel() != 1)
@@ -157,7 +157,7 @@ public class Config : MonoBehaviour
 					ContactShadows = true;
 					GlobalFogEnabled = false;
 					ShadowsEnabled = true;
-					Outlines = true;
+					Outlines = false;
 					World.ChunkShadows = true;
 
 					Interpolation = InterpolationLevel.Low;
@@ -176,7 +176,7 @@ public class Config : MonoBehaviour
 					ContactShadows = true;
 					GlobalFogEnabled = false;
 					ShadowsEnabled = true;
-					Outlines = true;
+					Outlines = false;
 					World.ChunkShadows = true;
 
 					if (QualitySettings.GetQualityLevel() != 3)

@@ -64,15 +64,22 @@ public class CameraOperator : MonoBehaviour
 	public MeshRenderer outlineRenderer;
 	public MeshRenderer solidRenderer;
 	public AnimationCurve curve;
-	//public Vector3 cameraPosition;
 
-	public Camera _camera;                  // the transform of the camera
-    Transform _pivot;                // the point at which the camera pivots around
+    // the transform of the camera
+    public Camera _camera;
+
+    // the point at which the camera pivots around
+    Transform _pivot;                
 	public Transform _player;
 
-	float originalDistance;             // the original distance to the camera before any modification are made
-	float moveVelocity;             // the velocity at which the camera moved
-	float currentDistance;              // the current distance from the camera to the target
+    // the original distance to the camera before any modification are made
+    float originalDistance;
+
+    // the velocity at which the camera moved
+    float moveVelocity;
+
+    // the current distance from the camera to the target
+    float currentDistance;              
 	float collisionDistance;
           
 	float lastTargetDist;
@@ -85,6 +92,27 @@ public class CameraOperator : MonoBehaviour
 	ushort cameraForwardBlock;
 
 	ModifiedFreeLookCam freeLookCamera;
+
+    //local position where your camera would rest when it's not bobbing.
+    Vector3 restPosition = Vector3.zero;
+
+    //smooths out the transition from moving to not moving.
+    float transitionSpeed = 20f;
+
+    //how quickly the player's head bobs.
+    public float bobSpeed = 6f;
+
+    //how dramatic the bob is. Increasing this in conjunction with bobSpeed gives a nice effect for sprinting.
+    public float bobAmount = 0.25f; 
+
+    // initialized as this value because this is where sin = 1. 
+    // So, this will make the camera always start at the crest of the sin wave, 
+    // simulating someone picking up their foot and starting to walk--
+    // you experience a bob upwards when you start walking as your foot pushes off the ground, 
+    // the left and right bobs come as you walk.
+    float timer = Mathf.PI / 2;
+
+    Vector3 bob;
 
     void Start()
     {
@@ -101,16 +129,65 @@ public class CameraOperator : MonoBehaviour
 	private void Update()
 	{
 		// TODO: Centralize all input handling
-		if (Input.GetKeyDown (KeyCode.F) && Game.PlayerActive) 
+		if (Input.GetKeyDown (KeyCode.F) && Game.Active) 
 		{
 			FirstPerson = !firstPerson;
 		}
-	}
+
+        if (!Game.CameraOp.FirstPerson)
+        {
+            return;
+        }
+
+        // Head Bob
+        Vector3 movement = Game.PlayerMovement;
+        if (movement.x != 0 || movement.z != 0) //moving
+        {
+            timer += bobSpeed * movement.magnitude * 0.8f * Time.deltaTime;
+
+            //use the timer value to set the position
+            bob = new Vector3
+            (
+                Mathf.Cos(timer) * bobAmount,
+                restPosition.y + Mathf.Abs((Mathf.Sin(timer) * bobAmount * movement.magnitude)), //abs val of y for a parabolic path
+                restPosition.z
+            );
+        }
+        else
+        {
+            timer = Mathf.PI / 2; //reinitialize
+
+            bob = new Vector3
+            (
+                Mathf.Lerp //transition smoothly from walking to stopping.
+                (
+                    bob.x,
+                    restPosition.x,
+                    transitionSpeed * Time.deltaTime
+                ),
+                Mathf.Lerp
+                (
+                    bob.y,
+                    restPosition.y,
+                    transitionSpeed * Time.deltaTime
+                ),
+                Mathf.Lerp
+                (
+                    bob.z,
+                    restPosition.z,
+                    transitionSpeed * Time.deltaTime
+                )
+            );
+        }
+
+        if (timer > Mathf.PI * 2) //completed a full cycle on the unit circle. Reset to 0 to avoid bloated values.
+            timer = 0;
+    }
 		
 
     private void LateUpdate()
 	{
-		if (!Game.PlayerActive)
+		if (!Game.Active)
 		{
 			_camera.transform.position = Game.CameraPosition;
 			return;
@@ -188,7 +265,8 @@ public class CameraOperator : MonoBehaviour
 			{
 				cameraPosition.y += 1f;
 			}
-			_camera.transform.position = cameraPosition;
+			_camera.transform.position = cameraPosition + bob;
+
 			Game.CameraPosition = cameraPosition;
 		}
 

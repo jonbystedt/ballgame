@@ -87,7 +87,7 @@ public class Cosmos : MonoBehaviour {
 
 	void Update () 
 	{
-		if (!Game.PlayerActive)
+		if (!Game.Active)
 		{
 			return;
 		}
@@ -101,7 +101,7 @@ public class Cosmos : MonoBehaviour {
 
 	void FixedUpdate()
 	{
-		if (!Game.PlayerActive)
+		if (!Game.Active)
 		{
 			return;
 		}

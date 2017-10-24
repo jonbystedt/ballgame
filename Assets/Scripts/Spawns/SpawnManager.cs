@@ -652,7 +652,7 @@ public class SpawnManager : MonoBehaviour {
 						continue;
 					}
 
-					if (Game.PlayerActive) 
+					if (Game.Active) 
 					{
 						yield return new WaitForSeconds(Config.SpawnTiming);
 					}

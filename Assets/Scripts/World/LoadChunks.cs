@@ -338,7 +338,7 @@ public class LoadChunks : MonoBehaviour
 
 	void ExecuteSpawn()
 	{
-		if (!Game.PlayerActive)
+		if (!Game.Active)
 		{
 			return;
 		}

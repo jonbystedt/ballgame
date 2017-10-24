@@ -30,11 +30,11 @@ public class Pause : MonoBehaviour
 	{
 		isPaused = true;
 
-		if (Game.PlayerActive)
+		if (Game.Active)
 		{
 			Time.timeScale = 0;
 			Game.Loader.loading = false;
-			Game.PlayerActive = false;
+			Game.Active = false;
 			playerActive = true;
 		}
 
@@ -49,7 +49,7 @@ public class Pause : MonoBehaviour
 		{
 			Time.timeScale = 1;
 			Game.Loader.loading = true;
-			Game.PlayerActive = true;
+			Game.Active = true;
 			playerActive = false;
 		}
 
