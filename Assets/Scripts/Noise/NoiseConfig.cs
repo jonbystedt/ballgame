@@ -3,39 +3,44 @@ using System.Collections.Generic;
 using System;
 
 [Serializable]
-public struct ValueRange
+public class ValueRange
 {
-	public float max;
-	public float min;
-	public float value;
+	public float max { get; set; }
+	public float min { get; set; }
+	public float value { get; set; }
 
-	public ValueRange(float n, float x, float pow)
+	public ValueRange(float n, float x, float v)
 	{
 		min = n;
 		max = x;
-		value = Mathf.Lerp(n, x, Mathf.Pow(GameUtils.Seed, pow));
+        value = v;
 	}
 
 	public ValueRange(float n, float x)
 	{
 		min = n;
 		max = x;
-		value = Mathf.Lerp(n, x, GameUtils.Seed);
 	}
+    
+    public ValueRange Init(float pow)
+    {
+        value = Mathf.Lerp(min, max, Mathf.Pow(GameUtils.Seed, pow));
+        return this;
+    }
 }
 
 [Serializable]
 public class NoiseOptions
 {
-	public ValueRange frequency;
-	public int octaves;
-	public float lacunarity;
-	public float persistance;
-	public int scale;
-	public float drift;
-	public float driftScale;
-	public int id;
-	public int driftMapId;
+	public ValueRange frequency { get; set; }
+	public int octaves { get; set; }
+    public float lacunarity { get; set; }
+    public float persistance { get; set; }
+    public int scale { get; set; }
+    public float drift { get; set; }
+    public float driftScale { get; set; }
+    public int id { get; set; }
+    public int driftMapId { get; set; }
 
     public NoiseOptions() { }
 
@@ -88,12 +93,13 @@ public static class NoiseConfig
 		int driftIndex = GetDriftIndex(Config.Noise.terrain.drift);
 		Config.Instance.terrain.hills = new NoiseOptions
 		(
-			new ValueRange(
+			new ValueRange
+            (
 				Config.Noise.terrain.frequency.low, 
-				Config.Noise.terrain.frequency.high,
-				1.2f
-				),
-			GameUtils.IntLerp(
+				Config.Noise.terrain.frequency.high
+		    )
+            .Init(1.2f),
+            GameUtils.IntLerp(
 				Config.Noise.terrain.octaves.low,
 				Config.Noise.terrain.octaves.high,
 				Seed
@@ -124,11 +130,12 @@ public static class NoiseConfig
 		driftIndex = GetDriftIndex(Config.Noise.mountain.drift);
 		Config.Instance.terrain.mountain = new NoiseOptions
 		(
-			new ValueRange(
+			new ValueRange
+            (
 				Config.Noise.mountain.frequency.low, 
-				Config.Noise.mountain.frequency.high,
-				2f
-				),
+				Config.Noise.mountain.frequency.high
+			)
+            .Init(2f),
 			GameUtils.IntLerp(
 				Config.Noise.mountain.octaves.low,
 				Config.Noise.mountain.octaves.high,
@@ -164,11 +171,12 @@ public static class NoiseConfig
 		driftIndex = GetDriftIndex(Config.Noise.cave.drift);
         Config.Instance.terrain.cave = new NoiseOptions
 		(
-			new ValueRange(
+			new ValueRange
+            (
 				Config.Noise.cave.frequency.low, 
-				Config.Noise.cave.frequency.high,
-				2f
-				),
+				Config.Noise.cave.frequency.high
+			)
+            .Init(2f),
 			GameUtils.IntLerp(
 				Config.Noise.cave.octaves.low,
 				Config.Noise.cave.octaves.high,
@@ -200,11 +208,13 @@ public static class NoiseConfig
 		driftIndex = GetDriftIndex(Config.Noise.pattern.drift);
         Config.Instance.terrain.pattern = new NoiseOptions
 		(
-			new ValueRange(
+			new ValueRange
+            (
 				Config.Noise.pattern.frequency.low, 
 				Config.Noise.pattern.frequency.high,
 				3f
-				),
+			)
+            .Init(3f),
 			GameUtils.IntLerp(
 				Config.Noise.pattern.octaves.low, 
 				Config.Noise.pattern.octaves.high, 
@@ -236,10 +246,12 @@ public static class NoiseConfig
 		driftIndex = GetDriftIndex(Config.Noise.stripe.drift);
         Config.Instance.terrain.stripe = new NoiseOptions
 		(
-			new ValueRange(
+			new ValueRange
+            (
 				Config.Noise.stripe.frequency.low, 
 				Config.Noise.stripe.frequency.high
-				), 
+			)
+            .Init(1f), 
 			GameUtils.IntLerp(
 				Config.Noise.stripe.octaves.low,
 				Config.Noise.stripe.octaves.high,
@@ -271,7 +283,7 @@ public static class NoiseConfig
 		driftIndex = GetDriftIndex(true);
         Config.Instance.spawns.type = new NoiseOptions
 		(
-			new ValueRange(0.008f, 0.05f, 2f), 
+			new ValueRange(0.008f, 0.05f).Init(2f), 
 			GameUtils.IntLerp(1, 2, Seed),
 			Mathf.Lerp(0f, 2f, Seed),
 			Mathf.Lerp(0f, 2f, Seed),
@@ -287,7 +299,7 @@ public static class NoiseConfig
 		driftIndex = GetDriftIndex(true);
 		Config.Instance.spawns.frequency = new NoiseOptions
 		(
-			new ValueRange(0.04f, 0.2f), 
+			new ValueRange(0.04f, 0.2f).Init(1f), 
 			GameUtils.IntLerp(1, 2, Seed),
 			Mathf.Lerp(0f, 2f, Seed),
 			Mathf.Lerp(0f, 2f, Seed),
@@ -303,7 +315,7 @@ public static class NoiseConfig
 		driftIndex = GetDriftIndex(true);
 		Config.Instance.spawns.intensity = new NoiseOptions
 		(
-			new ValueRange(0.004f, 0.05f, 2f), 
+			new ValueRange(0.004f, 0.05f, 2f).Init(1f), 
 			GameUtils.IntLerp(1, 2, Seed) + 2,
 			Mathf.Lerp(0f, 2f, Seed),
 			Mathf.Lerp(0f, 2f, Seed),
@@ -318,7 +330,7 @@ public static class NoiseConfig
 
 		Config.Instance.environment.rain = new NoiseOptions
 		(
-			new ValueRange(0.001f, 0.002f),
+			new ValueRange(0.001f, 0.002f).Init(1f),
 			GameUtils.IntLerp(1, 4, Seed),
 			Mathf.Lerp(0f, 2f, Seed),
 			Mathf.Lerp(0f, 2f, Seed),
@@ -333,7 +345,12 @@ public static class NoiseConfig
 
 		Config.Instance.environment.lightning = new NoiseOptions
 		(
-			Config.Instance.environment.rain.frequency,
+			new ValueRange
+            (
+                Config.Instance.environment.rain.frequency.min,
+                Config.Instance.environment.rain.frequency.max,
+                Config.Instance.environment.rain.frequency.value
+            ),
             Config.Instance.environment.rain.octaves,
             Config.Instance.environment.rain.lacunarity + Mathf.Lerp(0.01f, 0.0025f, Seed),
             Config.Instance.environment.rain.persistance + Mathf.Lerp(0.01f, 0.0025f, Seed),
@@ -348,7 +365,7 @@ public static class NoiseConfig
 		
 		Config.Instance.environment.boids.interaction = new NoiseOptions
 		(
-			new ValueRange(0.0002f, 0.01f),
+			new ValueRange(0.0002f, 0.01f).Init(1f),
 			1,
 			Mathf.Lerp(0f, 2f, Seed),
 			Mathf.Lerp(0f, 2f, Seed),
@@ -364,7 +381,7 @@ public static class NoiseConfig
 
         Config.Instance.environment.boids.distance = new NoiseOptions
 		(
-			new ValueRange(0.0002f, 0.01f),
+			new ValueRange(0.0002f, 0.01f).Init(1f),
 			1,
 			Mathf.Lerp(0f, 2f, Seed),
 			Mathf.Lerp(0f, 2f, Seed),
@@ -379,7 +396,7 @@ public static class NoiseConfig
 
         Config.Instance.environment.boids.alignment = new NoiseOptions
 		(
-			new ValueRange(0.0002f, 0.01f),
+			new ValueRange(0.0002f, 0.01f).Init(1f),
 			1,
 			Mathf.Lerp(0f, 2f, Seed),
 			Mathf.Lerp(0f, 2f, Seed),
@@ -393,7 +410,7 @@ public static class NoiseConfig
 		opts.Add(Config.Instance.environment.boids.alignment);
 
         Config.Instance.environment.key = new NoiseOptions(
-			new ValueRange(0.0002f, 0.01f),
+			new ValueRange(0.0002f, 0.01f).Init(1f),
 			2,
 			Mathf.Lerp(0f, 2f, Seed),
 			Mathf.Lerp(0f, 2f, Seed),
@@ -469,25 +486,30 @@ public static class NoiseConfig
 	static NoiseOptions GetDriftMap()
 	{
 		return new NoiseOptions(
-			new ValueRange(
+			new ValueRange
+            (
 				Config.Noise.driftMap.frequency.low, 
 				Config.Noise.driftMap.frequency.high
-				),
-			GameUtils.IntLerp(
+			)
+            .Init(1f),
+			GameUtils.IntLerp
+            (
 				Config.Noise.driftMap.octaves.low,
 				Config.Noise.driftMap.octaves.high, 
 				Seed
-				),
-			Mathf.Lerp(
+			),
+			Mathf.Lerp
+            (
 				Config.Noise.driftMap.lacunarity.low, 
 				Config.Noise.driftMap.lacunarity.high, 
 				Seed
-				),
-			Mathf.Lerp(
+			),
+			Mathf.Lerp
+            (
 				Config.Noise.driftMap.persistance.low, 
 				Config.Noise.driftMap.persistance.high, 
 				Seed
-				),
+			),
 			1, 
 			0f,
 			0f, 

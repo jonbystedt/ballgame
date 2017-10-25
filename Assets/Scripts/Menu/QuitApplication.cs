@@ -23,7 +23,8 @@ public class QuitApplication : MonoBehaviour {
 			Config.CoroutineTiming = 20000;
 		}
 		World.DestroyChunks();
-		Serialization.Compress();
+        Serialization.WriteWorldConfig();
+        Serialization.Compress();
 		Serialization.WriteConfig();
 		Serialization.WriteNoiseConfig();
 	}

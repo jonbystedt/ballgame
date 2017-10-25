@@ -249,7 +249,37 @@ public static class Serialization
 		return true;
 	}
 
-	public static void WriteNoiseConfig()
+    public static void WriteWorldConfig()
+    {
+        string worldSettingsFileName = Path.Combine(SaveLocation, "world.config");
+
+        var sb = new StringBuilder();
+        var stringWriter = new StringWriter(sb);
+        yaml.Serialize(stringWriter, Config.Instance);
+
+        using (StreamWriter sw = File.CreateText(worldSettingsFileName))
+        {
+            sw.WriteLine(sb.ToString());
+        }
+    }
+
+    public static bool ReadWorldConfig()
+    {
+        string worldSettingsFileName = Path.Combine(SaveLocation, "world.config");
+
+        if (!File.Exists(worldSettingsFileName))
+        {
+            return false;
+        }
+
+        var sr = new StringReader(System.IO.File.ReadAllText(worldSettingsFileName));
+        var deserializer = new Deserializer();
+        Config.Instance = deserializer.Deserialize<WorldSettings>(sr);
+
+        return true;
+    }
+
+    public static void WriteNoiseConfig()
 	{
 		var sb = new StringBuilder();
         var stringWriter = new StringWriter(sb);

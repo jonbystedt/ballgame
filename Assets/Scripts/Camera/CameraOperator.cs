@@ -149,7 +149,7 @@ public class CameraOperator : MonoBehaviour
             bob = new Vector3
             (
                 Mathf.Cos(timer) * bobAmount,
-                restPosition.y + Mathf.Abs((Mathf.Sin(timer) * bobAmount * movement.magnitude)), //abs val of y for a parabolic path
+                restPosition.y + Mathf.Abs((Mathf.Sin(timer) * bobAmount * movement.magnitude * 1.1f)), //abs val of y for a parabolic path
                 restPosition.z
             );
         }
