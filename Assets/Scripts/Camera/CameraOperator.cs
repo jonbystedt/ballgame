@@ -140,48 +140,51 @@ public class CameraOperator : MonoBehaviour
         }
 
         // Head Bob
-        Vector3 movement = Game.PlayerMovement;
-        if (movement.x != 0 || movement.z != 0) //moving
-        {
-            timer += bobSpeed * movement.magnitude * 0.8f * Time.deltaTime;
+        //Vector3 movement = Game.PlayerMovement;
+        //if (GameInput.Boosting && movement.x != 0 && movement.z != 0) //moving
+        //{
+        //    float bs = bobSpeed * movement.magnitude * 0.8f;
+        //    timer += bs * Time.deltaTime;
 
-            //use the timer value to set the position
-            bob = new Vector3
-            (
-                Mathf.Cos(timer) * bobAmount,
-                restPosition.y + Mathf.Abs((Mathf.Sin(timer) * bobAmount * movement.magnitude * 1.1f)), //abs val of y for a parabolic path
-                restPosition.z
-            );
-        }
-        else
-        {
-            timer = Mathf.PI / 2; //reinitialize
+        //    float ba = bobAmount * movement.magnitude * 1.1f;
 
-            bob = new Vector3
-            (
-                Mathf.Lerp //transition smoothly from walking to stopping.
-                (
-                    bob.x,
-                    restPosition.x,
-                    transitionSpeed * Time.deltaTime
-                ),
-                Mathf.Lerp
-                (
-                    bob.y,
-                    restPosition.y,
-                    transitionSpeed * Time.deltaTime
-                ),
-                Mathf.Lerp
-                (
-                    bob.z,
-                    restPosition.z,
-                    transitionSpeed * Time.deltaTime
-                )
-            );
-        }
+        //    //use the timer value to set the position
+        //    bob = new Vector3
+        //    (   
+        //        Mathf.Cos(timer) * bobAmount,
+        //        restPosition.y + Mathf.Abs((Mathf.Sin(timer) * ba)), //abs val of y for a parabolic path
+        //        restPosition.z
+        //    );
+        //}
+        //else
+        //{
+        //    timer = Mathf.PI / 2; //reinitialize
 
-        if (timer > Mathf.PI * 2) //completed a full cycle on the unit circle. Reset to 0 to avoid bloated values.
-            timer = 0;
+        //    bob = new Vector3
+        //    (
+        //        Mathf.Lerp //transition smoothly from walking to stopping.
+        //        (
+        //            bob.x,
+        //            restPosition.x,
+        //            transitionSpeed * Time.deltaTime
+        //        ),
+        //        Mathf.Lerp
+        //        (
+        //            bob.y,
+        //            restPosition.y,
+        //            transitionSpeed * Time.deltaTime
+        //        ),
+        //        Mathf.Lerp
+        //        (
+        //            bob.z,
+        //            restPosition.z,
+        //            transitionSpeed * Time.deltaTime
+        //        )
+        //    );
+        //}
+
+        //if (timer > Mathf.PI * 2) //completed a full cycle on the unit circle. Reset to 0 to avoid bloated values.
+        //    timer = 0;
     }
 		
 
@@ -265,7 +268,7 @@ public class CameraOperator : MonoBehaviour
 			{
 				cameraPosition.y += 1f;
 			}
-			_camera.transform.position = cameraPosition + bob;
+			//_camera.transform.position = cameraPosition + bob;
 
 			Game.CameraPosition = cameraPosition;
 		}

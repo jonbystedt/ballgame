@@ -333,7 +333,7 @@ public class Game : MonoBehaviour
 
 		// start generating world parameters
 		NoiseConfig.Initialize();
-		TileFactory.GenerateColorPalette();
+		ColorFactory.GeneratePalette();
 		Blocks.Initialize();
 		cosmos.CreateSky();
 
@@ -354,12 +354,6 @@ public class Game : MonoBehaviour
 		hbao.enabled = Config.ContactShadows;
 
 		RenderSettings.fog = true;
-		// fog = mainCamera.GetComponent<GlobalFog>();
-		// fog.enabled = Config.GlobalFogEnabled;
-
-		//distanceFog = cosmosCamera.GetComponent<GlobalFog>();
-		//distanceFog.enabled = Config.GlobalFogEnabled;
-		//distanceFog.Advanced.UseScattering = Config.AtmosphericScattering;
 
 		if (Config.ShadowsEnabled)
 		{
@@ -442,7 +436,8 @@ public class Game : MonoBehaviour
 			InterpolatedNoise.Results.TryGetValue(column.region, out results);
 			if (results != null)
 			{
-				LastGoodPosition = new Vector3(
+				LastGoodPosition = new Vector3
+                (
 					pos.x + Chunk.HalfSize + 0.5f,
 					results.spawnMap.height[Chunk.HalfSize, Chunk.HalfSize],
 					pos.z + Chunk.HalfSize + 0.5f
@@ -488,7 +483,7 @@ public class Game : MonoBehaviour
 		_instance.logMessage.text = message;
 	}
 
-    public static void LogAppend(string message)
+    public static void AppendLog(string message)
     {
         Game.Log(_instance.logMessage.text + " " + message);
     }

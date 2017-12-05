@@ -314,24 +314,27 @@ public class TerrainGenerator : MonoBehaviour
 				float hMV = GetHollowValue(hollowMountains, y);
 				float hGV = GetHollowValue(hollowGlass, y);
 
-				int cI;
+                int hollowCaveUp = (cvC + Mathf.FloorToInt(hMV * 100000));
+                int hollowCaveDown = (cvC - Mathf.FloorToInt(hMV * 100000));
+
+                int cI;
 				int mI;
 
 				bool beach = false;
-				if (y <= Config.Instance.terrain.beachHeight)
+				if (y <= Config.Instance.terrain.beachHeight && hollowCaveUp < cV)
 				{
 					beach = true;
 				}
 
 				// mountains if less than or equal to the height of a 2D noisemap, and not in the 'cave' negative space
-				if (y <= mountainHeight && cvC < cV)
+				if (y <= mountainHeight && (cvC < cV || beach))
 				{
 					// glass or rock? if the value of the 3D 'glass' noisemap is greater than the breakpoint this is potentially rock
                     if (Config.Instance.terrain.patternBreak < gV) 
 					{
 
 						// but if the value of the 'glass' noisemap is greater than the 'hollow' cutoff this is air
-						if (gV > Config.Instance.terrain.pattern.scale - Mathf.FloorToInt((hMV * (float)Config.Instance.terrain.pattern.scale)))
+						if (gV > Config.Instance.terrain.pattern.scale - Mathf.FloorToInt(hMV * sV))
 						{
 							chunk.SetBlock(localX, localY, localZ, Block.Air);
 							if (!air)
@@ -341,7 +344,7 @@ public class TerrainGenerator : MonoBehaviour
 							air = true;
 						}
 						// two distinct rock stripes provided by the 3D noisemap 'stripes'
-						else if (sV > Config.Instance.terrain.stripeBreak && (cvC < cV || beach)) 
+						else if (sV > Config.Instance.terrain.stripeBreak) 
 						{
 							cI = Mathf.FloorToInt(Mathf.Lerp
                             (
@@ -380,7 +383,7 @@ public class TerrainGenerator : MonoBehaviour
                     else 
 					{
 						// If we are less than the corresponding 'hollow' value this is air
-						if (gV < Config.Instance.terrain.pattern.scale * hGV) 
+						if (gV < sV * hGV) 
 						{
 							chunk.SetBlock(localX, localY, localZ, Block.Air);
 							if (!air)
@@ -392,7 +395,7 @@ public class TerrainGenerator : MonoBehaviour
 						// glass sections
 						// have rock stripes
 						// *** special glass section ***
-						else if (Flags.Get(NoiseFlags.Glass2) && (cvC < cV || beach))
+						else if (Flags.Get(NoiseFlags.Glass2) && hollowCaveDown > cV)
 						{
 							if (Config.Instance.terrain.patternStripeBreak > sV) 
 							{
@@ -454,7 +457,7 @@ public class TerrainGenerator : MonoBehaviour
 							}
 						}
 						// *** end special glass section ***
-						else if (cvC < cV || beach)
+						else
 						{
 							if (Config.Instance.terrain.patternStripeBreak > sV) 
 							{
@@ -484,7 +487,7 @@ public class TerrainGenerator : MonoBehaviour
 									{
 										cI = GetModIndex(cI, gV, sV, 16);
 									}
-									if (Config.Instance.terrain.modScale % (Mathf.Abs(y) + 1) < cI) 
+									if (Config.Instance.terrain.modScale % (Mathf.Abs(y) + 1) < cI && hollowCaveDown > cV) 
 									{
 										chunk.SetBlock(localX, localY, localZ, Blocks.Glass(cI));
 									}
@@ -1042,22 +1045,24 @@ public class TerrainGenerator : MonoBehaviour
 	// returns a value that moderates the chance of the 'pattern' sample carving holes in the mountains
 	float GetHollowValue(float hollowValue, int y)
 	{
-		return hollowValue;
-		// float persistance = hollowPersistance;
+        hollowValue = hollowValue  + Mathf.Lerp(0, hollowValue * (1 + hollowPersistance), (float)ToWorldHeight(y) / (float)WORLD_BLOCK_HEIGHT);
+        return Flags.Get(NoiseFlags.ReverseHollow) ? 1f - hollowValue : hollowValue;
+        //return hollowValue;
+        //float persistance = hollowPersistance;
 
-		// // persistance is the amount of the hollow value not affected by the linear fade below
-		// // at values below beachHeight this value is reduced on a log curve to promote beaches
-		// if (y < beachHeight - (Chunk.Size * (Config.WorldHeight - 1)))
-		// {
-		// 	persistance = persistance * log.Evaluate((float)(y + (Chunk.Size * (Config.WorldHeight - 1))) / (float)(beachHeight));
-		// }
+        //// persistance is the amount of the hollow value not affected by the linear fade below
+        //// at values below beachHeight this value is reduced on a log curve to promote beaches
+        //if (y < Config.Instance.terrain.beachHeight - (Chunk.Size * (Config.WorldHeight - 1)))
+        //{
+        //    persistance = persistance * log.Evaluate((float)(y + (Chunk.Size * (Config.WorldHeight - 1))) / (float)(Config.Instance.terrain.beachHeight));
+        //}
 
-		// // the portion which does not persist varies from 0-max with world height
-		// hollowValue = hollowValue * persistance 
-		// 				+ Mathf.Lerp(0, hollowValue * (1f / persistance), (float)ToWorldHeight(y) / (float)WORLD_BLOCK_HEIGHT);
+        //// the portion which does not persist varies from 0-max with world height
+        //hollowValue = hollowValue * persistance
+        //                + Mathf.Lerp(0, hollowValue * (1f / persistance), (float)ToWorldHeight(y) / (float)WORLD_BLOCK_HEIGHT);
 
-		// return reverseHollowTaper ? 1f - hollowValue : hollowValue;
-	}
+        //return Flags.Get(NoiseFlags.ReverseHollow) ? 1f - hollowValue : hollowValue;
+    }
 
 	int GetModIndex(int colorIndex, int patternValue, int stripeValue, int max)
 	{
@@ -1119,7 +1124,7 @@ public class TerrainGenerator : MonoBehaviour
 
         for (int i = 1; i <= numGlassFlags; i++)
         {
-            Flags.Set("Glass" + i.ToString(), GameUtils.Seed > 0.95f ? true : false);
+            Flags.Set("Glass" + i.ToString(), GameUtils.Seed > 0.5f ? true : false);
         }
 
         for (int i = 1; i <= numIslandFlags; i++)

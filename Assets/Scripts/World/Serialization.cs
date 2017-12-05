@@ -13,7 +13,6 @@ public static class Serialization
 	public static string SettingsFileName = "ballgame_Settings.config";
 	public static string NoiseSettingsFileName = "ballgame_Noise.config";
 
-	static DirectoryInfo saveDirectory;
 	static string saveLocation;
 	static string fileName;
 	static Save save;
@@ -24,34 +23,8 @@ public static class Serialization
 
 	public static void Reset()
 	{
-		saveDirectory = null;
 		saveLocation = "";
 	}
-
-	public static DirectoryInfo SaveDirectory
-	{
-		get
-		{
-			if (saveDirectory != null)
-			{
-				return saveDirectory;
-			}
-
-			saveLocation = SaveFolderName + "/" + World.Seed + "/";
-
-			if (!Directory.Exists(saveLocation))
-			{
-				saveDirectory = Directory.CreateDirectory(saveLocation);
-			}
-			else
-			{
-				saveDirectory = new DirectoryInfo(saveLocation);
-			}
-
-			return saveDirectory;
-		}
-	}
-
 
 	public static string SaveLocation
 	{
@@ -67,7 +40,8 @@ public static class Serialization
 			if (!Directory.Exists(saveLocation))
 			{
 				Directory.CreateDirectory(saveLocation);
-			}
+                Directory.CreateDirectory(Path.Combine(saveLocation, "chunks"));
+            }
 
 			return saveLocation;
 		}
@@ -88,7 +62,7 @@ public static class Serialization
 			return;
 		}
 
-		saveFile = Path.Combine(SaveLocation, FileName(chunk.pos));
+		saveFile = Path.Combine(SaveLocation, "chunks", FileName(chunk.pos));
 
 		try
 		{
@@ -106,7 +80,7 @@ public static class Serialization
 
 	public static bool Load(Chunk chunk)
 	{
-		saveFile = Path.Combine(SaveLocation, FileName(chunk.pos));
+		saveFile = Path.Combine(SaveLocation, "chunks", FileName(chunk.pos));
 
 		if (!File.Exists(saveFile))
 		{
@@ -133,7 +107,7 @@ public static class Serialization
 			return;
 		}
 
-		string[] files = Directory.GetFiles(SaveLocation);
+		string[] files = Directory.GetFiles(Path.Combine(SaveLocation, "chunks"));
 
 		if (files.Length == 0)
 		{
@@ -141,44 +115,44 @@ public static class Serialization
 			return;
 		}
 
-		using (fileStream = File.Create(SaveLocation + ".world"))
-		{
-			ZipOutputStream zipStream = new ZipOutputStream(fileStream);
-			zipStream.SetLevel(3);
-			
-			for (int i = 0; i < files.Length; i++)
-			{
-				string fileName = files[i];
-				FileInfo fi = new FileInfo(fileName);
+        using (fileStream = File.Create(Path.Combine(SaveLocation, "chunks.bin")))
+        {
+            ZipOutputStream zipStream = new ZipOutputStream(fileStream);
+            zipStream.SetLevel(3);
 
-				string entryName = fileName.Substring(SaveLocation.Length);
-				entryName = ZipEntry.CleanName(entryName);
-				ZipEntry newEntry = new ZipEntry(entryName);
-				newEntry.DateTime = fi.LastWriteTime;
-				newEntry.Size = fi.Length;
+            for (int i = 0; i < files.Length; i++)
+            {
+                string fileName = files[i];
+                FileInfo fi = new FileInfo(fileName);
 
-				zipStream.PutNextEntry(newEntry);
+                string entryName = fileName.Substring(SaveLocation.Length);
+                entryName = ZipEntry.CleanName(entryName);
+                ZipEntry newEntry = new ZipEntry(entryName);
+                newEntry.DateTime = fi.LastWriteTime;
+                newEntry.Size = fi.Length;
 
-				byte[] buffer = new byte[4096];
-				using (FileStream streamReader = File.OpenRead(fileName))
-				{
-					StreamUtils.Copy(streamReader, zipStream, buffer);
-				}
-				zipStream.CloseEntry();
-			}
+                zipStream.PutNextEntry(newEntry);
 
-			zipStream.IsStreamOwner = true;
-			zipStream.Close();
-		}
+                byte[] buffer = new byte[4096];
+                using (FileStream streamReader = File.OpenRead(fileName))
+                {
+                    StreamUtils.Copy(streamReader, zipStream, buffer);
+                }
+                zipStream.CloseEntry();
+            }
 
-		Directory.Delete(SaveLocation, true);
+            zipStream.IsStreamOwner = true;
+            zipStream.Close();
+        }
+
+		Directory.Delete(Path.Combine(SaveLocation, "chunks"), true);
 	}
 
 	public static void Decompress()
 	{
-		string saveFile = SaveLocation + ".world";
+        string saveFile = Path.Combine(SaveLocation, "chunks.bin");
 
-		if (!File.Exists(saveFile))
+        if (!File.Exists(saveFile))
 		{
 			return;
 		}
@@ -201,7 +175,7 @@ public static class Serialization
 
 					byte[] buffer = new byte[4096];
 					Stream zipStream =  zipFile.GetInputStream(entry);
-					string zipPath = Path.Combine(SaveLocation, fileName);
+					string zipPath = Path.Combine(SaveLocation, "chunks", fileName);
 
 					using (FileStream streamWriter = File.Create(zipPath))
 					{
@@ -220,7 +194,6 @@ public static class Serialization
 				zipFile.Close();
 			}
 		}
-		
 	}
 
 	public static void WriteConfig()
@@ -275,6 +248,83 @@ public static class Serialization
         var sr = new StringReader(System.IO.File.ReadAllText(worldSettingsFileName));
         var deserializer = new Deserializer();
         Config.Instance = deserializer.Deserialize<WorldSettings>(sr);
+
+        return true;
+    }
+
+    public static void WriteWorldHash()
+    {
+        string worldHashFileName = Path.Combine(SaveLocation,"world.hash");
+
+        var hash = new int[256];
+        Array.Copy(GameUtils.Hash, 0, hash, 0, 256);
+
+        var sb = new StringBuilder();
+        var stringWriter = new StringWriter(sb);
+        yaml.Serialize(stringWriter, hash);
+
+        using (StreamWriter sw = File.CreateText(worldHashFileName))
+        {
+            sw.WriteLine(sb.ToString());
+        }
+    }
+
+    public static bool ReadWorldHash()
+    {
+        string worldHashFileName = Path.Combine(SaveLocation, "world.hash");
+
+        if (!File.Exists(worldHashFileName))
+        {
+            return false;
+        }
+
+        var sr = new StringReader(System.IO.File.ReadAllText(worldHashFileName));
+        var deserializer = new Deserializer();
+        int[] hash = deserializer.Deserialize<int[]>(sr);
+
+        hash.CopyTo(GameUtils.Hash, 0);
+        hash.CopyTo(GameUtils.Hash, hash.Length);
+
+        return true;
+    }
+
+    public static void WriteWorldColors()
+    {
+        string worldColorFileName = Path.Combine(SaveLocation, "world.colors");
+
+        var colors = new SaveColor[64];
+        for (int i = 0; i < 64; i++)
+        {
+            colors[i] = new SaveColor(Tile.Colors[i].r, Tile.Colors[i].g, Tile.Colors[i].b);
+        }
+
+        var sb = new StringBuilder();
+        var stringWriter = new StringWriter(sb);
+        yaml.Serialize(stringWriter, colors);
+
+        using (StreamWriter sw = File.CreateText(worldColorFileName))
+        {
+            sw.WriteLine(sb.ToString());
+        }
+    }
+
+    public static bool ReadWorldColors()
+    {
+        string worldColorFileName = Path.Combine(SaveLocation, "world.colors");
+
+        if (!File.Exists(worldColorFileName))
+        {
+            return false;
+        }
+
+        var sr = new StringReader(System.IO.File.ReadAllText(worldColorFileName));
+        var deserializer = new Deserializer();
+        SaveColor[] colors = deserializer.Deserialize<SaveColor[]>(sr);
+
+        for (int i = 0; i < 64; i++)
+        {
+            Tile.Colors[i] = new UnityEngine.Color(colors[i].r, colors[i].g, colors[i].b);
+        }
 
         return true;
     }

@@ -24,6 +24,8 @@ public class QuitApplication : MonoBehaviour {
 		}
 		World.DestroyChunks();
         Serialization.WriteWorldConfig();
+        Serialization.WriteWorldHash();
+        Serialization.WriteWorldColors();
         Serialization.Compress();
 		Serialization.WriteConfig();
 		Serialization.WriteNoiseConfig();

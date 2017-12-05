@@ -21,6 +21,8 @@ public class ValueRange
 		min = n;
 		max = x;
 	}
+
+    public ValueRange() { }
     
     public ValueRange Init(float pow)
     {

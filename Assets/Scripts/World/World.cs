@@ -92,7 +92,10 @@ public class World : MonoBehaviour {
 	public void Reset()
 	{
 		DestroyChunks();
-		Serialization.Compress();
+        Serialization.WriteWorldConfig();
+        Serialization.WriteWorldHash();
+        Serialization.WriteWorldColors();
+        Serialization.Compress();
 
 		Chunks = new Dictionary<int, Chunk>();
 		ChunkList = new List<Chunk>();

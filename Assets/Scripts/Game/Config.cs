@@ -75,12 +75,12 @@ public class Config : MonoBehaviour
 				// start chunks
 				StartChunksToLoad = 128 * Mathf.FloorToInt((value - 2f) * 0.25f);
 				// set fog scale
-				float baseFog = 1.2f;
+				float baseFog = 1.6f;
 
 				Config.FogScale = baseFog - (value * 0.0333f);
 
 				// Load chunks out in a radius of 3 world sizes
-				_instance.chunkLoadRadius = value;//value + Mathf.FloorToInt(value / 2f);
+				_instance.chunkLoadRadius = 8;
 
 				// Delete the chunks that fall outside this
 				// TODO: detect memory usage to trigger deletion

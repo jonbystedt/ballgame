@@ -312,19 +312,19 @@ public class Cosmos : MonoBehaviour {
 			_ampm = Rotate(nightRotateSpeed * Time.deltaTime * skySpeed);
 		}
 
-		if (Daytime && dot >= 0.35f && _ampm < 0f && starsout)
+		if (Daytime /*&& dot >= 0.35f*/ && _ampm < 0f && starsout)
 		{
 			var em = stars.emission;
 			em.enabled = false;
 			starsout = false;
 		}
 
-		if (Daytime && dot >= 0.4f && _ampm < 0f && moonrenderer.transform.localScale.y == fullSizeMoon)
+		if (Daytime && dot >= 0.5f && _ampm < 0f && moonrenderer.transform.localScale.y == fullSizeMoon)
 		{
 			StartCoroutine(ShrinkMoon());
 		}
 
-		if (Daytime && dot <= 0.4f && _ampm > 0f && !starsout)
+		if (Daytime && dot <= 0.25f && _ampm > 0f && !starsout)
 		{
 			var em = stars.emission;
 			em.enabled = true;
@@ -332,7 +332,7 @@ public class Cosmos : MonoBehaviour {
 			starsout = true;
 		}
 
-		if (Daytime && dot <= 0.3f && _ampm > 0f && moonrenderer.transform.localScale.y < fullSizeMoon)
+		if (Daytime && dot <= 0.1f && _ampm > 0f && moonrenderer.transform.localScale.y < fullSizeMoon)
 		{
 			StartCoroutine(GrowMoon());
 		}
@@ -452,14 +452,14 @@ public class Cosmos : MonoBehaviour {
 
 		nightDayFogColor = new Gradient();
 		gck = new GradientColorKey[8];
-		gck[0].color = Color.Lerp(Tile.Colors[55], Color.black, 0.55f);
+		gck[0].color = Color.Lerp(Tile.Colors[51], Color.black, 0.75f);
 		gck[0].time = 0.0f;
-		gck[1].color = Color.Lerp(Tile.Colors[55], Color.black, 0.25f);
-		gck[1].time = 0.19f;
-		gck[2].color = Tile.Brighten(Color.Lerp(Tile.Colors[53], Color.black, 0.2f), 0.05f);
-		gck[2].time = 0.23f;
-		gck[3].color = Tile.Brighten(Color.Lerp(Tile.Colors[52], Color.black, 0.1f), 0.05f);
-		gck[3].time = 0.245f;
+		gck[1].color = Color.Lerp(Tile.Colors[51], Color.black, 0.45f);
+		gck[1].time = 0.21f;
+		gck[2].color = Tile.Brighten(Color.Lerp(Tile.Colors[51], Color.black, 0.2f), 0.05f);
+		gck[2].time = 0.24f;
+		gck[3].color = Tile.Brighten(Color.Lerp(Tile.Colors[51], Color.black, 0.1f), 0.05f);
+		gck[3].time = 0.25f;
 		gck[4].color = Tile.Brighten(Color.Lerp(Tile.Colors[51], Color.black, 0.05f), 0.1f);
 		gck[4].time = 0.26f;
 		gck[5].color = Tile.Brighten(Tile.Colors[51], 0.4f);

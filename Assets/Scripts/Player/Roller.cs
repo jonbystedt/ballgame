@@ -286,7 +286,7 @@ public class Roller : MonoBehaviour
                 }
                 else
                 {
-                    multiplier = Mathf.Lerp(10f, 5f, Mathf.Clamp01((moveDirection.x + moveDirection.y) / 5f));
+                    multiplier = Mathf.Lerp(5f, 2f, Mathf.Clamp01((moveDirection.x + moveDirection.y) / 5f));
                 }
 				_rigidbody.AddForce(moveDirection * movePower * airResistance + Vector3.up * jumpPower*multiplier, ForceMode.Impulse);
 			}
@@ -309,16 +309,22 @@ public class Roller : MonoBehaviour
 
 	void ApplyLateralForce(Vector3 moveDirection)
 	{
+        Vector3 force = moveDirection * movePower;
+        if (!grounded && !boosting)
+        {
+            force *= airResistance;
+        }
+
 		if (useTorque)
 		{
 			// ... add torque around the axis defined by the move direction.
 			_rigidbody.AddTorque(new Vector3(moveDirection.z, 0, -moveDirection.x) * movePower * torque);
-			_rigidbody.AddForce(moveDirection * movePower);
+			_rigidbody.AddForce(force);
 		}
 		else
 		{
 			// Otherwise just add force in the move direction.
-			_rigidbody.AddForce(moveDirection * movePower);
+			_rigidbody.AddForce(force);
 		}
 	}
 

@@ -2,6 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public class SaveColor
+{
+    public float r { get; set; }
+    public float g { get; set; }
+    public float b { get; set; }
+
+    public SaveColor(float red, float green, float blue)
+    {
+        r = red;
+        g = green;
+        b = blue;
+    }
+
+    public SaveColor() { }
+}
+
 public static class Tile
 {
 	public static Color[] Colors = new Color[64];

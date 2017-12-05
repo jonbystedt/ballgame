@@ -68,7 +68,48 @@ public class RollerController : MonoBehaviour
 
 		// calculate camera relative direction to move:
 		camForward = Vector3.Scale(cam.forward, new Vector3(1, 0, 1)).normalized;
-		move = (input.y * camForward + input.x * cam.right).normalized;
+        Vector3 cameraY = input.y * camForward;
+        Vector3 cameraX = input.x * cam.right;
+        float yMag = Vector3.Magnitude(cameraY);
+        float xMag = Vector3.Magnitude(cameraX);
+
+        move = (cameraY + cameraX).normalized;
+
+        // stop bumping up against blocks and jiggling around due to physics
+        if (camOp.FirstPerson)
+        {
+            ushort block = World.GetBlock(World.GetBlockPosition(Game.Player.transform.position + move));
+            if (block != Block.Air)
+            {
+                if (yMag > xMag)
+                {
+                    Vector3 move90 = Quaternion.Euler(0, 90 * Mathf.Sign(cameraY.x), 0) * move;
+                    block = World.GetBlock(World.GetBlockPosition(Game.Player.transform.position + move90));
+                    if (block == Block.Air)
+                    {
+                        move = cameraX.normalized;
+                    }
+                    else
+                    {
+                        move = Vector3.zero;
+                    }
+                }
+                if (xMag > yMag)
+                {
+                    Vector3 move90 = Quaternion.Euler(0, 90 * Mathf.Sign(cameraX.z), 0) * move;
+                    block = World.GetBlock(World.GetBlockPosition(Game.Player.transform.position + move90));
+                    if (block == Block.Air)
+                    {
+                        move = cameraY.normalized;
+                    }
+                    else
+                    {
+                        move = Vector3.zero;
+                    }
+                }
+            }
+        }
+
 
 		if (create)
 		{
