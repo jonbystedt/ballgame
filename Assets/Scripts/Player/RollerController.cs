@@ -10,7 +10,8 @@ public class RollerController : MonoBehaviour
 	private Roller roller; 
 
 	// the world-relative desired move direction, calculated from the camForward and user input.
-	private Vector3 move;
+	private Vector3 move = Vector3.zero;
+    private Vector3 move90 = Vector3.zero;
 	private Transform cam; 
 	private Vector3 camForward;
 
@@ -70,10 +71,13 @@ public class RollerController : MonoBehaviour
 		camForward = Vector3.Scale(cam.forward, new Vector3(1, 0, 1)).normalized;
         Vector3 cameraY = input.y * camForward;
         Vector3 cameraX = input.x * cam.right;
-        float yMag = Vector3.Magnitude(cameraY);
-        float xMag = Vector3.Magnitude(cameraX);
 
         move = (cameraY + cameraX).normalized;
+        Vector3 worldMove = cam.TransformDirection(move);
+
+        //Game.Log("X: " + worldMove.x + "  Y: " + worldMove.z);
+
+        Debug.DrawRay(transform.position, move, Color.cyan, 0.1f);
 
         // stop bumping up against blocks and jiggling around due to physics
         if (camOp.FirstPerson)
@@ -81,26 +85,30 @@ public class RollerController : MonoBehaviour
             ushort block = World.GetBlock(World.GetBlockPosition(Game.Player.transform.position + move));
             if (block != Block.Air)
             {
-                if (yMag > xMag)
+                Vector3 projectRight = Vector3.Project(move, Vector3.right);
+                Vector3 projectForward = Vector3.Project(move, Vector3.forward);
+
+                Debug.DrawRay(transform.position, projectRight.normalized, Color.red, 0.1f);
+                Debug.DrawRay(transform.position, projectForward.normalized, Color.yellow, 0.1f);
+
+                if (worldMove.z > 0)
                 {
-                    Vector3 move90 = Quaternion.Euler(0, 90 * Mathf.Sign(cameraY.x), 0) * move;
-                    block = World.GetBlock(World.GetBlockPosition(Game.Player.transform.position + move90));
+                    block = World.GetBlock(World.GetBlockPosition(Game.Player.transform.position + projectRight));
                     if (block == Block.Air)
                     {
-                        move = cameraX.normalized;
+                        move = projectRight;
                     }
                     else
                     {
                         move = Vector3.zero;
                     }
                 }
-                if (xMag > yMag)
+                else
                 {
-                    Vector3 move90 = Quaternion.Euler(0, 90 * Mathf.Sign(cameraX.z), 0) * move;
-                    block = World.GetBlock(World.GetBlockPosition(Game.Player.transform.position + move90));
+                    block = World.GetBlock(World.GetBlockPosition(Game.Player.transform.position + projectForward));
                     if (block == Block.Air)
                     {
-                        move = cameraY.normalized;
+                        move = projectForward;
                     }
                     else
                     {
@@ -184,7 +192,7 @@ public class RollerController : MonoBehaviour
 		lastPosition = transform.position;
 	}
 
-	IEnumerator CheckOutOfBounds()
+    IEnumerator CheckOutOfBounds()
 	{
 		for(;;) 
 		{

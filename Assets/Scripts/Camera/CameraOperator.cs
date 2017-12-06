@@ -268,7 +268,7 @@ public class CameraOperator : MonoBehaviour
 			{
 				cameraPosition.y += 1f;
 			}
-			//_camera.transform.position = cameraPosition + bob;
+            _camera.transform.position = cameraPosition;// + bob;
 
 			Game.CameraPosition = cameraPosition;
 		}
