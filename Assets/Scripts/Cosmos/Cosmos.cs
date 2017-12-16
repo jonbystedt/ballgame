@@ -451,23 +451,19 @@ public class Cosmos : MonoBehaviour {
 		nightDayColor.SetKeys(gck, gak);
 
 		nightDayFogColor = new Gradient();
-		gck = new GradientColorKey[8];
+		gck = new GradientColorKey[6];
 		gck[0].color = Color.Lerp(Tile.Colors[51], Color.black, 0.75f);
 		gck[0].time = 0.0f;
 		gck[1].color = Color.Lerp(Tile.Colors[51], Color.black, 0.45f);
-		gck[1].time = 0.21f;
-		gck[2].color = Tile.Brighten(Color.Lerp(Tile.Colors[51], Color.black, 0.2f), 0.05f);
-		gck[2].time = 0.24f;
-		gck[3].color = Tile.Brighten(Color.Lerp(Tile.Colors[51], Color.black, 0.1f), 0.05f);
-		gck[3].time = 0.25f;
-		gck[4].color = Tile.Brighten(Color.Lerp(Tile.Colors[51], Color.black, 0.05f), 0.1f);
-		gck[4].time = 0.26f;
-		gck[5].color = Tile.Brighten(Tile.Colors[51], 0.4f);
-		gck[5].time = 0.31f;
-		gck[6].color = Tile.Lighten(Tile.Brighten(Tile.Colors[52], 0.7f), 0.5f);
-		gck[6].time = 0.37f;
-		gck[7].color = Color.Lerp(Tile.Brighten(Tile.Colors[21], 0.7f), Color.white, 0.65f);
-		gck[7].time = 0.75f;
+		gck[1].time = 0.12f;
+		gck[2].color = Color.Lerp(Tile.Brighten(Tile.Colors[51], 0.8f), Color.black, 0.05f);
+        gck[2].time = 0.245f;
+		gck[3].color = Tile.Brighten(Tile.Colors[51], 0.95f);
+        gck[3].time = 0.285f;
+		gck[4].color = Tile.Lighten(Tile.Brighten(Tile.Colors[52], 0.7f), 0.5f);
+		gck[4].time = 0.37f;
+		gck[5].color = Color.Lerp(Tile.Brighten(Tile.Colors[21], 0.7f), Color.white, 0.65f);
+		gck[5].time = 0.75f;
 		nightDayFogColor.SetKeys(gck, gak);
 
 		moonlight.nightDayColor = nightDayFogColor;

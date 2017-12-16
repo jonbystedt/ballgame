@@ -3,6 +3,8 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 
 public class World : MonoBehaviour {
+
+    public enum Direction { none, north, northeast, east, southeast, south, southwest, west, northwest };
 	
 	public static Dictionary<int, Chunk> Chunks = new Dictionary<int, Chunk>();
 	public static Dictionary<int, Column> Columns = new Dictionary<int, Column>();
@@ -113,6 +115,50 @@ public class World : MonoBehaviour {
 		Seed = "";
 		generator.initialized = false;
 	}
+
+    public static World.Direction GetDirection(World3 from, World3 to)
+    {
+        if (to.z > from.z)
+        {
+            if (to.x < from.x)
+            {
+                return World.Direction.northwest;
+            }
+            else if (to.x > from.x)
+            {
+                return World.Direction.northeast;
+            }
+            else
+            {
+                return World.Direction.north;
+            }
+        }
+        else if (to.z < from.z)
+        {
+            if (to.x < from.x)
+            {
+                return World.Direction.southwest;
+            }
+            else if (to.x > from.x)
+            {
+                return World.Direction.southeast;
+            }
+            else
+            {
+                return World.Direction.south;
+            }
+        }
+        else if (to.x < from.x)
+        {
+            return World.Direction.west;
+        }
+        else if (to.x > from.x)
+        {
+            return World.Direction.east;
+        }
+
+        return World.Direction.none;
+    }
 
 	public static World3 GetChunkPosition(Vector3 pos)
 	{

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.PostProcessing.Utilities;
 
 public enum Quality
 {
@@ -54,6 +55,8 @@ public class Config : MonoBehaviour
 
 	public Quality graphicsMode;
 	public InterpolationLevel interpolation;
+
+    PostProcessingController post;
 
 	public static int WorldHeight = 4;
 
@@ -123,8 +126,15 @@ public class Config : MonoBehaviour
 					ShadowsEnabled = false;
 					Outlines = false;
 					World.ChunkShadows = false;
-					
-					if (QualitySettings.GetQualityLevel() != 0)
+
+                    _instance.post.enableAntialiasing = false;
+                    _instance.post.enableBloom = false;
+                    _instance.post.enableDepthOfField = false;
+                    _instance.post.enableEyeAdaptation = false;
+                    _instance.post.enableMotionBlur = false;
+
+
+                    if (QualitySettings.GetQualityLevel() != 0)
 					{
 						QualitySettings.SetQualityLevel(0);
 					}
@@ -142,7 +152,13 @@ public class Config : MonoBehaviour
 					Outlines = false;
 					World.ChunkShadows = false;
 
-					if (QualitySettings.GetQualityLevel() != 1)
+                    _instance.post.enableAntialiasing = true;
+                    _instance.post.enableBloom = true;
+                    _instance.post.enableDepthOfField = false;
+                    _instance.post.enableEyeAdaptation = true;
+                    _instance.post.enableMotionBlur = false;
+
+                    if (QualitySettings.GetQualityLevel() != 1)
 					{
 						QualitySettings.SetQualityLevel(1);
 					}
@@ -160,7 +176,13 @@ public class Config : MonoBehaviour
 					Outlines = false;
 					World.ChunkShadows = true;
 
-					Interpolation = InterpolationLevel.Low;
+                    _instance.post.enableAntialiasing = true;
+                    _instance.post.enableBloom = true;
+                    _instance.post.enableDepthOfField = true;
+                    _instance.post.enableEyeAdaptation = true;
+                    _instance.post.enableMotionBlur = true;
+
+                    Interpolation = InterpolationLevel.Low;
 					if (QualitySettings.GetQualityLevel() != 2)
 					{
 						QualitySettings.SetQualityLevel(2);
@@ -179,7 +201,13 @@ public class Config : MonoBehaviour
 					Outlines = false;
 					World.ChunkShadows = true;
 
-					if (QualitySettings.GetQualityLevel() != 3)
+                    _instance.post.enableAntialiasing = true;
+                    _instance.post.enableBloom = true;
+                    _instance.post.enableDepthOfField = true;
+                    _instance.post.enableEyeAdaptation = true;
+                    _instance.post.enableMotionBlur = true;
+
+                    if (QualitySettings.GetQualityLevel() != 3)
 					{
 						QualitySettings.SetQualityLevel(3);
 					}
@@ -384,7 +412,8 @@ public class Config : MonoBehaviour
 
 	void Start()
 	{
-		//DontDestroyOnLoad(gameObject);
+        //DontDestroyOnLoad(gameObject);
+        post = Game.MainCamera.GetComponent<PostProcessingController>();
 
 		if (_instance == null)
 		{

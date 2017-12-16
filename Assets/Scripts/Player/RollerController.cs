@@ -21,6 +21,9 @@ public class RollerController : MonoBehaviour
 	private bool create;
 	private bool pound;
 
+    private World.Direction lastDirection;
+    private World.Direction prevDirection;
+
 	Rigidbody _rigidbody;
 	Collider _collider;
 	Vector3 lastPosition;
@@ -82,18 +85,34 @@ public class RollerController : MonoBehaviour
         // stop bumping up against blocks and jiggling around due to physics
         if (camOp.FirstPerson)
         {
-            ushort block = World.GetBlock(World.GetBlockPosition(Game.Player.transform.position + move));
+            World3 blockPos = World.GetBlockPosition(Game.Player.transform.position + move);
+            ushort block = World.GetBlock(blockPos);
+
             if (block != Block.Air)
             {
+                World.Direction direction = World.GetDirection(World.GetBlockPosition(Game.Player.transform.position), blockPos);
+                if (direction != lastDirection)
+                {
+                    prevDirection = lastDirection;
+                }
+                lastDirection = direction;
+                Game.Log(direction.ToString());
+
                 Vector3 projectRight = Vector3.Project(move, Vector3.right);
                 Vector3 projectForward = Vector3.Project(move, Vector3.forward);
 
                 Debug.DrawRay(transform.position, projectRight.normalized, Color.red, 0.1f);
                 Debug.DrawRay(transform.position, projectForward.normalized, Color.yellow, 0.1f);
 
-                if (worldMove.z > 0)
+                //if (worldMove.z > 0)
+                if
+                (
+                    worldMove.z > 0 ||
+                    direction == World.Direction.north || 
+                    direction == World.Direction.south
+                )
                 {
-                    block = World.GetBlock(World.GetBlockPosition(Game.Player.transform.position + projectRight));
+                    block = World.GetBlock(World.GetBlockPosition(Game.Player.transform.position + projectRight.normalized));
                     if (block == Block.Air)
                     {
                         move = projectRight;
@@ -103,9 +122,14 @@ public class RollerController : MonoBehaviour
                         move = Vector3.zero;
                     }
                 }
-                else
+                else if
+                (
+                    worldMove.z < 0 ||
+                    direction == World.Direction.east ||
+                    direction == World.Direction.west
+                )
                 {
-                    block = World.GetBlock(World.GetBlockPosition(Game.Player.transform.position + projectForward));
+                    block = World.GetBlock(World.GetBlockPosition(Game.Player.transform.position + projectForward.normalized));
                     if (block == Block.Air)
                     {
                         move = projectForward;
@@ -114,6 +138,10 @@ public class RollerController : MonoBehaviour
                     {
                         move = Vector3.zero;
                     }
+                }
+                else
+                {
+                    move = Vector3.zero;
                 }
             }
         }

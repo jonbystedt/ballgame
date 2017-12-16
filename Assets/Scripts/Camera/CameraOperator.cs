@@ -262,7 +262,7 @@ public class CameraOperator : MonoBehaviour
 
 			if (freeLookCamera.m_TiltAngle < 0)
 			{
-				cameraPosition.y = Game.Player.transform.position.y;
+				cameraPosition.y = Mathf.Lerp(cameraPosition.y, Game.Player.transform.position.y, 0.00001f);
 			}
 			if (FirstPerson)
 			{
